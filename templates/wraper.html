@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Global Board &#8211; View ads from all over the World</title>
+    <link rel='stylesheet' href='/static/css/extra.css' type='text/css' />
+    <link rel='stylesheet' id='font-awesome-css' href='/static/css/font-awesome-4.7.0/css/font-awesome.min.css' type='text/css' media='all' />
+    <link rel='stylesheet' id='bootstrap-css' href='/static/css/bootstrap-3.3.6-dist/css/bootstrap.min.css' type='text/css' media='all' />
+</head>
+<body style="overflow: hidden; width: 100%; height: 100%;">
+    <iframe style="position: absolute;height: 100%;width: 100%;border: none;left: 0;top: 0;" allowfullscreen src="{{ next }}"></iframe>
+    {% if user.is_authenticated and not logout %}
+    <div class="chat-wrapper">
+        <div class="chat-header">
+            <div class="chat-title"><i class="fa fa-comments"></i> Chat</div>
+            <div class="chat-close"><i class="fa fa-window-maximize"></i><i class="fa fa-window-minimize hidden"></i></div>
+        </div>
+        <div class="chat-body">
+            <iframe class="chat-frame" src="/static/chat/index.html?uid={{ user.email }}"></iframe>
+        </div>
+    </div>  
+
+    <script type='text/javascript' src='/static/js/jquery.min.js'></script>
+    <script type="text/javascript">
+        $('.chat-header').on('click', function() {
+            $('.fa-window-maximize').toggleClass('hidden');
+            $('.fa-window-minimize').toggleClass('hidden');
+            $('.chat-wrapper').toggleClass('show-chat');
+        });
+    </script>
+    {% endif %}
+
+</body>
+</html>

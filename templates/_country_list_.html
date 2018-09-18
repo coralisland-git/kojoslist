@@ -1,0 +1,7 @@
+<ul class='country-list'>
+    {% for country in countries %}
+        <li>
+            <a data-id="{{ country.sortname|lower }}" class="country_id" href="javascript:void();">{{ country.name }}</a>
+        </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,22 @@
+<div class="row">     
+    <div class="col-md-12">
+        <div class="form-group edit-profile">
+            <label>Location</label>
+            <input type="text" name="location" class="form-control edit-post-wrap" value="{{ post.location }}" required/>
+        </div>
+    </div>
+</div>
+<div class="row">     
+    <div class="col-md-6">
+        <div class="form-group edit-profile">
+            <label>start day</label>
+            <input tabindex="" type="text" class="form-control edit-post-wrap cl_datepicker" name="start_day__lte" required="" value="{{ post.start_day }}">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group edit-profile">
+            <label>end day</label>
+            <input tabindex="" type="text" class="form-control edit-post-wrap cl_datepicker" name="end_day__gte" required="" value="{{ post.end_day }}">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Condition</label>
+            <select name="condition" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="new" {% if post.condition == "new" %}selected{% endif %}>new</option>
+                <option value="like new" {% if post.condition == "like new" %}selected{% endif %}>like new</option>
+                <option value="excellent" {% if post.condition == "excellent" %}selected{% endif %}>excellent</option>
+                <option value="good" {% if post.condition == "good" %}selected{% endif %}>good</option>
+                <option value="fair" {% if post.condition == "fair" %}selected{% endif %}>fair</option>
+                <option value="salvage" {% if post.condition == "salvage" %}selected{% endif %}>salvage</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3 col-xs-6">
+        <div class="form-group edit-profile">
+            <label>Cryptocurrency ok</label>
+            <input type="checkbox" name="cryptocurrency_ok" class="edit-post-wrap" style="display: block;" {% if post.cryptocurrency_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+</div>

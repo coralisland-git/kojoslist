@@ -1,0 +1,592 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+{% block own_css %}
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/jquery-ui.css' type='text/css' media='all' /> 
+<link rel='stylesheet' href='/static/fullcalendar/fullcalendar.min.css' type='text/css' /> 
+<link rel='stylesheet' href='/static/fullcalendar/fullcalendar.print.css' type='text/css' media='print' /> 
+{% endblock %}
+
+{% block right_content %}
+<!-- Content Right Content -->
+
+<div class="col-sm-12 full-h">
+
+    <div class="content-right-content my-ads">
+        <h2>Post Ads</h2>
+        <div class="row" style="margin:0;">
+            <form method="post" enctype="multipart/form-data" id="post-form">
+                {% csrf_token %}
+                <div class="col-md-8 col-lg-7">    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group edit-profile">
+                                <label>Ad Category</label>
+
+                                <div class="category-select-wrap-full">
+                                    <select id="ads_category" name="ads_category" class="form-control edit-post-wrap category-select-wrap" required>
+                                        {% if post.id %}
+                                            <option value="{{ post.category.parent.id }}"> {{ post.category.parent.name }} </option>
+                                        {% else %}
+                                            <option value=""> Select Ad Category </option>
+                                            {% for mc in mcategories %}
+                                                {% if mc.name != 'Campaign' %}
+                                                <option value="{{ mc.id }}" {% if mc.id == post.category.parent_id %}selected{% endif %}>{{ mc.name }}</option>
+                                                {% endif %}
+                                            {% endfor %}                                        
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group edit-profile">
+                                <label>Ad Sub Category</label>
+                                <select id="ads_sub_category" name="category" class="form-control edit-post-wrap" required>
+                                    {% if post.id %}
+                                        <option value="{{ post.category_id }}"> {{ post.category.name }} </option>
+                                    {% else %}
+                                        <option>Select Sub Category</option>
+                                    {% endif %}                                   
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group edit-profile">
+                                <label>Ad Country</label>
+                                <select id="ads_country" name="ads_country" class="form-control edit-post-wrap">
+                                    <option value="">Global</option>
+                                    {% for cc in countries %}
+                                    <option value="{{ cc.id }}" {% if cc.id == post.region.state.country_id or cc.sortname == post.country %}selected{% endif %}>{{ cc.name }}</option>
+                                    {% endfor %}                                    
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group edit-profile">
+                                <label>Ad Region ( State )</label>
+                                <select id="ads_state" name="ads_state" class="form-control edit-post-wrap">
+                                    <option>Select Region</option>
+                                    {% for cc in states %}
+                                    <option value="{{ cc.id }}" {% if cc.id == post.region.state_id or cc.name == post.state %}selected{% endif %}>{{ cc.name }}</option>
+                                    {% endfor %}                                    
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group edit-profile">
+                                <label>Specify City</label>
+                                <select id="ads_city" name="region{% if districts %} _1 {% endif %}" class="form-control edit-post-wrap" {% if not districts and country %} required="" {% endif %}>
+                                    <option value="">Select City</option>
+                                    {% for cc in cities %}
+                                    <option value="{{ cc.id }}" {% if cc.id == post.region_id or cc.id == post.region.district_id or cc.id == post.district_id %}selected{% endif %}>{{ cc.name }}</option>
+                                    {% endfor %}                                    
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ads-district row">
+                        <div class="col-md-12">
+                            <div class="form-group edit-profile">
+                                <label>Specify District</label>
+                                <select id="ads_district" name="region{% if not districts %} _2 {% endif %}" class="form-control edit-post-wrap" {% if districts %} required="" {% endif %}>
+                                    <option value="">Select District</option>
+                                    {% for cc in districts %}
+                                    <option value="{{ cc.id }}" {% if cc.id == post.region_id %}selected{% endif %}>{{ cc.name }}</option>
+                                    {% endfor %}                                    
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 price-note" style="display: none;">
+                    To post ads in this category, you need to pay $<span id="price">10</span>.
+                </div>
+                <div class="col-md-12">
+                    <h2 class="description-title">Ad Description</h2>
+                </div>
+
+                <div class="col-md-8 col-lg-7">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group edit-profile">
+                                <label>Title</label>
+                                <input type="text" name="title" class="form-control edit-post-wrap" value="{{ post.title }}" required/>
+                            </div>
+                            <div class="form-group edit-profile">
+                                <label>Price (in USD)</label>
+                                <input type="number" step="0.01" id="post-price" name="price" class="form-control edit-post-wrap" min="0" value="{{ post.price }}" />
+                                <div style="margin-top: 2px;line-height: 14px;"><small id="help_shortterm">{% if post.category.form == 'ShortTermPost' %}( price per day ){% endif %}</small></div>
+                            </div>
+
+                            <div class="form-group edit-profile">
+                                <label>Description</label>
+                                <textarea name="content" class="form-control edit-post-wrap" required="">{{ post.content }}</textarea>
+                            </div>
+                            <div id="ads_details">
+                            {% include detail_template %}
+                            </div>
+                            <input type="hidden" id="ads_form" name="ads_form" value="{{ post.category.form }}">
+                            <input type="hidden" name="owner" value="{{ user.id }}">
+                            <input type="hidden" name="status" value="new">
+                            <input type="hidden" name="by_dealer" id="by_dealer" value="0">
+                            <div class="form-group edit-profile">
+                                <label style="color: #5bc0de;">Add Pictures</label>
+                                <ul id="loaded-files" class="upload-image-thumbs upload-image-ul">
+                                    {% for image in images %}
+                                        {% if image.is_head %}
+                                            <input type="hidden" name="head_image" class="head_image" value="{{ image.name }}">
+                                        {% endif %}
+                                        <li class="upload-placeholder {% if image.is_head%} active {% endif %}">
+                                            <div class="uploadedImg">
+                                                <i class="fa fa-times close_img"></i>
+                                                <img class="image-responsive" src="/static/media/{{ image.name }}" >
+                                            </div>
+                                            <input type="hidden" name="uploded_id[]" value="{{ image.name }}" class="uploded_id" />
+                                        </li>
+                                    {% endfor %}
+                                    <li class="upload-placeholder upload-image">
+                                        <div class="uploadedImg"></div>
+                                        <input type="hidden" name="uploded_id[]" class="uploded_id" />
+                                    </li>
+                                </ul>
+                                <div style="display:none;" id="upload_btn" class="upload_btn button button-primary">
+                                    Add pictures
+                                    <input id="inputfile" type="file" name="files[]" data-maxfilesize="4000000" class="" data-maxuploadfile="20" data-imagequality="0.7" multiple="">
+                                </div>
+                            </div>
+
+                        </div>
+                        <input type="hidden" name="stripeToken" id="stripe_token">
+                        <div class="col-md-12">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" checked value="">I Accept <a href="/terms-of-use/">terms & service</a>
+                                </label>
+                            </div>
+                            <div class="form-group price-note" style="display: none;">
+                                <div class="col-sm-52">
+                                    <a id="customButton" class="btn btn-info update-btn">Pay with Card</a>      
+                                </div>
+                            </div>        
+
+                            <div class="form-group edit-profile">
+                                <input type="submit" class="btn btn-info update-btn" value="Submit" />
+                                <input class="btn btn-info post-add-btn-cancel" id="cancel" value="Cancel" type="button">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+<div id="dialog-confirm" title="Confirmation" style="padding-top: 25px; display: none;">
+  <p>Do you want to post as a dealer?</p>
+</div>
+
+<div id="stripe-confirm" title="Confirmation" style="padding-top: 25px; display: none;">
+  <p style="margin-bottom: 12px;">You need to connect to stripe or bank account to get paid for ads.</p><p></p>
+  <p>Click <b>CONTINUE</b> to connect to stripe or click <b>SUBMIT</b> to post ad.</p>
+</div>
+
+<div class="modal fade" id="addNew-event">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add an Event</h4>
+            </div>
+            <form class="addEvent" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="eventName" style="margin-bottom: 5px;color: #5e5e5e;">Event Name</label>
+                    <div class="fg-line">
+                        <input type="text" class="input-sm form-control edit-post-wrap" name="eventName" id="eventName" placeholder="eg: maintenance day" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventName" style="margin-bottom: 7px;color: #5e5e5e;">Tag Color</label>
+                    <div class="event-tag">
+                        <span data-color="#009688" class="bgm-teal selected"></span>
+                        <span data-color="#f44336" class="bgm-red"></span>
+                        <span data-color="#e91e63" class="bgm-pink"></span>
+                        <span data-color="#2196f3" class="bgm-blue"></span>
+                        <span data-color="#cddc39" class="bgm-lime"></span>
+                        <span data-color="#4caf50" class="bgm-green"></span>
+                        <span data-color="#00bcd4" class="bgm-cyan"></span>
+                        <span data-color="#9c27b0" class="bgm-purple"></span>
+                        <span data-color="#9e9e9e" class="bgm-gray"></span>
+                        <span data-color="#000000" class="bgm-black"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">   
+                    <label for="eventName" style="margin-bottom: 5px;color: #5e5e5e;">Book Available</label>
+                    <div class="checkbox">
+                        <label>
+                        <input type="checkbox" name="rent_avail" class="rent_avail" checked="">Available to rent</label>
+                    </div>
+                </div>
+                <input type="hidden" name="event_start" class="event_start">
+                <input type="hidden" name="event_end" class="event_end">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link c-red" id="deleteEvent" data-dismiss="modal">Delete Event</button>
+                <button type="submit" class="btn btn-link waves-effect" id="addEvent">Add Event</button>
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End Content Right Content -->
+{% endblock %}
+
+{% block own_js %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script type="text/javascript" src="/static/fullcalendar/fullcalendar.min.js"></script>
+<script>
+    var price, stripe_confirmed=false; 
+
+    var handler = StripeCheckout.configure({
+        key: '{{ skey }}',
+        locale: 'auto',
+        token: function(token) {
+            $('#stripe_token').val(token.id);
+            $("input.update-btn").removeAttr('disabled');
+        }
+    });
+
+    refresh_datetime_picker();
+    
+    $('#customButton').on('click', function(e) {
+        handler.open({
+            name: "Globalboard",
+            description: "Post Ads",
+            currency: "usd",
+            amount: price
+        });
+        e.preventDefault();
+    });
+
+    $('#post-form').submit(function(e) {
+        var cn_id = jQuery('#ads_country').val();
+        var ct_id = jQuery('#ads_city').val();
+
+        if (cn_id && !ct_id) {
+            e.preventDefault();
+            alert('Please select a city');
+            jQuery('#ads_city').focus();
+        }
+
+        if ($('#calendar').length) {
+            store_calendar();
+        }
+
+        // change to [required] if not using true option as part of the attribute as it is not really needed.
+        var required = $('#post-form [required]'); 
+        var error = false;
+
+        for(var i = 0; i < required.length; i++) {
+            if(required[i].value.trim() == '') {
+                required[i].style.backgroundColor = 'rgb(255,155,155)';
+                error = true; // if any inputs fail validation then the error variable will be set to true;     
+            }
+        }
+
+        if (error) {
+            alert('Please provide all information highlighted.');
+            return false; // stop the form from being submitted.
+        }
+
+        {% if not stripe_connected %}
+            if ($('#post-price').val().trim() != '' && !stripe_confirmed) {
+                $( "#stripe-confirm" ).dialog({
+                    resizable: false,
+                    height: "auto",
+                    width: "auto",
+                    modal: true,
+                    buttons: {
+                        Continue: function() {
+                            $( this ).dialog( "close" );
+                            window.location.href = '/my-account';
+                            return false;
+                        },
+                        Submit: function() {
+                            $( this ).dialog( "close" );
+                            stripe_confirmed = true;
+                            $('#post-form').submit();
+                        }
+                    }
+                });
+                return false;
+            }
+        {% endif %}
+    }); 
+
+    // Close Checkout on page navigation:
+    $(window).on('popstate', function() {
+        handler.close();
+    });
+
+    jQuery(document).ready(function() {
+        if ($('.head_image').length == 0 ) {
+            jQuery(".upload-image-ul").append('<input type="hidden" name="head_image" class="head_image">');
+        }
+
+        jQuery('#ads_category').change(function() {
+            var obj_id = jQuery(this).val();
+            
+            if (obj_id) {
+                jQuery.ajax({
+                    type: 'get',
+                    url: '/get_sub_info',
+                    data: {
+                        obj_id: obj_id,
+                        type: 'category'
+                    },
+                    success: function(data) {
+                        jQuery('#ads_sub_category').html(data);
+                    }
+                });                
+            } else {
+                jQuery('#ads_sub_category').html("<option>All Sub Categories</option>");
+            }
+        });
+
+        jQuery('#ads_country').change(function() {
+            var obj_id = jQuery(this).val();
+            
+            if (obj_id) {
+                jQuery.ajax({
+                    type: 'get',
+                    url: '/get_sub_info',
+                    data: {
+                        obj_id: obj_id,
+                        type: 'state'
+                    },
+                    success: function(data) {
+                        jQuery('#ads_state').html(data);
+                    }
+                });
+                $('#ads_city').attr('required');
+            } else {
+                jQuery('#ads_state').html("<option>All Regions</option>");
+                $('#ads_city').removeAttr('required', true);
+                $('#ads_district').removeAttr('required', true);
+            }
+            jQuery('#ads_city').html("<option value=''>All Locations</option>");
+        });
+
+        jQuery('#ads_state').change(function() {
+            var obj_id = jQuery(this).val();
+            
+            if (obj_id) {
+                jQuery.ajax({
+                    type: 'get',
+                    url: '/get_sub_info',
+                    data: {
+                        obj_id: obj_id,
+                        type: 'city'
+                    },
+                    success: function(data) {
+                        jQuery('#ads_city').html(data);
+                    }
+                });                
+            } else {
+                jQuery('#ads_city').html("<option value=''>All Locations</option>");
+            }
+        });
+
+        jQuery('#ads_city').change(function() {
+            var obj_id = jQuery(this).val();
+            
+            if (obj_id) {
+                jQuery.ajax({
+                    type: 'get',
+                    url: '/get_sub_info',
+                    data: {
+                        obj_id: obj_id,
+                        type: 'district'
+                    },
+                    success: function(data) {
+                        $('#ads_district').html(data);
+                        if ((data.match(/option/g) || []).length > 2) {
+                            $('#ads_city').attr('name', 'region_1');
+                            $('#ads_city').removeAttr('required');
+                            $('#ads_district').attr('name', 'region');
+                            $('#ads_district').attr('required', true);
+                        } else {
+                            $('#ads_city').attr('name', 'region');
+                            $('#ads_city').attr('required');
+                            $('#ads_district').attr('name', 'region_2');
+                            $('#ads_district').removeAttr('required', true);
+                        }
+                    }
+                });                
+            } else {
+                $('#ads_city').attr('name', 'region');
+                $('#ads_district').attr('name', 'region_2');                
+            }
+        });
+
+        window.liindex = 0;
+        jQuery("body").on("click", ".upload-image", function() {
+            window.liindex = jQuery(this).index();
+            jQuery("#inputfile").click();
+        });
+
+        $('body').on('click', ".upload-image-thumbs.upload-image-ul li img", function (obj) {
+            $('.upload-image-thumbs.upload-image-ul li').removeClass('active');
+            $(obj.target).parent().parent().addClass('active');
+            $('.head_image').val(obj.target.src);
+        });
+
+        jQuery("#inputfile").change(function() {
+            var fd = new FormData();
+            var file = this.files;
+            var count = file.length;
+            for (var i = 0; i < count; i++) {
+                if (fd) {
+                    fd.append("images", file[i]);
+                }
+                
+                jQuery("#loaded-files li").eq((i + window.liindex)).addClass("loader_img");
+                jQuery.ajax({
+                    type: 'POST',
+                    url: '/upload-image',
+                    data: fd,
+                    contentType: false,
+                    dataType: "json",
+                    processData: false,
+                    success: function(response) {
+                        jQuery("#loaded-files li").removeClass("loader_img");
+                        jQuery(".upload-image").find('input[class="uploded_id"]').val(response.image_name);
+                        var image = '<i class="fa fa-times close_img"></i><img class="image-responsive" src="' + response.image_url + '" >';
+                        jQuery(".upload-image .uploadedImg").html(image);
+                        if ($('.upload-placeholder').length == 1) {
+                            jQuery(".upload-image").addClass('active');
+                            $('.head_image').val(response.image_name);
+                        }
+
+                        jQuery(".upload-image").removeClass("upload-image");
+                        jQuery(".upload-image-ul").append('<li class="upload-placeholder upload-image"><div class="uploadedImg"></div><input type="hidden" name="uploded_id[]" class="uploded_id" /></li>');
+                    }
+                });
+            }
+        });
+
+        jQuery("body").on("click", ".close_img", function() {
+            var dataid = jQuery(this).parent().parent().find("input").attr("value");
+            jQuery(this).parent().parent().addClass('remove_uploded_img');
+
+            jQuery.ajax({
+                type: 'post',
+                url: '/delete-image',
+                dataType: 'json',
+                data: {
+                    image_name: dataid,
+                },
+                success: function(data) {
+                    jQuery(".remove_uploded_img").remove();                    
+                }
+            });
+
+        });
+
+        $('#cancel').click(function() {
+            window.location.href = '/my-ads/';
+        });
+
+        jQuery('#ads_sub_category').change(function() {
+            var obj_id = jQuery(this).val();
+            var obj_val = jQuery("#ads_sub_category option:selected").text();
+
+            jQuery('.price-note').hide();
+            jQuery('input.update-btn').removeAttr('disabled');
+            
+            if (obj_val == 'short term rentals' || obj_val == 'vacation rentals') {
+                $('#help_shortterm').html('( price per day )');
+            } else {
+                $('#help_shortterm').html('');
+            }
+
+            if (obj_id) {
+                jQuery.ajax({
+                    type: 'get',
+                    url: '/get_post_detail',
+                    data: {
+                        obj_id: obj_id
+                    },
+                    success: function(res) {
+                        jQuery('#ads_details').html(res.html);
+                        jQuery('#ads_form').val(res.form);
+                        price = res.price;
+                        
+                        if(res.price) {
+                            if(res.dealer_avail) {
+                                $( "#dialog-confirm" ).dialog({
+                                    resizable: false,
+                                    height: "auto",
+                                    width: "auto",
+                                    modal: true,
+                                    buttons: {
+                                        Yes: function() {
+                                            jQuery('.price-note').show();
+                                            jQuery('#price').html(String(res.price / 100));
+                                            jQuery('input.update-btn').attr('disabled', true);
+                                            jQuery('#by_dealer').val(1);
+                                            $( this ).dialog( "close" );
+                                        },
+                                        No: function() {
+                                            $( this ).dialog( "close" );
+                                        }
+                                    }
+                                });                                
+                            } else {
+                                jQuery('.price-note').show();
+                                jQuery('#price').html(String(res.price / 100));
+                                jQuery('input.update-btn').attr('disabled', true);
+                            }
+                        }
+
+                        refresh_datetime_picker();
+                    }
+                });                
+            } else {
+                jQuery('#ads_details').html("");
+            }
+        });
+
+    }); 
+
+    function refresh_datetime_picker() {
+        $('.cl_datepicker').datetimepicker({
+            format: 'MM/DD/YYYY'
+        });
+
+        $('.cl_timepicker').datetimepicker({
+            format: 'h:m a'
+        });        
+    }
+
+    jQuery("body").on("click", ".userpro-checkbox span", function() {
+        $(this).toggleClass('checked');
+    }); 
+</script>
+
+{% endblock %}

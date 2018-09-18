@@ -1,0 +1,128 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+
+        <div class="content-right-content my-ads">
+        <div class="col-md-7">
+            <h2 style="color: #5bc0de;text-align: center;margin-bottom: 25px;">Subscription Edit</h2>            
+            <form method="post" class="sub-update-form">
+                {{ form.errors }}
+                {% csrf_token %}
+                <div class="row" style="margin-bottom: 12px;">
+                    <div class="col-md-12">
+                        <div class="form-group edit-profile">
+                            <label>Keyword</label>
+                            <input type="text" name="keyword" class="form-control edit-post-wrap" value="{{ form.keyword.value }}" placeholder="keyword"/>
+                        </div>
+                    </div>    
+                    <div class="col-md-12">
+                        <div class="form-group edit-profile">
+                            <label>Category</label>
+                            <select name="category" class="form-control edit-post-wrap">
+                                {% if categories %}
+                                    {% for ii in categories %}
+                                        <option value="{{ ii.id }}" {% if form.category.value == ii.id %} selected {% endif %} >{{ ii.name }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option>-</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group edit-profile">
+                            <label>State</label>
+                            <select name="state" class="form-control edit-post-wrap">
+                                {% if states %}
+                                    {% for ii in states %}
+                                        <option value="{{ ii.id }}" {% if form.state.value == ii.id %} selected {% endif %} >{{ ii.name }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="">-</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group edit-profile">
+                            <label>City</label>
+                            <select name="city" class="form-control edit-post-wrap">
+                                {% if cities %}
+                                    {% for ii in cities %}
+                                        <option value="{{ ii.id }}" {% if form.city.value == ii.id %} selected {% endif %} >{{ ii.name }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option>-</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group edit-profile">
+                            <label>Price</label>
+                            <div class="clearfix"></div>
+                            <div class="col-sm-6">
+                                <input type="number" name="min_price" class="form-control edit-post-wrap" placeholder="min price" min="0" value="{{ form.min_price.value }}">
+                                </div>
+                                <div class="col-sm-6">
+                                <input type="number" name="max_price" class="form-control edit-post-wrap" placeholder="max price" min="0" value="{{ form.max_price.value }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox" style="margin-left: 10px;">
+                            <label><input type="checkbox" {% if form.search_title.value %} checked {% endif %} id="ck_search_title" value="true" name="search_title">Search titles only</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="checkbox" style="margin-left: 10px;">
+                            <label><input type="checkbox" {% if form.has_image.value %} checked {% endif %} id="ck_has_image" value="true" name="has_image"> Has image</label>
+                        </div>
+                    </div>
+                    <input type="hidden" name="owner" value="{{ request.user.id }}">
+                    <input type="hidden" name="alert" value="{{ form.alert.value }}">
+                    <input type="hidden" name="stripeToken" id="stripe_token">
+                    <div class="modal-footer">
+                        <button class="btn btn-default" id="btn-update">Save</button>
+                        <a href="/my-subscriptions" class="btn btn-default" data-dismiss="modal">Cancel</a>
+                    </div>                    
+                </div>
+            </form>
+        
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block own_js %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+
+<script type="text/javascript">
+    var price = 50; 
+
+    var handler = StripeCheckout.configure({
+        key: '{{ skey }}',
+        locale: 'auto',
+        token: function(token) {
+            $('#stripe_token').val(token.id);
+            $(".sub-update-form").submit();
+        }
+    });
+
+    $('#btn-update').on('click', function(e) {
+        // handler.open({
+        //     name: "Globalboard",
+        //     description: "Update Subscription",
+        //     currency: "usd",
+        //     amount: price
+        // });
+        // e.preventDefault();
+        $('#stripe_token').val(token.id);
+        $(".sub-update-form").submit();
+    });
+</script>
+{% endblock %}

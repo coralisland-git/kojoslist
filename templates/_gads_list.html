@@ -1,0 +1,35 @@
+{% load humanize %}
+{% load extra %}
+
+{% for post in posts %}
+<div class="col-md-3 col-sm-4">
+    <a href="/ads/{{ post.0.id }}">
+    <div class="campaign-card">        
+        <img src="/static/media/{{ post.1 }}" class="overview" />
+        <div class="card-body">
+            <div class="ctitle">{{ post.0.title }}</div>
+            <div class="tagline" style="margin-bottom: 7px;height: 20px;">Posted on {{ post.0.created_at|date:'m/d/Y' }}</div>
+            <div class="category" style="
+                font-size: 13px;
+                font-weight: 500;
+                height: 20px;
+                margin-bottom: 6px;
+                overflow:  hidden;
+                white-space: nowrap;
+                text-overflow:  ellipsis;
+            " {% if post.0.region %}title="{{ post.0.region.name }}, {{ post.0.region.state.name }}, {{ post.0.region.state.country.name }}"{% endif %}>
+            {% if post.0.region %}
+                ( {{ post.0.region.name }}, {{ post.0.region.state.name }}, {{ post.0.region.state.country.name }} )
+            {% endif %}            
+            </div>
+            <div class="category">{{ post.0.category.name }}</div>
+            <div class="budget">
+            {% if post.0.price %}
+                ${{ post.0.price|floatformat:2|intcomma }}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    </a>
+</div>
+{% endfor %}  

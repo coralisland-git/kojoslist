@@ -1,0 +1,82 @@
+/* list */
+.list-item {
+    height: 60px;
+    background: #fff;
+    cursor: pointer;
+}
+.list-item:hover {
+    background: #f2f4f5;
+}
+#requestsList .list-item:hover {
+    background: #fff;
+}
+.list-actions {
+    z-index: 2;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    -webkit-transform: translate(-50%, 0);
+    top: 100%;
+    border: 1px solid #f2f4f5;
+    box-shadow: 0 0 10px 3px rgba(240, 240, 240, 1);
+}
+.list-actions_contacts {
+    margin: -15px auto 0;
+}
+.list-actions_contacts.margin-up {
+    top: inherit;
+    bottom: 70%;
+}
+.list-actions_occupants {
+    position: absolute;
+    margin-top: 32px;
+}
+.list-actions_profile {
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    left: initial;
+}
+.list-actions .list-item {
+    width: 125px;
+    height: 32px;
+}
+.list-actions .list-item:last-child {
+    border-bottom: 0;
+}
+.list-actions-action {
+    display: block;
+    padding: 0 10px;
+    font-size: 15px;
+    line-height: 32px;
+    color: #4a4a4a;
+    font-family: Roboto, sans-serif;
+}
+.list-actions-action:hover {
+    opacity: 1;
+}
+.list_contacts {
+    height: calc(100% - 60px - 60px - 37px);
+    /* 37px - spinner_bounce height */
+}
+.popup-content .list_contacts {
+    height: 100%;
+}
+/* hover icons */
+.header-links-item .icon-active,
+.list-item .icon-active {
+    display: none;
+}
+.header-links-item:hover .icon-normal,
+.send-request:hover .icon-normal {
+    display: none;
+}
+.header-links-item:hover .icon-active,
+.send-request:hover .icon-active {
+    display: inline-block;
+}
+.list-item-firm {
+    padding: 5px 12px;
+    font-weight: 600;
+    color: #333;
+}

@@ -1,0 +1,641 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+{% load humanize %}
+{% load extra %}
+
+{% block own_css %}
+<link href="/static/star-rating/star-rating.css" rel="stylesheet">
+<link href="/static/slick-1.8.0/slick/slick.css" rel="stylesheet">
+<link href="/static/slick-1.8.0/slick/slick-theme.css" rel="stylesheet">
+{% endblock %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+        <div class="content-right-content ad-view">
+            <nav class="breadcrumb">
+              <a class="breadcrumb-item" href="/profile/">worldwide<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              {% if post.region %}
+              <a class="breadcrumb-item" href="#">{{ post.region.state.country.name }}<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              <a class="breadcrumb-item" href="#">{{ post.region.state.name }}<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              <a class="breadcrumb-item" href="#">{{ post.region.name }}<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              {% endif %}
+              <span class="breadcrumb-item active">{{ post.category.name }}</span>
+            </nav>
+
+            <div class="main-product">
+                <div class="col-md-12">
+                    <div class="col-md-12 no-padding">
+                        <h4 style="font-size: 22px; color: black; line-height: 24px;">{{ post.title }}</h4>
+                    </div>
+                    <div class="col-md-12 no-padding" style="margin-top: 16px;">
+                        <div class="col-md-11 no-padding" style="margin-bottom: 15px;">Posted on {{ post.created_at }}</div>
+                        {% if user != post.owner %}
+                        <div class="col-md-1 no-padding favourite {% if favourite %} like {% endif %}">
+                            <i class="fa fa-heart-o" aria-hidden="true"></i>
+                            <i class="fa fa-heart" aria-hidden="true"></i>
+                            <span>Favourite</span>
+                        </div>                    
+                        {% endif %}                   
+                    </div>                
+                </div>
+                <div class="col-md-6">
+                    <div class="product-img col-md-12" style="margin-bottom: 15px;">
+                        {% if post.images.all %}
+                            {% for img in post|head_sort_images %}
+                                <img class="img-responsive" src="/static/media/{{ img.name }}" alt="">
+                            {% endfor %}
+                        {% else %}
+                            <img class="img-responsive" src="/static/media/dummy.jpg" alt="">
+                        {% endif %}
+                    </div>
+                    {% if post.images.all %}
+                        <div class="product-img-nav col-md-12" style="margin-bottom: 42px;">
+                            {% for img in post.images.all %}
+                                <img class="slick-thumb" src="/static/media/{{ img.name }}" alt="">
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="clearfix"></div>
+                    {% if post.category.form == 'ShortTermPost' %}
+                    <div class="col-md-7 col-md-offset-2 cart m-t-20" style="border: solid 1px #aaa; padding: 15px;">
+                        <h4 style="margin: 20px auto;"><span style="font-size: 28px;font-weight: 500;">${{ post.price|floatformat:2|intcomma }}</span> per night</h4>
+                        <hr>
+
+                        <h5>Dates</h5>
+                        <div class="col-sm-6">
+                            <input type="text" name="check_in" class="form-control date-checkin edit-post-wrap cl_datepicker" required placeholder="Check In" />
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" name="check_out" class="form-control date-checkout edit-post-wrap cl_datepicker" required placeholder="Check Out" />
+                        </div>
+                        <div class="clearfix"></div>
+
+                        <h5 class="m-t-15">Guests</h5>
+                        <div class="col-md-12">
+                            <div class="form-group edit-profile">
+                                <span class="num-guests form-control edit-post-wrap" style="padding-top: 10px;" /><span class="cnt-guests">1</span> guest(s)</span>
+                            </div>
+                        </div>
+
+                        <div class="guests-detail hidden">
+                            {% if post.num_adults %}
+                            <div class="col-md-12">
+                                <div class="form-group edit-profile">
+                                    <label>Adults</label>
+                                    <select id="num_adults" class="form-control edit-post-wrap" required>
+                                        {% for ii in 1|rangee:post.num_adults %}
+                                            <option value="{{ ii }}">{{ ii }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if post.num_children %}
+                            <div class="col-md-12">
+                                <div class="form-group edit-profile">
+                                    <label>Children</label>
+                                    <select id="num_children" class="form-control edit-post-wrap" required>
+                                        {% for ii in 0|rangee:post.num_children %}
+                                            <option value="{{ ii }}">{{ ii }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if post.num_infants %}
+                            <div class="col-md-12">
+                                <div class="form-group edit-profile">
+                                    <label>Infants</label>
+                                    <select id="num_infants" class="form-control edit-post-wrap" required>
+                                        {% for ii in 0|rangee:post.num_infants %}
+                                            <option value="{{ ii }}">{{ ii }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group edit-profile">
+                            <div class="edit-post-wrap" style="padding-top: 10px;">
+                                ${{ post.price|floatformat:2|intcomma }} x <span class="num-days">-</span> nights
+                                <span class="pull-right net-price">--</span>
+                            </div>
+                        </div>
+                        <div class="form-group edit-profile">
+                            <div class="edit-post-wrap" style="padding-top: 10px;">
+                                Service fee
+                                <span class="pull-right service-fee">${{ post.service_fee|floatformat:2|intcomma }}</span>
+                            </div>
+                        </div>
+
+                        <h4>Total<span class="pull-right total-price">--</span></h4>
+                        <input class="btn btn-info btn-payment form-control" type="button" value="Request to Book" style="font-weight: 600;font-size: 18px;height: 46px; margin-top: 20px;">
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <div class="col-md-12 no-padding" style="margin-top: 18px;">
+                        <div class="star-profile">
+                            <a href="/user_show/{{ post.owner.id }}">
+                                <img src="/static/media/avatar/{{ post.owner.avatar }}" width="75" height="75">
+                            </a>
+                            <div class="star-profile-name" style="display: inline-block;">
+                                <a href="/user_show/{{ post.owner.id }}" class="username_on_detail">{{ post.owner.first_name }} {{ post.owner.last_name }}</a>
+                                <input id="rating-owner" value="{{ post.owner|rating }}"/>
+                            </div>
+                            {% if post.owner == user %}
+                                <a class="btn btn-default btn-reply" href="/post-ads/{{ post.id }}">Edit</a>
+                            {% else %}
+                                <button class="btn btn-default btn-reply">Reply</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="reply-post hidden">
+                        <div>
+                            <label>Your email: </label>
+                            <input type="email" id="from_remail">                                
+                        </div>
+
+                        <textarea id="reply-body"></textarea>
+                        <button class="btn btn-default" id="send_remail">Send</button>
+                    </div>
+                    <div class="main-product-info">
+                        <div class="product-location-info">
+                            <div class="product-location-info-left">
+                                <span>Country</span>
+                                {% if post.region %}
+                                    <h6>{{ post.region.state.country.name }}</h6>
+                                {% else %}
+                                    <h6>Global</h6>
+                                {% endif %}
+                            </div>
+                            <div class="product-location-info-left">
+                                <span>Category</span>
+                                <h6>{{ post.category.parent.name }} / {{ post.category.name }}</h6>
+                            </div>
+                            {% if post.price and post.category.form != 'ShortTermPost' %}
+                            <div class="product-location-info-left m-t-15">
+                                <span>Price</span>
+                                <h6><b>${{ post.price|floatformat:2|intcomma }}</b></h6>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="product-text">
+                            <span>Description</span>
+                            <p>{{ post.content }}</p>
+                        </div>
+
+                        <div class="email_to_friend">
+                            Email to friend
+                        </div>
+                        <div class="hidden femail_body">
+                            <label class="col-md-3 col-xs-12">Your email: </label>
+                            <input class="col-md-4" type="email" id="from_email">                                
+                            <div class="clearfix"></div>
+                            <label class="col-md-3 col-xs-12">Friend's email:</label>
+                            <input class="col-md-4" type="email" id="to_email">                                
+                            <div class="clearfix"></div>
+                            <button class="col-md-offset-3 col-md-2 btn btn-default" id="send_femail">Send</button>
+                        </div>
+                        {% if post.price and post.owner != user and post.category.form != 'ShortTermPost' %}
+                        <div class="main-product-btn">
+                            <div class="col-xs-6 col-md-3 no-padding">
+                                <input class="btn btn-info btn-payment" type="button" value="Purchase">
+                            </div>  
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if post.category.form == 'ShortTermPost' %}
+                        <div class="rv-title m-t-15">Reviews ( {{ reviews.count }} )</div>
+                        <input id="rating-post" value="{{ post|rating_post }}"/>
+                        <hr>
+                        {% for review in reviews %}
+                        <div class="review-card row">            
+                            <div class="col-sm-2 col-xs-6 m-b-15 hidden-xs">
+                                <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
+                                <div class="rv-rater">{{ review.rater.first_name }}</div>
+                            </div>
+                            <div class="col-xs-6 col-xs-offset-3 m-b-15 visible-xs">
+                                <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
+                                <div class="rv-rater">{{ review.rater.first_name }}</div>
+                            </div>
+                            <div class="clearfix visible-xs"></div>
+                            <div class="col-sm-9">
+                                <div class="rv-content">{{ review.content }}</div>
+                                <div class="rv-created">{{ review.created_at }}</div>
+                                <hr>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="rv-title m-t-15">Location</div>
+                        <div id="map" style="height: 360px;"></div>
+                    {% endif %}
+                </div>
+            </div>            
+        </div>
+    </div>
+
+    <div id="pay-modal" class="perk-modal modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+        <form action="" method="post" class="ads-pay-form">
+          {% csrf_token %}
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">{{ post.title }}</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-price">Price: <b class="pay-price">${{ post.price }}</b> USD</div>
+            <div class="form-group" style="padding: 12px;">
+                <div class="radio">
+                  <label title="Direct pay to owner"><input style="margin-top: -1px;" type="radio" name="optpay" value="direct" checked="">Direct Pay</label>
+                </div>
+                <div class="radio">
+                  <label title="Put money on escrow until you approve it"><input style="margin-top: -1px;" type="radio" name="optpay" value="escrow">Escrow Payment</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Contact Information</label>
+                <small>Please provide email, phone number, address ...</small>
+                <textarea class="form-control" name="contact" rows=4>{{ user.email }}&#13;&#10;{% if user.phone %}{{ user.phone }}{% endif %}&#13;&#10;{% if user.address %}{{ user.address }}{% endif %}</textarea>
+            </div>            
+            <input type="hidden" name="stripeToken" id="stripe_token">
+            <input type="hidden" name="checkin" id="pay-checkin">
+            <input type="hidden" name="checkout" id="pay-checkout">
+            <input type="hidden" name="adults" id="pay-adults">
+            <input type="hidden" name="children" id="pay-children">
+            <input type="hidden" name="infants" id="pay-infants">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn" id="btn-pay">CONTINUE</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+          </div>
+        </form>
+        </div>
+
+      </div>
+    </div>      
+
+    <div id="result-modal" class="modal fade perk-modal" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Purchase an Item</h4>
+          </div>
+        <form id="rate-form">
+        <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+            <div class="well">
+                <p>Thank you for your purchase</p>
+                <p>Transaction ID: {{ result }}</p>
+                <p style="margin-top: 15px;">You have 30 days to review the user.</p>
+            </div>
+                <h4>Please rate the item</h4>
+                <div style="padding: 10px 0;">
+                    <input id="rating-input" name="rating" type="text" title="" value="5"/>
+                </div>
+                <div class="form-group">
+                    <label style="margin-top: 16px;margin-bottom: 7px;">Leave Review</label>
+                    <textarea class="form-control" name="content" rows=4 required=""></textarea>
+                </div>            
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+                <input type="hidden" name="purchase_id" value="{{ purchase.id }}">
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn" id="btn-rate">Rate</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+        </div>
+
+      </div>
+    </div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script src="/static/star-rating/star-rating.min.js"></script>
+<script src="/static/slick-1.8.0/slick/slick.min.js"></script>
+
+<script type="text/javascript">
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    $('#rating-input').rating({
+        min: 0,
+        max: 5,
+        step: 0.5,
+        size: 'xs',
+        showClear: false,
+        showCaption: false
+    });
+
+    $('#rating-owner').rating({
+        min: 0,
+        max: 5,
+        step: 0.5,
+        size: 'xs',
+        showClear: false,
+        showCaption: false,
+        displayOnly: true
+    });
+
+    $('#rating-post').rating({
+        min: 0,
+        max: 5,
+        step: 0.5,
+        size: 'xs',
+        showClear: false,
+        displayOnly: true
+    });
+
+    {% if post.category.form == 'ShortTermPost' %}    
+    var is_total_ready = false;
+    {% else %}
+    var is_total_ready = true;
+    {% endif %}
+    
+    {% if post.price %}
+        var transaction = '{{ result }}',
+            optpay = '{{ optpay }}';
+        if (transaction) {
+            if (optpay == 'direct') {
+                $('#result-modal').modal();
+            } else {
+                alert('Thank you for your purchase.');
+                location.href = '/my-account?tab=purchase&pid={{ purchase.id }}';
+            }
+        }
+    
+        var loggedin = '{{ user.is_authenticated }}';
+
+        var price = {{ post.price }} * 100; 
+
+        var handler = StripeCheckout.configure({
+            key: '{{ skey }}',
+            locale: 'auto',
+            token: function(token) {
+                $('#stripe_token').val(token.id);
+                $(".ads-pay-form").submit();
+            }
+        });
+
+        $('#btn-pay').on('click', function(e) {
+            handler.open({
+                name: "Globalboard",
+                description: "{{ post.title }}",
+                currency: "usd",
+                amount: price
+            });
+            e.preventDefault();
+        });
+
+        // Close Checkout on page navigation:
+        $(window).on('popstate', function() {
+            handler.close();
+        });
+
+        $('.btn-payment').click(function() {
+            if(loggedin == 'False') {
+                alert('Please login and process payment!');
+                location.href = '/accounts/login?next={{ request.path }}';
+                return;
+            }
+
+            if (!is_total_ready) {
+                alert('Please specify all information!');
+                return;
+            } else {
+                $('#pay-modal').modal();                
+            }
+        });
+
+        $('#rate-form').submit(function(e) {
+            e.preventDefault();
+
+            jQuery.ajax({
+                type: 'post',
+                url: '/rate_ads',
+                data: $(this).serialize(),
+                success: function(res) {
+                    alert('Thank you for your rating.');
+                    $('#result-modal').modal('hide');
+                }
+            }); 
+        });
+    {% endif %}
+
+    $('.email_to_friend').click(function() {
+        $('.femail_body').toggleClass('hidden');
+    })
+
+    $('button.btn-reply').click(function() {
+        $('.reply-post').toggleClass('hidden');
+    })
+
+    $('#send_femail').click(function() {
+        var from_email = $('#from_email').val();
+        var to_email = $('#to_email').val();
+
+        if (!re.test(from_email)) {
+            alert('Please provide a valid email!');
+            $('#from_email').focus();
+            return;
+        }
+
+        if (!re.test(to_email)) {
+            alert('Please provide a valid email!');
+            $('#to_email').focus();
+            return
+        }
+        
+        jQuery.ajax({
+            type: 'post',
+            url: '/send_friend_email',
+            data: {
+                ads_id: {{ post.id }},
+                from_email: from_email,
+                to_email: to_email
+            },
+            success: function(data) {
+                alert('Email sent successfully!');
+                $('.femail_body').toggleClass('hidden');
+            }
+        });
+
+    });
+
+    $('#send_remail').click(function() {
+        var from_email = $('#from_remail').val();
+        var content = $('#reply-body').val().trim();
+
+        if (!re.test(from_email)) {
+            alert('Please provide a valid email!');
+            $('#from_remail').focus();
+            return;
+        }
+        
+        if (content == '') {
+            alert('Please provide some content!');
+            $('#reply-body').focus();
+            return;
+        }
+
+        jQuery.ajax({
+            type: 'post',
+            url: '/send_reply_email',
+            data: {
+                ads_id: {{ post.id }},
+                from_email: from_email,
+                content: content
+            },
+            success: function(data) {
+                alert('Reply email sent successfully!');
+                $('.reply-post').toggleClass('hidden');
+            }
+        });
+
+    });
+
+    $('.favourite').click(function() {
+        var tthis = this;
+        jQuery.ajax({
+            type: 'post',
+            url: '/toggle_favourite',
+            data: {
+                ads_id: {{ post.id }},
+            },
+            success: function(res) {
+                if (res == 'success') {
+                    $(tthis).toggleClass('like');                    
+                } else {
+                    alert('You need to login for saving this in your favourites.');
+                }
+            }
+        });        
+    });
+
+    // $('.product-img').slick({
+    //     slidesToShow: 1,
+    //     slidesToScroll: 1,
+    //     fade: true,
+    // });
+
+
+    $('.product-img').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        fade: true,
+        asNavFor: '.product-img-nav'
+    });
+    $('.product-img-nav').slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '.product-img',
+        arrows: false,
+        dots: true,
+        centerMode: true,
+        focusOnSelect: true,
+        variableWidth: true
+    });
+    
+
+    $('.date-checkin').datetimepicker({
+        format: 'MM/DD/YYYY',
+        minDate: moment(),
+        disabledDates: {{ post|disable_dates|safe }}
+    });
+
+    $('.date-checkout').datetimepicker({
+        format: 'MM/DD/YYYY',
+        disabledDates: {{ post|disable_dates|safe }}
+    });
+
+    $(".date-checkin").on("dp.change", function (e) {
+        $('.date-checkout').data("DateTimePicker").minDate(e.date);
+        update_cart();
+    });
+    $(".date-checkout").on("dp.change", function (e) {
+        $('.date-checkin').data("DateTimePicker").maxDate(e.date);
+        update_cart();
+    });
+</script>
+
+{% if post.category.form == 'ShortTermPost' %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyB2N_52W-T3TSU9Rk7X77Td4cMp1SE1Hmc"></script> 
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,        
+        });
+        var geocoder = new google.maps.Geocoder();
+        var address = "{{ post.address }}";
+        geocoder.geocode({'address': address}, function(results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                map.setCenter(results[0].geometry.location);
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location
+                });
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+
+    var service_fee = {{ post.service_fee }};
+    var room_fee = {{ post.price }};
+
+    $('.num-guests').click(function() {
+        $(this).toggleClass('open');
+        $('.guests-detail').toggleClass('hidden');
+    });
+
+    var update_cart = function() {
+        var num_guests = +$('#num_adults').val();
+        if (+$('#num_children').val())
+            num_guests += +$('#num_children').val();
+
+        $('.cnt-guests').html(num_guests);
+        $('.service-fee').html((num_guests * service_fee).toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
+
+        if ($('.date-checkin').val() && $('.date-checkout').val()) {
+            var first = new Date($('.date-checkin').val()),
+                second = new Date($('.date-checkout').val()),
+                days = Math.round((second-first)/(1000*60*60*24)),
+                total_price = num_guests * service_fee + room_fee * days;
+
+            is_total_ready = true;
+            $('.num-days').html(days);        
+            $('.net-price').html((room_fee * days).toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
+            $('.total-price').html(total_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));    
+            $('#pay-checkin').val($('.date-checkin').val());
+            $('#pay-checkout').val($('.date-checkout').val());
+            $('#pay-adults').val($('#num_adults').val());
+            $('#pay-children').val($('#num_children').val());
+            $('#pay-infants').val($('#num_infants').val());
+            $('.pay-price').html(total_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
+            price = total_price * 100;
+        } else {
+            is_total_ready = false;
+        }
+    };
+
+    $('#num_adults').change(update_cart);
+    $('#num_children').change(update_cart);
+</script>
+{% endif %}
+
+{% endblock %}

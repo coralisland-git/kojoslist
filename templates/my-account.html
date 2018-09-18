@@ -1,0 +1,550 @@
+{% extends "profile.html" %} 
+{% load socialaccount %}
+{% load staticfiles %} 
+{% load humanize %}
+{% load extra %}
+
+{% block own_css %}
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/my-account.css' type='text/css' media='all' /> 
+<link href="/static/star-rating/star-rating.css" rel="stylesheet">
+{% endblock %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+
+        <div class="content-right-content my-account">
+            <ul class="nav nav-pills tabs">
+                <li {% if tab == 'profile' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#profile">Profile</a></li>
+                <li {% if tab == 'balance' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#balance">ID Verification</a></li>
+                <li {% if tab == 'resume' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#resume">Reviews</a></li>
+                <li {% if tab == 'purchase' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#purchase">Purchases</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="profile" class="tab-pane fade {% if tab == 'profile' %}active in{% endif %}">
+                    <div class="pages balance">
+                        <form class="login form-horizontal" method="POST">
+                            {% csrf_token %}
+                            {% for _, error in form.errors.items %}
+                                <div class="error">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-group m-t-15">
+                                <div class="col-sm-1 col-xs-5 upload-image" style="margin-bottom: 15px;">
+                                    <input id="inputfile" type="file" name="files[]" data-maxfilesize="4000000" class="hidden" data-maxuploadfile="20" data-imagequality="0.7">
+                                    <input type="hidden" name="uploded_id[]" class="uploded_id" />
+                                    <input type="hidden" name="avatar" class="uploded_id1" value="{{ form.avatar.value }}" />
+                                    <img src="/static/media/avatar/{{ user.avatar }}" class="avatar" style="width: 100px; height: 100px;">
+                                </div>
+                                <div class="col-sm-6 col-xs-7">
+                                    <a class="btn btn-default upload-avatar" style="margin: 30px 5px 10px 24px;"><i class="fa fa-upload"></i> Upload Avatar</a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_login">Username:</label>
+                                <div class="col-sm-6">
+                                    <input autofocus="autofocus" id="id_email" name="username" type="text" class="form-control" required value="{{ user.username }}" readonly="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_login">First Name:</label>
+                                <div class="col-sm-6">
+                                    <input autofocus="autofocus" id="id_email" name="first_name" type="text" class="form-control" required value="{{ user.first_name }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_password">Last Name:</label>
+                                <div class="col-sm-6">
+                                    <input id="id_password1" name="last_name" type="text" class="input-xlarge form-control" required="" value="{{ user.last_name }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_password">Gender:</label>
+                                <div class="col-sm-6">
+                                    <select name="gender" class="input-xlarge form-control" required="">
+                                    <option {% if user.gender != 'Female' %}selected{% endif %} value="Male">Male</option>
+                                    <option {% if user.gender == 'Female' %}selected{% endif %} value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group m-t-15">
+                                <label class="control-label col-sm-2" for="id_login">E-mail:</label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input autofocus="autofocus" id="id_email" name="email" type="email" class="form-control" required value="{{ user.email }}">
+                                        <span class="input-group-addon">     
+                                            <i class="fa fa-check c-green"></i>
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_password">Phone:</label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input id="id_password1" name="phone" type="text" class="input-xlarge form-control phone_number" placeholder="+1 (212) 234 4342" value="{% if user.phone %}{{ user.phone }}{% endif %}">
+                                        <span class="input-group-addon sym_phone">     
+                                            {% if user.phone_verified %}
+                                            <i class="fa fa-check c-green"></i>
+                                            {% else %}
+                                            <i class="fa fa-square-o" style="width: 14px;"></i>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    {% if not user.phone_verified %}
+                                        <a class="btn btn-default verify_phone">Verify via SMS</a>
+                                        <input type="text" class="hidden input-xlarge form-control verify_code phone" placeholder="6 digits">
+                                        <a class="hidden btn btn-default verify_code">Verify</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group m-t-15">
+                                <label class="control-label col-sm-2" for="id_login">Payment:</label>
+                                <div class="col-sm-6">
+                                    {% if stripe %}
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" readonly="" value="Stripe">
+                                        <span class="input-group-addon">     
+                                            <i class="fa fa-check c-green"></i>
+                                        </span>
+                                    </div>
+                                    {% else %}
+                                    <a href="{% provider_login_url "stripe" process="connect" %}">
+                                    <img src="/static/img/stripe.png"></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_password">Birth Date:</label>
+                                <div class="col-sm-6">
+                                    <input id="id_dob" name="dob" type="text" class="input-xlarge form-control" required="" value="{% if form.dob.value %}{{ form.dob.value }}{% endif %}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_password">Address:</label>
+                                <div class="col-sm-6">
+                                    <input id="id_password1" name="address" type="text" class="input-xlarge form-control" required="" value="{% if user.address %}{{ user.address }}{% endif %}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_password">Description:</label>
+                                <div class="col-sm-6">
+                                    <textarea name="description" class="input-xlarge form-control">{% if user.description %}{{ user.description }}{% endif %}</textarea>                                    
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="id_remember">Password:</label>
+                                <div class="col-sm-6">
+                                    <a class="btn btn-default" href="/accounts/password/change/">Change Password</a>
+                                </div>
+                            </div>                            
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-5">
+                                    <button type="submit" class="primaryAction btn btn-success">Save Updates</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="balance" class="tab-pane fade {% if tab == 'balance' %}active in{% endif %}">
+                    <div class="pages balance verify_section">
+                        {% if not user.v_statue or user.v_statue == 'unverified' %}
+                        <input id="ID_file" type="file" name="files[]" data-maxfilesize="4000000" class="hidden" data-maxuploadfile="20" data-imagequality="0.7">
+                        <input type="hidden" name="uploded_id[]" class="uploded_id" />
+                        <input type="hidden" name="avatar" class="uploded_id1" value="{{ form.avatar.value }}" />
+
+                        <button class="primaryAction btn btn-danger provide_id">Provide ID</button>
+                        {% elif user.v_statue == 'awaiting_approve' %}
+                        <span class="primaryAction btn btn-warning">Verifing ID</span>
+                        {% elif user.v_statue == 'approved' %}purchase_idpurchase_id
+                        <span class="primaryAction btn btn-success">Verified</span>
+                        {% endif %}
+                    </div>
+                </div>       
+                <div id="resume" class="tab-pane fade {% if tab == 'resume' %}active in{% endif %}">
+                    <div class="pages balance">
+                        <div class="col-md-9 col-lg-8">
+                            {% include '_review.html' %}
+                        </div>
+                    </div>
+                </div>
+                <div id="purchase" class="tab-pane fade {% if tab == 'purchase' %}active in{% endif %}">
+                    <div class="pages balance">
+                        <div class="rv-title">Pending Purchases</div>
+                        <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
+                            <div class="col-md-3">Title</div>
+                            <div class="col-md-2">Price</div>
+                            <div class="col-md-2">Released Percent</div>
+                            <div class="col-md-2">Released Amount</div>
+                            <div class="col-md-2">Purchase Date</div>
+                            <div class="col-md-1"></div>
+                        </div>
+                        <hr>
+                        {% if ppurchases %}
+                        {% for purchase in ppurchases %}
+                            <div class="row" style="font-size: 17px;">
+                                <div class="col-md-3">{{ purchase.title }}</div>
+                                <div class="col-md-2">${{ purchase.price|floatformat:2|intcomma }}</div>
+                                <div class="col-md-2">{{ purchase.paid_percent }}%</div>
+                                <div class="col-md-2">${{ purchase.approved|floatformat:2|intcomma }}</div>
+                                <div class="col-md-2">{{ purchase.date|date:"M d, Y" }}</div>
+                                <div class="col-md-1 pull-right">
+                                    <button class="btn btn-primary btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}">Release</button>
+                                </div>
+                            </div>
+                            <hr>
+                        {% endfor %}
+                        {% else %}
+                            <div class="row" style="font-size: 18px;">
+                                <div class="col-md-4">No record</div>
+                            </div>
+                        {% endif %}
+                        <div class="rv-title" style="margin-top: 36px;">Finished Purchases</div>
+                        <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
+                            <div class="col-md-4">Title</div>
+                            <div class="col-md-1">Price</div>
+                            <div class="col-md-3">Transaction ID</div>
+                            <div class="col-md-2">Purchase Date</div>
+                            <div class="col-md-2">Pay Type</div>
+                        </div>
+                        <hr>
+                        {% if dpurchases %}
+                        {% for purchase in dpurchases %}
+                            <div class="row" style="font-size: 17px;">
+                                <div class="col-md-4">{{ purchase.post.title }}</div>
+                                <div class="col-md-1">${{ purchase.post.price|floatformat:2|intcomma }}</div>
+                                <div class="col-md-3">{{ purchase.transaction }}</div>
+                                <div class="col-md-2">{{ purchase.created_at|date:"M d, Y" }}</div>
+                                <div class="col-md-1">{{ purchase.type|title }}</div>
+                                <div class="col-md-1">
+                                    {% if purchase|can_rate %}
+                                        <button class="btn btn-warning btn-rate-later" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post.id }}">Rate</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <hr>
+                        {% endfor %}                    
+                        {% else %}
+                            <div class="row" style="font-size: 18px;">
+                                <div class="col-md-4">No record</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>                         
+            </div>
+        </div>      
+
+    </div>
+
+    <div id="result-modal" class="modal fade perk-modal" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Purchase an Item</h4>
+          </div>
+        <form id="rate-form">
+        <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+            <div class="well">
+                <p>Thank you for your purchase</p>
+                <p>Transaction ID: <span id="transaction_id">{{ result }}</span></p>
+                <p style="margin-top: 15px;">You have 30 days to review this user.</p>
+            </div>
+                <h4>Please rate the item</h4>
+                <div style="padding: 10px 0;">
+                    <input id="rating-input" name="rating" type="text" title="" value="5"/>
+                </div>
+                <div class="form-group">
+                    <label style="margin-top: 16px;margin-bottom: 7px;">Leave Review</label>
+                    <textarea class="form-control" name="content" rows=4 required=""></textarea>
+                </div>            
+                <input type="hidden" name="post_id" class="post-id">
+                <input type="hidden" name="purchase_id" class="purchase-id">
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn" id="btn-rate">Rate</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+        </div>
+
+      </div>
+    </div>        
+    <div id="release-modal" class="modal fade perk-modal" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Verify amount to be released from escrow</h4>
+          </div>
+        <form id="release-form">
+          <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+            <div class="well" style="line-height: 24px;">
+                <p>Total Price: $<span class="ptotal-price">89.99</span></p>
+                <p>Paid Amount: <span class="ppaid-amount">$30</span> ( <span class="ppaid-percent">25%</span> )</p>
+                <p>Transaction: <span class="plast-transaction"></span></p>
+            </div>
+                <h4>Release Amount</h4>
+                <div style="padding: 10px 0;">
+                    <select name="release-amount" class="input-xlarge form-control release-amount">
+                        <option>10 %</option>
+                        <option>20 %</option>
+                        <option>30 %</option>
+                    </select>
+                </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn" style="background-color: #4DBEE2;" id="btn-release-confirm">Continue</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+        </div>
+
+      </div>
+    </div>        
+
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script src="/static/star-rating/star-rating.min.js"></script>
+
+<script>
+    var purchase_id = '{{ request.GET.pid }}', post_id;
+
+    $('#rating-input').rating({
+        min: 0,
+        max: 5,
+        step: 0.5,
+        size: 'xs',
+        showClear: false,
+        showCaption: false
+    });
+
+    $('#rating-owner').rating({
+        min: 0,
+        max: 5,
+        step: 0.5,
+        size: 'xs',
+        showClear: false,
+        displayOnly: true
+    });
+
+    jQuery(document).ready(function() {
+
+        $('#result-modal').on('hidden.bs.modal', function () {
+            location.href = '/my-account?tab=purchase';
+        });
+
+        $('#rate-form').submit(function(e) {
+            e.preventDefault();
+
+            jQuery.ajax({
+                type: 'post',
+                url: '/rate_ads',
+                data: $(this).serialize(),
+                success: function(res) {
+                    alert('Thank you for your rating.');
+                    $('#result-modal').modal('hide');
+                }
+            }); 
+        });
+
+        jQuery("body").on("click", ".btn-rate-later", function() {
+            $('#transaction_id').html($(this).data('transaction'));
+            $('.post-id').val($(this).data('post-id'));
+            $('.purchase-id').val($(this).data('id'));
+            $('#result-modal').modal();
+        });
+
+        $('#release-form').submit(function(e) { 
+            e.preventDefault();
+            var r = confirm("Do you confirm to release?");
+            var percent = $('.release-amount').val();
+
+            if (r == true) {
+                jQuery.ajax({
+                    type: 'post',
+                    url: '/release_purchase',
+                    data: {
+                        p_id: purchase_id,
+                        percent: percent
+                    },
+                    success: function(res) {
+                        $('#release-modal').modal('toggle');
+                        if (res.message != '') {
+                            alert(res.message);
+                        }
+                        else
+                        {
+                            if (res.finished) {
+                                $('#transaction_id').html(res.transaction);
+                                $('.post-id').val(post_id);
+                                $('.purchase-id').val(purchase_id);
+                                $('#result-modal').modal();
+                            } else {
+                                alert('Thank you for your payment.');
+                                location.href = '/my-account?tab=purchase';
+                            }
+                        }
+                    }
+                });
+            }            
+        });
+        // purchase / release management
+        $(".btn-release").click(function() {
+            var amount = $(this).data('amount'),
+                transaction = $(this).data('transaction'),
+                percent = $(this).data('percent'),
+                htmlPercents = '';
+
+            purchase_id = $(this).data('id');
+            post_id = $(this).data('post-id');
+
+            $('.ptotal-price').html(amount);
+            $('.plast-transaction').html(transaction);
+            $('.ppaid-amount').html('$'+(amount * percent / 100).toFixed(2));
+            $('.ppaid-percent').html(percent+'%');
+
+            for (i = 10; i <= 100-parseInt(percent); i+=10) {
+                htmlPercents += "<option value='"+i+"'>"+i+" %</option>";
+            }
+
+            $('.release-amount').html(htmlPercents);
+            $('#release-modal').modal();
+        });
+
+        // profile management        
+        jQuery("body").on("click", ".upload-avatar", function() {
+            jQuery("#inputfile").click();
+        });
+
+        jQuery("body").on("click", ".provide_id", function() {
+            jQuery("#ID_file").click();
+        });
+
+        jQuery("#inputfile").change(function() {
+            var fd = new FormData();
+            var file = this.files;
+            fd.append("images", file[0]);
+            fd.append('type', 'avatar');
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/upload-image',
+                data: fd,
+                contentType: false,
+                dataType: "json",
+                processData: false,
+                success: function(response) {
+                    jQuery(".upload-image").find('input[class="uploded_id"]').val(response.image_name);
+                    jQuery(".upload-image").find('input[class="uploded_id1"]').val(response.image_name);
+                    jQuery(".avatar").attr('src', response.image_url);
+                }
+            });
+        });
+
+        jQuery("#ID_file").change(function() {
+            var fd = new FormData();
+            var file = this.files;
+            fd.append("images", file[0]);
+            fd.append('type', 'ID');
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/upload-image',
+                data: fd,
+                contentType: false,
+                dataType: "json",
+                processData: false,
+                success: function(response) {
+                    jQuery.ajax({
+                        type: 'post',
+                        url: '/upload_id',
+                        data: {
+                            id_photo: response.image_name
+                        },
+                        success: function(res) {
+                            jQuery(".verify_section").html('<span class="primaryAction btn btn-warning">Verifing ID</span>');
+                        }
+                    });            
+
+                }
+            });
+        });
+
+        $('.verify_phone').click(function() {
+            var phone_number = $('.phone_number').val();
+            if (!phone_number) {
+                alert('Enter phone number!');
+                $('.phone_number').focus();
+                return false;
+            }
+
+            jQuery.ajax({
+                type: 'post',
+                url: '/send_vcode',
+                data: {
+                    phone: phone_number
+                },
+                success: function(res) {
+                    if (res == 'success') {
+                        $('.verify_code').toggleClass('hidden');
+                        $('.verify_phone').toggleClass('hidden');                        
+                    } else {
+                        alert('Please input correct phone number!');
+                        $('.phone_number').focus();
+                    }
+                }
+            });            
+
+        });
+
+        $('.btn.verify_code').click(function() {
+            var vcode = $('.verify_code.phone').val();
+            if (!vcode) {
+                alert('Put 6 digits verification code.');
+                $('.verify_code.phone').focus();
+                return false;
+            }
+
+            jQuery.ajax({
+                type: 'post',
+                url: '/verify_phone',
+                data: {
+                    vcode: vcode
+                },
+                success: function(res) {
+                    if (res == 'success') {
+                        $('.verify_code').toggleClass('hidden');
+                        $('.sym_phone').html('<i class="fa fa-check c-green"></i>');
+                    } else {
+                        alert('Verification failed!');
+                    }
+                }
+            });            
+        });
+
+        $('#id_dob').datetimepicker({
+            format: 'MM/DD/YYYY'
+        });
+
+        if (purchase_id) {
+            $('.brp-'+purchase_id).click();
+        }
+
+    });
+</script>
+
+{% endblock %}

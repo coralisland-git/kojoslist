@@ -1,0 +1,31 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+
+        <div class="content-right-content my-ads choose-dealer row">
+            <h3>{{ category.name }}</h3>
+            <div class="col-md-12">
+                <a href="/category-ads-dealer/{{ category.id }}/all">
+                    All Ads 
+                </a><div>(dealer + by-owner)</div>
+                <a href="/category-ads-dealer/{{ category.id }}/owner">
+                    By Owner Only 
+                </a><div>(private party, no dealers)</div>
+                <a href="/category-ads-dealer/{{ category.id }}/dealer">
+                    By Dealer Only 
+                </a><div>(no private party)</div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+{% endblock %}

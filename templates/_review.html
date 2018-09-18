@@ -1,0 +1,26 @@
+{% load extra %}
+
+<div class="rv-title m-t-15">Reviews ( {{ num_reviews }} )</div>
+<input id="rating-owner" value="{{ host|rating }}"/>
+<hr>
+{% for category in reviews %}
+<div class="rv-title m-t-10" style="font-size: 22px; color: black;">{{ category.post__category__parent__name }} / {{ category.post__category__name }}</div>
+    {% for review in category.reviews %}
+    <div class="review-card row">            
+        <div class="col-sm-2 col-xs-6 m-b-15 hidden-xs">
+            <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
+            <div class="rv-rater">{{ review.rater.first_name }}</div>
+        </div>
+        <div class="col-xs-6 col-xs-offset-3 m-b-15 visible-xs">
+            <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
+            <div class="rv-rater">{{ review.rater.first_name }}</div>
+        </div>
+        <div class="clearfix visible-xs"></div>
+        <div class="col-sm-10">
+            <div class="rv-content">{{ review.content }}</div>
+            <div class="rv-created">{{ review.created_at }}</div>
+            <hr>
+        </div>
+    </div>
+    {% endfor %}
+{% endfor %}

@@ -1,0 +1,255 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+{% load humanize %} 
+{% load extra %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-offset-1 col-sm-10">
+        <div class="content-right-content ad-view" style="padding: 15px 0;">
+            <div class="main-product campaign-detail">
+                <div class="col-md-7 no-padding video-wrap">
+                    <div style="display:none;margin:0 auto;" class="html5gallery" data-skin="light" data-slideshadow="false" data-resizemode="fill">                
+                        {% for vid in post|get_vids %}
+                            <a href="http://www.youtube.com/embed/{{ vid }}"><img src="http://img.youtube.com/vi/{{ vid }}/0.jpg" alt="Youtube Video"></a>
+                        {% endfor %}
+                    </div>                    
+                </div>
+                <div class="col-md-5">
+                    <div class="ctitle">{{ post.title }}</div>
+                    <div class="tagline">{{ post.tagline }}</div>
+                    <div class="col-md-12 no-padding" style="margin-top: 18px;">
+                        <div class="star-profile">
+                            <a href="#">
+                                <img src="/static/media/avatar/{{ post.owner.avatar }}" width="80" height="80">
+                            </a>
+                            <div class="star-profile-name" style="display: inline-block;">
+                                <div><b>{{ post.owner.first_name }} {{ post.owner.last_name }}</b></div>
+                                <div class="m-t-10">{{ post.owner.address }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-location-info">
+                        <div class="product-location-info-left">
+                            <span>Category</span>
+                            <h6>{{ post.category.name }}</h6>
+                        </div>
+                    </div>
+                    <div class="budget">
+                        <span class="raised">${{ post.raised|floatformat:2|intcomma }}</span> USD raised by {{ post.claims.count }} baker(s)
+                    </div>
+                    <div id="myProgress">
+                        <div id="myBar" style="width: {{ post|raised_percent:1 }}%;"></div>
+                    </div>            
+                    <div class="duration">
+                        <span class="percent"><b>{{ post|raised_percent }}%</b> of ${{ post.budget|intcomma }}</span>
+                        <span class="left-days"> <i class="fa fa-clock-o" aria-hidden="true"></i> 
+                          {% with flag=post|is_expired %} 
+                            {% if flag %}                
+                                ended
+                            {% else %}
+                                {{ post|ramained_days }} days left
+                            {% endif %}
+                          {% endwith %}
+                        </span>
+                    </div>
+                    {% with flag=post|is_expired %} 
+                      {% if not flag %}                
+                        <div><button class="btn-donate">BACK IT</button></div>
+                      {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="col-md-7">
+                    <span class="cheader">OVERVIEW</span>
+                    <hr>
+                    <div class="row overview">
+                        <div class="col-md-5">
+                            <img class="img-responsive" src="/static/media/campaigns/{{ post.over_image }}">
+                        </div>
+                        <div class="col-md-7">
+                            {{ post.overview }}
+                        </div>
+                    </div>
+                    <div class="cheader ext">STORY</div>
+                    <hr>
+                    <div class="product-text">
+                        {% autoescape off %}{{ post.content }}{% endautoescape %}
+                    </div>
+                </div>
+                <div class="col-md-5">
+                <div class="col-sm-offset-1 col-sm-10">
+                <span class="cheader">PERKS</span>
+                <hr>
+                {% for perk in perks %}
+                    <div class="perk-card" data-price="{{ perk.price }}" data-title="{{ perk.title }}" data-perk="{{ perk.id }}">
+                        {% if perk.image %}
+                            <img src="/static/media/{{ perk.image }}" class="img-responsive">
+                        {% endif %}
+                        <div class="price"><span>${{ perk.price|floatformat:2|intcomma }}</span> USD</div>
+                        <div class="ctitle">{{ perk.title }}</div>
+                        <div class="overview">{{ perk.description }}</div>
+                        <div class="num_claimed">
+                            {{ perk.num_claimed }} {% if perk.num_avail != 1000000 %}out of {{ perk.num_avail }}{% endif %} claimed
+                        </div>
+                        {% with flag=post|is_expired %} 
+                          {% if not flag %}                
+                            <div><button class="btn-donate">BACK IT</button></div>
+                          {% endif %}
+                        {% endwith %}                        
+                    </div>
+                {% endfor %}
+                </div>
+                </div>
+            </div>            
+            
+        </div>
+    </div>
+
+<!-- Modal -->
+<div id="perk-modal" class="perk-modal modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+    <form action="" method="post" class="donate-form">
+      {% csrf_token %}
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Early Bird Backers- Board Only</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-price">Price: <b>$399</b> USD</div>
+        <div class="form-group donate-div">
+            <input type="number" class="form-control" placeholder="Donate Amount (USD)" id="donate_amount" min="1">
+        </div>
+        <div class="form-group">
+        <label>Contact Information</label>
+        <small>Please provide email, phone number, address ...</small>
+        <textarea class="form-control" name="contact" rows=4>{{ user.email }}&#13;&#10;{% if user.phone %}{{ user.phone }}{% endif %}
+        </textarea>
+        </div>
+        <input type="hidden" name="stripeToken" id="stripe_token">
+        <input type="hidden" name="perk_id" class="perk_id">
+        <input type="hidden" name="amount" class="modal-amount">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" id="btn-pay">CONTINUE</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+      </div>
+    </form>
+    </div>
+
+  </div>
+</div>    
+
+<!-- Modal -->
+<div id="result-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Contribution</h4>
+      </div>
+      <div class="modal-body" style="font-size: 18px; line-height: 24px;">
+        <p>The transaction is processed successfully</p>
+        <p>Transaction ID: {{ result }}</p>
+        <p>Thank you for your contribution</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script type="text/javascript">
+    var w = $('.video-wrap').width();
+    $('.html5gallery').data('width', w-24);
+    $('.html5gallery').data('height', Math.floor(w*0.74));
+</script>
+<script type="text/javascript" src="/static/html5gallery/html5gallery.js"></script>
+<script src="https://checkout.stripe.com/checkout.js"></script>
+
+<script type="text/javascript">
+    var transaction = '{{ result }}';
+    if (transaction)
+        $('#result-modal').modal();
+
+    var price, desc; 
+
+    var handler = StripeCheckout.configure({
+        key: '{{ skey }}',
+        locale: 'auto',
+        token: function(token) {
+            $('#stripe_token').val(token.id);
+            $(".donate-form").submit();
+        }
+    });
+
+    $('#btn-pay').on('click', function(e) {
+        if (!$('#perk-modal .perk_id').val()) { // donation
+            var p = $('#donate_amount').val();
+            
+            if(p.trim() == '' || isNaN(+p)) {
+                alert('Please type proper amount!');
+                $('#donate_amount').val('');
+                $('#donate_amount').focus();
+                return false;
+            }
+
+            price = (+p) * 100;
+            $('#perk-modal .modal-amount').val(price);            
+        }
+
+        handler.open({
+            name: "Globalboard",
+            description: desc,
+            currency: "usd",
+            amount: price
+        });
+        e.preventDefault();
+    });
+
+    // Close Checkout on page navigation:
+    $(window).on('popstate', function() {
+        handler.close();
+    });
+
+    $('.btn-perk').click(function() {
+        var p = $(this).parent().data('price');
+        var t = $(this).parent().data('title');
+        var k = $(this).parent().data('perk');
+        price = parseInt(p) * 100;
+        desc = t;
+
+        $('#perk-modal .modal-price').show();
+        $('#perk-modal .donate-div').hide();
+
+        $('#perk-modal .perk_id').val(k);
+        $('#perk-modal .modal-amount').val(price);
+        $('#perk-modal .modal-title').html(t);
+        $('#perk-modal .modal-price b').html('$'+p);
+        $('#perk-modal').modal();
+    });
+
+    $('.btn-donate').click(function() {
+        desc = 'Donation';
+        $('#perk-modal .modal-price').hide();
+        $('#perk-modal .donate-div').show();
+
+        $('#perk-modal .modal-title').html("Contribution to {{ post.title }}");
+        $('#perk-modal .perk_id').val('');
+        $('#perk-modal').modal(); 
+    });
+</script>
+{% endblock %}

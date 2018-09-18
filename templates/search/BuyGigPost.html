@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-md-6" style="margin-bottom: 15px;">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" style="margin-top: -2px;" {% if post.direct_contact_by_recruiters_is_okay %}checked{% endif %} name="direct_contact_by_recruiters_is_okay">Direct contact by recruiters is okay
+            </label>
+        </div>
+    </div>    
+    <div class="col-md-6" style="margin-bottom: 15px;">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" style="margin-top: -2px;" {% if post.pay %}checked{% endif %} name="pay">Pay
+            </label>
+        </div>
+    </div>           
+    <div class="col-md-12">
+        <div class="form-group edit-profile">
+            <label>compensation</label>
+            <input type="text" name="compensation" class="form-control edit-post-wrap" required value="{{ post.compensation }}" />
+        </div>
+    </div>
+</div>

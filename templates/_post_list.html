@@ -1,0 +1,52 @@
+{% load extra %}
+{% load humanize %}
+
+{% for post in posts %}
+<div class="my_add col-md-12 col-xs-12">
+    <div class="col-xs-12 col-md-9 title no-padding">
+        <a href="/ads/{{ post.0.id }}">
+            <div class="pl-div-image">
+                <img class="photo" style="margin-right: 10px;" src="/static/media/{{ post.1 }}">
+            </div>
+            <div class="pl-div-desc">
+                {% if user != post.0.owner %}
+                <div class="favourite {{ post.0|is_like:user }}" style="
+                    float: left;
+                    margin: 2px -2px 0 10px;
+                " data-id="{{ post.0.id }}">
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+                    <i class="fa fa-heart" aria-hidden="true"></i>
+                </div>
+                {% endif %}
+
+                <h3>{{ post.0.title }}</h3>
+                {% if post.0.price %}
+                    <span class="pl-budget">${{ post.0.price|floatformat:2|intcomma }}</span>
+                {% endif %}
+                <span class="pl-category">{{ post.0.category.parent.name }} / {{ post.0.category.name }}</span>
+                {% if post.0.region %}
+                    <span class="pl-location">( {{ post.0.region.name }}, {{ post.0.region.state.name }}, {{ post.0.region.state.country.name }} )</span>
+                {% else %}
+                    <span class="pl-location">( Global )</span>
+                {% endif %}
+                <span class="pl-date">
+                    Posted on {{ post.0.created_at|date:'m/d/Y' }}
+                </span>
+            </div>
+        </a>
+    </div>
+    <div class="clearfix visible-sm"></div>
+    {% if not others %}
+    <div class="col-md-3">
+        <div class="actions">
+            <select data-value="{{ post.0.id }}" class="active_deactive status form-control">
+                <option value="active" {% if post.0.status == 'active' %} selected {% endif %}>Active</option>
+                <option value="deactive" {% if post.0.status == 'deactive' %} selected {% endif %}>Deactive</option>
+            </select>
+            <a href="/post-ads/{{ post.0.id }}"><i class="fa fa-pencil"></i></a>
+            <a class="ads_post_delete" data-value="{{ post.0.id }}" href="#"><i class="fa fa-trash"></i></a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}

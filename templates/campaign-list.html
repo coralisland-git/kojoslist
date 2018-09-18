@@ -1,0 +1,82 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+        <div class="content-right-content my-ads">
+
+            <h2>
+                Campaign List 
+            </h2>            
+            <div class="col-md-12 camp-filter-bar m-t-15">
+                <div class="col-md-3 no-padding">
+                    <select name="category" class="form-control camp_category">
+                        <option class="main" value=""> Choose Category </option>
+                        {% for mc in categories %}
+                            <option {% if not mc.parent %} class="main"{% endif %} value="{{ mc.id }}"> {{ mc.name }}</option>
+                        {% endfor %}                                        
+                    </select>
+                </div>
+                <div class="col-md-7 ads_search search">
+                    <input type="text" class="search-input camp_search_input" placeholder="Search for campaign name..." style="height: 41px;">
+                </div>
+                <div class="col-md-2 ads_search">
+                    <input type="submit" id="search_camp" class="btn btn-info" value="Search">
+                </div>
+            </div>
+            <div class="clearfix"></div>
+                <hr>
+            <div id="camp_list" class="row" style="padding: 10px;">
+            {% include '_camp_list.html' %}            
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script>
+    jQuery(document).ready(function(){                
+        jQuery('.camp_category').change(function() {
+            search_camp();
+        });
+
+        jQuery('#search_camp').click(function() {
+            search_camp();
+        });
+
+        jQuery('.camp_search_input').keypress(function(e) {
+            var key = e.which;
+            if (key == 13) {
+                search_camp();
+            }
+        });
+
+        function search_camp() {
+            var search_val = jQuery('.camp_search_input').val();
+            var category = jQuery('.camp_category').val();
+
+            jQuery.ajax({
+                type: 'post',
+                url: '/search_camps',
+                data: {
+                    keyword: search_val,
+                    category: category,
+                    others: true
+                },
+                success: function (data) {
+                    jQuery('#camp_list').html(data);
+                }
+            });                     
+        }
+    });  
+
+</script>
+
+{% endblock %}

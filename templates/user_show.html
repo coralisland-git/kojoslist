@@ -1,0 +1,70 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+{% load extra %}
+
+{% block own_css %}
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/my-account.css' type='text/css' media='all' /> 
+<link href="/static/star-rating/star-rating.css" rel="stylesheet">
+{% endblock %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+        <div class="content-right-content my-account">
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1 col-md-12 m-t-25">
+                <div class="col-md-4 col-lg-3"><div class="col-xs-12">
+                    <img src="/static/media/avatar/{{ host.avatar }}" class="avatar" style="width: 100%; display: block; height: auto;">
+                    <div class="panel panel-success" style="margin-top: 19px; border-radius: 0px;">
+                        <div class="panel-heading">Verified Info</div>
+                        <div class="panel-body">
+                            <div class="ht-verify">Government ID 
+                                {% if host.v_statue == 'verified' %}
+                                <i class="fa fa-check c-green pull-right"></i>
+                                {% endif %}
+                            </div>
+                            <div class="ht-verify">Email address                                 
+                                <i class="fa fa-check c-green pull-right"></i>
+                            </div>
+                            <div class="ht-verify">Payment
+                                <i class="fa fa-check c-green pull-right"></i>
+                            </div>
+                            <div class="ht-verify">Phone number 
+                                {% if host.phone_verified %}
+                                <i class="fa fa-check c-green pull-right"></i>
+                                {% endif %}
+                            </div>                      
+                        </div>
+                    </div>                                        
+                </div></div>
+                <div class="col-md-9 col-lg-8">
+                    <div class="su-title">Hey, I'm {{ host.first_name }} {{ host.last_name}}</div>
+                    <div class="su-joined">Joined at {{ host.date_joined }}</div>
+                    <div class="su-desc">{{ host.description }}</div>
+
+                    {% include '_review.html' %}
+                </div>
+            </div>
+        </div>
+        </div>      
+    </div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script src="/static/star-rating/star-rating.min.js"></script>
+
+<script>
+    $('#rating-owner').rating({
+        min: 0,
+        max: 5,
+        step: 0.5,
+        size: 'xs',
+        showClear: false,
+        displayOnly: true
+    });
+</script>
+{% endblock %}

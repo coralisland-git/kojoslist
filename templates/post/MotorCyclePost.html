@@ -1,0 +1,123 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Model year</label>
+            <select name="model_year" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 1900|rangee:2019 %}
+                    <option value="{{ ii }}" {% if post.model_year == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Make and Model</label>
+            <input type="text" name="make_model" class="form-control edit-post-wrap" required value="{{ post.make_model }}" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>VIN</label>
+            <input type="text" name="vin" class="form-control edit-post-wrap" required value="{{ post.vin }}" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Odometer</label>
+            <input type="number" name="odometer" class="form-control edit-post-wrap" required value="{{ post.odometer }}" min="0" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Condition</label>
+            <select name="condition" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="new" {% if post.condition == "new" %}selected{% endif %}>new</option>
+                <option value="like new" {% if post.condition == "like new" %}selected{% endif %}>like new</option>
+                <option value="excellent" {% if post.condition == "excellent" %}selected{% endif %}>excellent</option>
+                <option value="good" {% if post.condition == "good" %}selected{% endif %}>good</option>
+                <option value="fair" {% if post.condition == "fair" %}selected{% endif %}>fair</option>
+                <option value="salvage" {% if post.condition == "salvage" %}selected{% endif %}>salvage</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Engine displacement (CC)</label>
+            <input type="number" name="engine_displacement" class="form-control edit-post-wrap" required value="{{ post.engine_displacement }}" min="0" />
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Fuel</label>
+            <select name="fuel" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="gas" {% if post.fuel == "gas" %}selected{% endif %}>gas</option>
+                <option value="diesel" {% if post.fuel == "diesel" %}selected{% endif %}>diesel</option>
+                <option value="hybrid" {% if post.fuel == "hybrid" %}selected{% endif %}>hybrid</option>
+                <option value="electric" {% if post.fuel == "electric" %}selected{% endif %}>electric</option>
+                <option value="other" {% if post.fuel == "other" %}selected{% endif %}>other</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Transmission</label>
+            <select name="transmission" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="manual" {% if post.transmission == "manual" %}selected{% endif %}>manual</option>
+                <option value="automatic" {% if post.transmission == "automatic" %}selected{% endif %}>automatic</option>
+                <option value="other" {% if post.transmission == "other" %}selected{% endif %}>other</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Paint color</label>
+            <select name="paint_color" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="red" {% if post.paint_color == "red" %}selected{% endif %}>red</option>
+                <option value="blue" {% if post.paint_color == "blue" %}selected{% endif %}>blue</option>
+                <option value="black" {% if post.paint_color == "black" %}selected{% endif %}>black</option>
+                <option value="brown" {% if post.paint_color == "brown" %}selected{% endif %}>brown</option>
+                <option value="green" {% if post.paint_color == "green" %}selected{% endif %}>green</option>
+                <option value="grey" {% if post.paint_color == "grey" %}selected{% endif %}>grey</option>
+                <option value="orange" {% if post.paint_color == "orange" %}selected{% endif %}>orange</option>
+                <option value="purple" {% if post.paint_color == "purple" %}selected{% endif %}>purple</option>
+                <option value="yellow" {% if post.paint_color == "yellow" %}selected{% endif %}>yellow</option>
+                <option value="silver" {% if post.paint_color == "silver" %}selected{% endif %}>silver</option>
+                <option value="white" {% if post.paint_color == "white" %}selected{% endif %}>white</option>
+                <option value="custom" {% if post.paint_color == "custom" %}selected{% endif %}>custom</option>
+            </select>
+        </div>
+    </div>    
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Title status</label>
+            <select name="title_status" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="clean" {% if post.title_status == "clean" %}selected{% endif %}>clean</option>
+                <option value="salvage" {% if post.title_status == "salvage" %}selected{% endif %}>salvage</option>
+                <option value="lien" {% if post.title_status == "lien" %}selected{% endif %}>lien</option>
+                <option value="rebuilt" {% if post.title_status == "rebuilt" %}selected{% endif %}>rebuilt</option>
+                <option value="parts only" {% if post.title_status == "parts only" %}selected{% endif %}>parts only</option>
+                <option value="missing" {% if post.title_status == "missing" %}selected{% endif %}>missing</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Cryptocurrency ok</label>
+            <input type="checkbox" name="cryptocurrency_ok" class="edit-post-wrap" style="display: block;" {% if post.cryptocurrency_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="form-group edit-profile">
+            <label>Include "more ads by this user" link</label>
+            <input type="checkbox" name="include_ads" class="edit-post-wrap" style="display: block;" {% if post.include_ads %} checked="" {% endif %}>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,101 @@
+{% extends "index.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block extra_css %}
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/bootstrap-datetimepicker.css' type='text/css' media='all' /> 
+{% endblock %}
+
+{% block meta_main %}
+<div class="header-menu">
+    <div class="container auth">
+        <h1 class="auth-header">{% trans "Sign Up" %}</h1> 
+        <p style="padding: 10px;">{% blocktrans with provider_name=account.get_provider.name site_name=site.name %}You are about to use your {{provider_name}} account to login to {{site_name}}. As a final step, please complete the following form:{% endblocktrans %}</p>
+
+        <form class="login form-horizontal" method="POST" action="{% url 'socialaccount_signup' %}">
+            {% csrf_token %}
+            {% for _, error in form.errors.items %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+            <div class="form-group m-t-15">
+                <label class="control-label col-sm-2" for="id_login">First Name:</label>
+                <div class="col-sm-6">
+                    <input autofocus="autofocus" name="first_name" placeholder="First Name" type="text" class="form-control" required value="{{ form.first_name.value }}">
+                </div>
+            </div>
+            <div class="form-group m-t-15">
+                <label class="control-label col-sm-2" for="id_login">Last Name:</label>
+                <div class="col-sm-6">
+                    <input name="last_name" placeholder="Last Name" type="text" class="form-control" required value="{{ form.last_name.value }}">
+                </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="id_login">E-mail:</label>
+              <div class="col-sm-6">
+                <input id="id_email" name="email" placeholder="E-mail address" type="email" class="form-control" required value="{{ form.email.value }}" >
+              </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="id_password">Gender:</label>
+                <div class="col-sm-6">
+                    <select name="gender" class="input-xlarge form-control" required="">
+                        <option selected value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="id_dob">Birth Date:</label>
+                <div class="col-sm-6">
+                    <input id="id_dob" name="dob" type="text" class="input-xlarge form-control" required="" {% if form.dob.value %} value="{{ form.dob.value }}" {% endif %}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="id_address">Address:</label>
+                <div class="col-sm-6">
+                    <input id="id_address" name="address" type="text" class="input-xlarge form-control">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="id_password">Password:</label>
+                <div class="col-sm-6">
+                    <input id="id_password1" name="password1" placeholder="Password" type="password" class="input-xlarge form-control" required="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="id_remember">Password Confirm:</label>
+                <div class="col-sm-6">
+                    <input id="id_password2" name="password2" placeholder="Password confirm" type="password" class="input-xlarge form-control" required="">
+                </div>
+            </div>
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> 
+            {% endif %}
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-5">
+                    <button type="submit" class="primaryAction btn btn-success">{% trans "Sign Up" %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/moment-with-locales.js"></script>
+<script src="/static/js/bootstrap-datetimepicker.js"></script>
+
+<script>
+    jQuery(document).ready(function() {
+        $('#id_dob').datetimepicker({
+            format: 'MM/DD/YYYY'
+        });
+    });
+</script>
+
+{% endblock %}

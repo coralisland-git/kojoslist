@@ -1,0 +1,370 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+
+{% block own_css %}
+<link rel='stylesheet' href='/static/croppie/croppie.css' type='text/css' media='all' /> 
+{% endblock %} 
+
+{% block right_content %}
+<!-- Content Right Content -->
+
+<div class="col-sm-12 full-h">
+
+    <div class="content-right-content my-ads row">
+        <h2>Post a Campaign</h2>
+        <div class="pages">
+            <form method="post" enctype="multipart/form-data" action="" id="post-camp">
+                {% csrf_token %}               
+
+                <div class="col-md-7">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group edit-profile">
+                                <label>Title</label>
+                                <input type="text" name="title" class="form-control edit-post-wrap" value="{% if form.title.value %}{{ form.title.value }}{% endif %}" required/>
+                            </div>
+                            <div class="form-group edit-profile">
+                                <label>Tagline</label>
+                                <input type="text" name="tagline" class="form-control edit-post-wrap" value="{% if form.tagline.value %}{{ form.tagline.value }}{% endif %}" required/>
+                            </div>
+
+                            <div class="form-group edit-profile">
+                                <label>Overview</label>
+                                <textarea name="overview" class="form-control edit-post-wrap" required="">{% if form.overview.value %}{{ form.overview.value }}{% endif %}</textarea>
+                            </div>
+                            <div class="form-group edit-profile">
+                                <label>Overview Image</label>
+                            </div>
+                            <div class="col-md-8 no-padding">                                
+                                <a class="btn btn-default upload-avatar overview_img_preview" href="javascript:void();"><i class="fa fa-upload"></i> Choose Image</a>
+                                <a class="btn btn-success crop-result" href="javascript:void();"><i class="fa fa-save"></i> Save</a>
+                                <input type="file" class="hidden choose_overview"/>
+                                <input type="hidden" name="over_image" id="id_over_image">
+                                <div id="over_image" class="col-md-10 no-padding"></div>
+                                <div class="clearfix"></div>
+                                <div class="error">
+                                    {{ form.over_image.errors }}
+                                </div>
+                                <div><small>Crop Using Landscape Image For Better Presentation</small></div>
+                            </div>
+
+                            <div class="form-group edit-profile m-t-25">
+                                <label>Category</label>
+
+                                <div class="category-select-wrap-full">
+                                    <select name="category" class="form-control edit-post-wrap category-select-wrap camp_category" required>
+                                        {% if post.id %}
+                                            <option value="{{ post.category.parent.id }}"> {{ post.category.parent.name }} </option>
+                                        {% else %}
+                                            {% for mc in categories %}
+                                            <option {% if not mc.parent %}disabled class="main"{% else %} value="{{ mc.id }}" {% endif %} {% if mc.id == 2 %}selected{% endif %}>{{ mc.name }}</option>
+                                            {% endfor %}                                        
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group edit-profile">
+                                <label>Location</label>
+                                <input type="text" name="location" class="form-control edit-post-wrap" value="{% if form.location.value %}{{ form.location.value }}{% endif %}" required/>
+                            </div>
+                            <div class="form-group edit-profile">
+                                <label>Budget (in USD)</label>
+                                <input type="number" name="budget" class="form-control edit-post-wrap" value="{% if form.budget.value %}{{ form.budget.value }}{% endif %}" required min="10" />
+                            </div>
+                            <div class="form-group edit-profile">
+                                <label>Duration</label>
+                                <input type="number" name="duration" class="form-control edit-post-wrap" value="{% if form.duration.value %}{{ form.duration.value }}{% endif %}" required min="3" max="60" placeholder="60 day maximum." />
+                            </div>
+
+                            <div class="form-group edit-profile m-t-25">
+                                <label>Stage</label>
+
+                                <div class="category-select-wrap-full">
+                                    <select name="stage" class="form-control edit-post-wrap category-select-wrap camp_category" required>
+                                    <option value="concept">CONCEPT</option>
+                                    <option value="prototype">PROTOTYPE</option>
+                                    <option value="production">PRODUCTION</option>
+                                    <option value="shipping">SHIPPING</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group edit-profile">
+                                <label>Content</label>
+                                <textarea name="content" id="wys_content" class="form-control edit-post-wrap" required="">
+                                    {% if form.content.value %}
+                                        {{ form.content.value }}
+                                    {% else %}
+                                        {% include "_camp_pitch_template.html" %}
+                                    {% endif %}
+                                </textarea>
+                            </div>
+
+                            <div class="form-group edit-profile m-t-15">
+                                <label class=" edit-profile">Video URL (Youtube or Vimeo)</label>
+                                <input type="url" class="edit-post-wrap col-md-10 col-xs-12 video-url" placeholder="www.youtube.com/wa=zKkUN-mJQ" style="margin-top: -8px;" />
+                                <a class="btn btn-danger col-md-2 col-xs-12 add-video"> Add Video </a>
+                            </div>
+
+                            <div id="video-gallery">
+                            </div>
+
+                            <input type="hidden" name="owner" value="{{ user.id }}">
+                            <input type="hidden" name="videos" value="{% if form.videos.value %}{{ form.videos.value }}{% endif %}" id="videos">
+                        </div>
+                        <div class="col-md-12">
+                            <h2>Perks</h2>
+                            <div class="form-group edit-profile m-t-25">
+                                <label>Number of Perks</label>
+
+                                <div class="category-select-wrap-full">
+                                    <select id="num_perks" name="num_perks" class="form-control edit-post-wrap category-select-wrap camp_category" required>
+                                    <option value="0"> ---- </option>
+                                    {% for ii in rng_perks %}
+                                        <option value="{{ ii }}">{{ ii }}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                            </div>      
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row" id="perks_region">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-8">                
+                            <div class="form-group edit-profile">
+                                <input type="submit" class="btn btn-info update-btn" value="Submit" />
+                                <a class="btn btn-info post-add-btn-cancel" id="cancel" href="/my-campaigns">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- End Content Right Content -->
+{% endblock %}
+
+{% block own_js %}
+<script src="/static/tinymce/tinymce.min.js"></script>
+<script src="/static/croppie/croppie.min.js"></script>
+<script>
+    {% if not stripe_connected %}
+        alert('You need to connect stripe to post ads and get paid for it.');
+        window.location.href = '/my-account';
+    {% endif %}
+        
+    function readURL(input) {
+
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            $(input).parent().find('.overview_img_preview').attr('src', e.target.result);
+            $(input).parent().find('.flag_overview_img').val('true');
+        }
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    // chose overview image
+    jQuery("body").on("change", ".choose_overview", function() {
+      var input = this;
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            basic.croppie('bind', {
+                url: e.target.result
+            });
+        }
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    });    
+
+    jQuery("body").on("change", ".overview_img", function() {
+        readURL(this);
+    });    
+
+    jQuery("body").on("click", ".overview_img_preview", function() {
+        console.log($(this).parent());
+        $(this).parent().find('.overview_img').click();
+        $(this).parent().find('.error').html('');
+        $(this).parent().find('.choose_overview').click();
+    });
+
+    var viewport = { width: 400, height: 300 };
+    if ($(window).width() < 500) {
+        width = $(window).width() - 70;
+        viewport = { width: width, height: width * 0.75 };
+    }
+
+    var basic = $('#over_image').croppie({
+        viewport: viewport
+    });
+
+    basic.croppie('bind', {
+        url: '/static/img/fill.png'
+    });
+
+    jQuery("body").on("click", ".video_close_img", function() {
+        $(this).parent().remove();
+        update_videos();
+    });
+
+    function update_videos() {
+        var videos = '';
+        $( ".video_close_img" ).each(function() {
+            videos += $(this).data('vid') + ', ';
+        });
+
+        $('#videos').val(videos);
+    }
+
+    tinymce.init({ 
+        selector:'#wys_content',
+        menubar: false,
+        height: 300,
+        content_css : '/static/tinymce/tinymce.css',
+        plugins: [
+          'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+          'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+          'save table contextmenu directionality emoticons template paste textcolor'
+        ]
+    });
+
+    $('.add-video').click(function() {
+        var video_url = $('.video-url').val();
+        if (!video_url.trim()) {
+            alert("Please put proper Youtube or Vimeo url!");
+            $('.video-url').focus();
+            return false;
+        }
+
+        var vid = getYoutubeId(video_url);
+        if ($('#videos').val().indexOf(vid) != -1) {
+            alert("The video is already added!");
+            $('.video-url').val('');
+            $('.video-url').focus();
+            return false;            
+        }
+
+        var bbody = '<div class="col-md-7 video-frame"> \
+                        <i class="fa fa-times video_close_img" data-vid="' + vid + '"></i> \
+                        <iframe src="//www.youtube.com/embed/' + vid + 
+                        '?rel=0&amp;showinfo=0&amp;enablejsapi=1" width="100%" height="400" frameborder="0" allowfullscreen="allowfullscreen" id="player_3"></iframe> \
+                    </div>';
+        $('#video-gallery').append(bbody);
+        update_videos();
+    });
+
+    $('.crop-result').click(function() {
+        basic.croppie('result', 'blob').then(function(blob) {
+            var input = $('.choose_overview')[0],
+                filename = 'default.png';
+
+            if (input.files && input.files[0]) {
+                filename = input.files[0].name;
+                filename = filename.toLowerCase().replace('jpg', 'png').replace('jpeg', 'png');
+            }
+
+            var fd = new FormData();
+            // fd.append("images", new File([blob], filename));
+            fd.append("images", blob);
+            fd.append("type", 'campaigns');
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/upload-image',
+                data: fd,
+                contentType: false,
+                dataType: "json",
+                processData: false,
+                success: function(response) {
+                    $('#id_over_image').val(response.image_name);
+                    alert('Overview image saved successfully.')
+                }
+            });
+        });
+    });
+
+    $('#post-camp').submit(function(e) {
+        var required = $('#post-camp [required]'); 
+        var error = false;
+
+        for(var i = 0; i < required.length; i++) {
+            if(required[i].value.trim() == '') {
+                required[i].style.backgroundColor = 'rgb(255,155,155)';
+                error = true; // if any inputs fail validation then the error variable will be set to true;     
+            }
+        }
+
+        if (error) {
+            alert('Please provide all information highlighted.');
+            return false; // stop the form from being submitted.
+        }        
+    }); 
+
+    function getYoutubeId(url) {
+        var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        var match = url.match(regExp);
+
+        if (match && match[2].length == 11) {
+            return match[2];
+        } else {
+            return 'error';
+        }
+    }    
+
+    $('#num_perks').change(function() {
+        var num_perks = $(this).val();
+        if (!num_perks)
+            return;
+
+        var bbody = '<div class="col-md-6"><div class="col-md-12 perk_pannel">' +               
+                        '<div class="form-group edit-profile m-t-15"> \
+                            <label>Perk Title</label> \
+                            <input type="text" name="perk_title" class="form-control edit-post-wrap" required/> \
+                        </div> \
+                        <div class="form-group edit-profile"> \
+                            <label>Perk Price (in USD)</label> \
+                            <input type="number" name="perk_price" class="form-control edit-post-wrap" required min="1" /> \
+                        </div> \
+                        <div class="form-group edit-profile"> \
+                            <label>Available Number</label> \
+                            <input type="number" name="perk_avail_num" class="form-control edit-post-wrap" min="1" /> \
+                        </div> \
+                        <div class="form-group edit-profile"> \
+                            <label>Perk  Description</label> \
+                            <textarea name="perk_desc" class="form-control edit-post-wrap" required=""></textarea> \
+                        </div> \
+                        <div class="form-group edit-profile"> \
+                            <label>Overview Image</label> \
+                        </div> \
+                        <div class="col-md-7 no-padding" style="margin-bottom: 20px;"> \
+                            <input type="file" name="perk_overview" class="overview_img form-control edit-post-wrap hidden" /> \
+                            <input type="hidden" name="flag_perk_overview" class="flag_overview_img" /> \
+                            <img class="overview_img_preview img-thumbnail img-responsive" src="/static/img/fill.png"> \
+                        </div> \
+                    </div></div>';
+
+        $('#perks_region').html('');
+        var i;
+        for(i = 0; i < num_perks; i++) {
+            $('#perks_region').append(bbody);
+        }
+    });
+</script>
+
+{% endblock %}

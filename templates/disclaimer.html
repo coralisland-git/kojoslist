@@ -1,0 +1,36 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+
+        <div class="content-right-content my-ads choose-dealer row">
+            <h3>Disclaimer ( {{ category.name }} )</h3>
+            <div class="col-md-12">
+                <div style="line-height: 25px;margin-bottom: 25px;">
+                    This section may contain sexual content, including pictorial nudity and adult language. It is to be accessed only by persons who are 18 years of age or older (and is not considered to be a minor in his/her state of residence) and who live in a community or local jurisdiction where nude pictures are not illegal.                    
+                </div>
+                <div>
+                    <strong style="line-height: 25px;">
+                        I have read and agree to this disclaimer as well as the Terms of Use.
+                    </strong>
+                </div>
+                <a href="/category-ads-dealer/{{ category.id }}/all">
+                    I agree
+                </a>
+                <a href="/profile">
+                   I don't agree
+                </a>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+{% endblock %}

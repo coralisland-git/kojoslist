@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group edit-profile">
+            <label>employment type</label>
+            <select name="employment_type" class="form-control edit-post-wrap" required>
+                <option value="">---------</option>
+                <option value="full-time" {% if post.employment_type == "full-time" %}selected{% endif %}>full-time</option>
+                <option value="part-time" {% if post.employment_type == "part-time" %}selected{% endif %}>part-time</option>
+                <option value="contract" {% if post.employment_type == "contract" %}selected{% endif %}>contract</option>
+                <option value="employee's choice" {% if post.employment_type == "employee's choice" %}selected{% endif %}>employee's choice</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="form-group edit-profile">
+            <label>compensation</label>
+            <input type="text" name="compensation" class="form-control edit-post-wrap" placeholder="describe in detail as much as possible" required value="{{ post.compensation }}" />
+        </div>
+    </div>
+    <div class="col-md-6" style="margin-bottom: 15px;">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" style="margin-top: -2px;" {% if post.direct_contact_by_recruiters_is_okay %}checked{% endif %} name="direct_contact_by_recruiters_is_okay">Direct contact by recruiters is okay
+            </label>
+        </div>
+    </div>    
+    <div class="col-md-6" style="margin-bottom: 15px;">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" style="margin-top: -2px;" {% if post.internship %}checked{% endif %} name="internship">Internship
+            </label>
+        </div>
+    </div>           
+    <div class="col-md-6" style="margin-bottom: 15px;">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" style="margin-top: -2px;" {% if post.non_profit_organization %}checked{% endif %} name="non_profit_organization">Non profit organization
+            </label>
+        </div>
+    </div>         
+    <div class="col-md-6" style="margin-bottom: 15px;">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" style="margin-top: -2px;" {% if post.telecommuting_okay %}checked{% endif %} name="telecommuting_okay">Telecommuting okay
+            </label>
+        </div>
+    </div> 
+</div>

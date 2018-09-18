@@ -1,0 +1,130 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>ft<sup>2</sup></label>
+            <div class="clearfix"></div>
+            <div class="col-sm-6">
+            <input type="number" name="area__gte" class="form-control edit-post-wrap" placeholder="Min area" min="0">
+            </div>
+            <div class="col-sm-6">
+            <input type="number" name="area__lte" class="form-control edit-post-wrap" placeholder="Max area" min="0">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Available On</label>
+            <div class="clearfix"></div>
+            <div class="col-sm-6">
+                <input type="text" name="available_on__gte" class="form-control edit-post-wrap cl_datepicker" placeholder="Min date" min="0">
+                </div>
+                <div class="col-sm-6">
+                <input type="text" name="available_on__lte" class="form-control edit-post-wrap cl_datepicker" placeholder="Max date" min="0">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Bedrooms</label>
+            <div class="clearfix"></div>
+            <div class="col-sm-6">
+                <input type="number" name="bedrooms__gte" class="form-control edit-post-wrap" placeholder="Min bedrooms" min="0">
+                </div>
+                <div class="col-sm-6">
+                <input type="number" name="bedrooms__lte" class="form-control edit-post-wrap" placeholder="Max bedrooms" min="0">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Bathrooms</label>
+            <div class="clearfix"></div>
+            <div class="col-sm-6">
+                <input type="number" name="bathrooms__gte" class="form-control edit-post-wrap" placeholder="Min bathrooms" min="0">
+                </div>
+                <div class="col-sm-6">
+                <input type="number" name="bathrooms__lte" class="form-control edit-post-wrap" placeholder="Max bathrooms" min="0">
+            </div>
+        </div>
+    </div>    
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Housing Type</label>
+            <select name="type" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="apartment" {% if post.type == "apartment" %}selected{% endif %}>apartment</option>
+                <option value="condo" {% if post.type == "condo" %}selected{% endif %}>condo</option>
+                <option value="cottage/cabin" {% if post.type == "cottage/cabin" %}selected{% endif %}>cottage/cabin</option>
+                <option value="duplex" {% if post.type == "duplex" %}selected{% endif %}>duplex</option>
+                <option value="flat" {% if post.type == "flat" %}selected{% endif %}>flat</option>
+                <option value="house" {% if post.type == "house" %}selected{% endif %}>house</option>
+                <option value="in-law" {% if post.type == "in-law" %}selected{% endif %}>in-law</option>
+                <option value="loft" {% if post.type == "loft" %}selected{% endif %}>loft</option>
+                <option value="townhouse" {% if post.type == "townhouse" %}selected{% endif %}>townhouse</option>
+                <option value="manufactured" {% if post.type == "manufactured" %}selected{% endif %}>manufactured</option>
+                <option value="assited living" {% if post.type == "assited living" %}selected{% endif %}>assited living</option>
+                <option value="land" {% if post.type == "land" %}selected{% endif %}>land</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Laundry</label>
+            <select name="laundry" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="w/d in unit" {% if post.laundry == "w/d in unit" %}selected{% endif %}>w/d in unit</option>
+                <option value="w/d hookups" {% if post.laundry == "w/d hookups new" %}selected{% endif %}>w/d hookups</option>
+                <option value="laundry in bldg" {% if post.laundry == "laundry in bldg" %}selected{% endif %}>laundry in bldg</option>
+                <option value="laundry on site" {% if post.laundry == "laundry on site" %}selected{% endif %}>laundry on site</option>
+                <option value="no laundry on site" {% if post.laundry == "no laundry on site" %}selected{% endif %}>no laundry on site</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Parking</label>
+            <select name="parking" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="carport" {% if post.parking == "carport" %}selected{% endif %}>carport</option>
+                <option value="attached garage" {% if post.parking == "attached garage" %}selected{% endif %}>attached garage</option>
+                <option value="detached garage" {% if post.parking == "detached garage" %}selected{% endif %}>detached garage</option>
+                <option value="off-street parking" {% if post.parking == "off-street parking" %}selected{% endif %}>off-street parking</option>
+                <option value="street parking" {% if post.parking == "street parking" %}selected{% endif %}>street parking</option>
+                <option value="valet parking" {% if post.parking == "valet parking" %}selected{% endif %}>valet parking</option>
+                <option value="no parking" {% if post.parking == "no parking" %}selected{% endif %}>no parking</option>
+            </select>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-2 col-xs-4">
+        <div class="form-group edit-profile">
+            <label>Cats Ok</label>
+            <input type="checkbox" name="cats_ok" class="edit-post-wrap" style="display: block;" {% if post.cats_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-md-2 col-xs-4">
+        <div class="form-group edit-profile">
+            <label>Dogs Ok</label>
+            <input type="checkbox" name="dogs_ok" class="edit-post-wrap" style="display: block;" {% if post.dogs_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-md-2 col-xs-4">
+        <div class="form-group edit-profile">
+            <label>Furnished</label>
+            <input type="checkbox" name="furnished" class="edit-post-wrap" style="display: block;" {% if post.furnished %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-md-2 col-xs-6">
+        <div class="form-group edit-profile">
+            <label>No smoking</label>
+            <input type="checkbox" name="no_smoking" class="edit-post-wrap" style="display: block;" {% if post.no_smoking %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-md-4 col-xs-6">
+        <div class="form-group edit-profile">
+            <label>Wheelchair accessible</label>
+            <input type="checkbox" name="wheelchair" class="edit-post-wrap" style="display: block;" {% if post.wheelchair %} checked="" {% endif %}>
+        </div>
+    </div>
+</div>

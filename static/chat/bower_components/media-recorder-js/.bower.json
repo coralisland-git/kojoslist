@@ -1,0 +1,34 @@
+{
+  "name": "media-recorder-js",
+  "description": "WebRTC media recorder library for Javascript",
+  "version": "1.0.1",
+  "main": "src/index.js",
+  "authors": [
+    "dimaspirit <dspwww@gmail.com>",
+    "Vladlukhanin <vladlukhanin@gmail.com>"
+  ],
+  "license": "(Apache-2.0)",
+  "keywords": [
+    "audio",
+    "video",
+    "record",
+    "mediastream"
+  ],
+  "homepage": "https://github.com/QuickBlox/javascript-media-recorder",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "1.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.1",
+    "commit": "34096756caac26999d3123bf2a2444f7154dd83f"
+  },
+  "_source": "https://github.com/QuickBlox/javascript-media-recorder.git",
+  "_target": "^1.0.1",
+  "_originalSource": "media-recorder-js"
+}

@@ -1,0 +1,61 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Make / Manufacture</label>
+            <input type="text" name="make" class="form-control edit-post-wrap" required value="{{ post.make }}" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Model name / number</label>
+            <input type="text" name="model" class="form-control edit-post-wrap" required value="{{ post.model }}" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Year manufatured</label>
+            <input type="number" name="made_year" class="form-control edit-post-wrap" required value="{{ post.made_year }}" min="0" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Condition</label>
+            <select name="condition" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="new" {% if post.condition == "new" %}selected{% endif %}>new</option>
+                <option value="like new" {% if post.condition == "like new" %}selected{% endif %}>like new</option>
+                <option value="excellent" {% if post.condition == "excellent" %}selected{% endif %}>excellent</option>
+                <option value="good" {% if post.condition == "good" %}selected{% endif %}>good</option>
+                <option value="fair" {% if post.condition == "fair" %}selected{% endif %}>fair</option>
+                <option value="salvage" {% if post.condition == "salvage" %}selected{% endif %}>salvage</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Paint color</label>
+            <select name="paint_color" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="red" {% if post.paint_color == "red" %}selected{% endif %}>red</option>
+                <option value="blue" {% if post.paint_color == "blue" %}selected{% endif %}>blue</option>
+                <option value="black" {% if post.paint_color == "black" %}selected{% endif %}>black</option>
+                <option value="brown" {% if post.paint_color == "brown" %}selected{% endif %}>brown</option>
+                <option value="green" {% if post.paint_color == "green" %}selected{% endif %}>green</option>
+                <option value="grey" {% if post.paint_color == "grey" %}selected{% endif %}>grey</option>
+                <option value="orange" {% if post.paint_color == "orange" %}selected{% endif %}>orange</option>
+                <option value="purple" {% if post.paint_color == "purple" %}selected{% endif %}>purple</option>
+                <option value="yellow" {% if post.paint_color == "yellow" %}selected{% endif %}>yellow</option>
+                <option value="silver" {% if post.paint_color == "silver" %}selected{% endif %}>silver</option>
+                <option value="white" {% if post.paint_color == "white" %}selected{% endif %}>white</option>
+                <option value="custom" {% if post.paint_color == "custom" %}selected{% endif %}>custom</option>
+            </select>
+        </div>
+    </div>    
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Cryptocurrency ok</label>
+            <input type="checkbox" name="cryptocurrency_ok" class="edit-post-wrap" style="display: block;" {% if post.cryptocurrency_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+</div>

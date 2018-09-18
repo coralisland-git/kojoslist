@@ -1,0 +1,95 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>ft<sup>2</sup></label>
+            <input type="number" name="area" class="form-control edit-post-wrap" required value="{{ post.area }}" min="0" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Available On</label>
+            <input type="text" name="available_on" class="form-control edit-post-wrap cl_datepicker" required value="{{ post.available_on|date:'m/d/Y' }}" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Private Bed</label>
+            <select name="private_bed" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="shared room" {% if post.private_bed == "shared room" %}selected{% endif %}>shared room</option>
+                <option value="private room" {% if post.private_bed == "private room" %}selected{% endif %}>private room</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Private Bath</label>
+            <select name="private_bath" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="shared bathroom" {% if post.private_bath == "shared bathroom" %}selected{% endif %}>shared bathroom</option>
+                <option value="private bath" {% if post.private_bath == "private bath" %}selected{% endif %}>private bath</option>
+            </select>
+        </div>
+    </div>        
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Laundry</label>
+            <select name="laundry" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="w/d in unit" {% if post.laundry == "w/d in unit" %}selected{% endif %}>w/d in unit</option>
+                <option value="w/d hookups" {% if post.laundry == "w/d hookups new" %}selected{% endif %}>w/d hookups</option>
+                <option value="laundry in bldg" {% if post.laundry == "laundry in bldg" %}selected{% endif %}>laundry in bldg</option>
+                <option value="laundry on site" {% if post.laundry == "laundry on site" %}selected{% endif %}>laundry on site</option>
+                <option value="no laundry on site" {% if post.laundry == "no laundry on site" %}selected{% endif %}>no laundry on site</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Parking</label>
+            <select name="parking" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="carport" {% if post.parking == "carport" %}selected{% endif %}>carport</option>
+                <option value="attached garage" {% if post.parking == "attached garage" %}selected{% endif %}>attached garage</option>
+                <option value="detached garage" {% if post.parking == "detached garage" %}selected{% endif %}>detached garage</option>
+                <option value="off-street parking" {% if post.parking == "off-street parking" %}selected{% endif %}>off-street parking</option>
+                <option value="street parking" {% if post.parking == "street parking" %}selected{% endif %}>street parking</option>
+                <option value="valet parking" {% if post.parking == "valet parking" %}selected{% endif %}>valet parking</option>
+                <option value="no parking" {% if post.parking == "no parking" %}selected{% endif %}>no parking</option>
+            </select>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-sm-3 col-xs-4">
+        <div class="form-group edit-profile">
+            <label>No smoking</label>
+            <input type="checkbox" name="no_smoking" class="edit-post-wrap" style="display: block;" {% if post.no_smoking %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-sm-4 col-xs-8">
+        <div class="form-group edit-profile">
+            <label>Wheelchair accessible</label>
+            <input type="checkbox" name="wheelchair" class="edit-post-wrap" style="display: block;" {% if post.wheelchair %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-sm-3 col-xs-4">
+        <div class="form-group edit-profile">
+            <label>Cats Ok</label>
+            <input type="checkbox" name="cats_ok" class="edit-post-wrap" style="display: block;" {% if post.cats_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-sm-3 col-xs-4">
+        <div class="form-group edit-profile">
+            <label>Dogs Ok</label>
+            <input type="checkbox" name="dogs_ok" class="edit-post-wrap" style="display: block;" {% if post.dogs_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-sm-3 col-md-2 col-xs-4">
+        <div class="form-group edit-profile">
+            <label>Furnished</label>
+            <input type="checkbox" name="furnished" class="edit-post-wrap" style="display: block;" {% if post.furnished %} checked="" {% endif %}>
+        </div>
+    </div>
+</div>

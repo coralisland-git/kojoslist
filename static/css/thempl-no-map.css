@@ -1,0 +1,30 @@
+.site-inner{
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+#content{
+	 min-height: calc(100% - 330px);
+}
+.title_page{
+	text-align: center;
+    /*font-family: "Raleway-Thin";*/
+    color: #4d4d4d;
+    font-size: 25px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    word-spacing: -4px;
+    padding: 10px;
+    margin: 50px 0px;
+    font-weight: 300;
+    
+}
+.content{
+	font-size: 16px;
+    line-height: 19px;
+    color: #333;
+    max-width: 890px;
+    padding: 0px 15px 0px;
+    margin: 0px auto 130px;
+    min-width: 150px;	
+}

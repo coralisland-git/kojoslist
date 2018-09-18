@@ -1,0 +1,128 @@
+[  
+    {  
+        "model":"general.category",
+        "pk":1,
+        "fields":{  
+            "parent":null,
+            "name":"community",
+            "columns":2
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":2,
+        "fields":{  
+            "parent":null,
+            "name":"housing",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":3,
+        "fields":{  
+            "parent":1,
+            "name":"activities",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":4,
+        "fields":{  
+            "parent":1,
+            "name":"artists",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":5,
+        "fields":{  
+            "parent":2,
+            "name":"apts / housing",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":6,
+        "fields":{  
+            "parent":2,
+            "name":"housing swap",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":7,
+        "fields":{  
+            "parent":2,
+            "name":"housing wanted",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":8,
+        "fields":{  
+            "parent":2,
+            "name":"office / commercial",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":9,
+        "fields":{  
+            "parent":2,
+            "name":"parking / storage",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":10,
+        "fields":{  
+            "parent":2,
+            "name":"real estate for sale",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":11,
+        "fields":{  
+            "parent":2,
+            "name":"rooms / shared",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":12,
+        "fields":{  
+            "parent":2,
+            "name":"rooms wanted",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":13,
+        "fields":{  
+            "parent":2,
+            "name":"sublets / temporary",
+            "columns":1
+        }
+    },
+    {  
+        "model":"general.category",
+        "pk":14,
+        "fields":{  
+            "parent":2,
+            "name":"vacation rentals",
+            "columns":1
+        }
+    }
+]

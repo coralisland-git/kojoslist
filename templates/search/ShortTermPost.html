@@ -1,0 +1,265 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-2">
+        <div class="form-group edit-profile">
+            <label>Home Type</label>
+            <select name="type" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="Entire place" {% if post.type == "Entire place" %}selected{% endif %}>Entire place</option>
+                <option value="Private room" {% if post.type == "Private room" %}selected{% endif %}>Private room</option>
+                <option value="Shared room" {% if post.type == "Shared room" %}selected{% endif %}>Shared room</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Available On</label>
+            <div class="clearfix"></div>
+            <div class="col-sm-6">
+                <input type="text" name="available_on__gte" class="form-control edit-post-wrap cl_datepicker" placeholder="Min date" min="0">
+                </div>
+                <div class="col-sm-6">
+                <input type="text" name="available_on__lte" class="form-control edit-post-wrap cl_datepicker" placeholder="Max date" min="0">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group edit-profile">
+            <label>Beds</label>
+            <select name="beds" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.beds == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group edit-profile">
+            <label>Bedrooms</label>
+            <select name="bedrooms" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.bedrooms == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group edit-profile">
+            <label>Bathrooms</label>
+            <select name="bathrooms" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.bathrooms == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>    
+    <div class="col-md-2">
+        <div class="form-group edit-profile">
+            <label>Adults</label>
+            <select name="num_adults" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 1|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.num_adults == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group edit-profile">
+            <label>Children</label>
+            <select name="num_children" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:6 %}
+                    <option value="{{ ii }}" {% if post.num_children == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <h4 class="st-house-sub-header" data-toggle="collapse" data-target="#amenities">Amenities</h4>
+    </div>
+    <div class="collapse" id="amenities">
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_kitchen" {% if post.amd_kitchen %} checked="" {% endif %}>Kitchen</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_shampoo" {% if post.amd_shampoo %} checked="" {% endif %}>Shampoo</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_heating" {% if post.amd_heating %} checked="" {% endif %}>Heating</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_washer" {% if post.amd_washer %} checked="" {% endif %}>Washer</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_wireless" {% if post.amd_wireless %} checked="" {% endif %}>Wireless Internet</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_kid_friendly" {% if post.amd_kid_friendly %} checked="" {% endif %}>Family/kid friendly</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_buzzer" {% if post.amd_buzzer %} checked="" {% endif %}>Buzzer/wireless intercom</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_hangers" {% if post.amd_hangers %} checked="" {% endif %}>Hangers</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_hair_dryer" {% if post.amd_hair_dryer %} checked="" {% endif %}>Hair dryer</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_bedroom_locker" {% if post.amd_bedroom_locker %} checked="" {% endif %}>Lock on bedroom door</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_tv" {% if post.amd_tv %} checked="" {% endif %}>TV</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_air_condition" {% if post.amd_air_condition %} checked="" {% endif %}>Air conditioning</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_dryer" {% if post.amd_dryer %} checked="" {% endif %}>Dryer</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_breakfast" {% if post.amd_breakfast %} checked="" {% endif %}>Breakfast</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_indoor_fireplace" {% if post.amd_indoor_fireplace %} checked="" {% endif %}>Indoor fireplace</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_doorman" {% if post.amd_doorman %} checked="" {% endif %}>Doorman</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_iron" {% if post.amd_iron %} checked="" {% endif %}>Iron</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_laptop_workspace" {% if post.amd_laptop_workspace %} checked="" {% endif %}>Laptop friendly workspace</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_self_checkin" {% if post.amd_self_checkin %} checked="" {% endif %}>Self Check-In</label>
+        </div>
+    </div>    
+    </div>
+    <div class="col-md-12">
+        <h4 class="st-house-sub-header" data-toggle="collapse" data-target="#facilities">Facilities</h4>
+    </div>
+    <div class="collapse" id="facilities">
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_elevator" {% if post.fc_elevator %} checked="" {% endif %}>Elevator</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_gym" {% if post.fc_gym %} checked="" {% endif %}>Gym</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_pool" {% if post.fc_pool %} checked="" {% endif %}>Pool</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_free_parking" {% if post.fc_free_parking %} checked="" {% endif %}>Free parking on premises</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_hottub" {% if post.fc_hottub %} checked="" {% endif %}>Hot tub</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_wheelchair" {% if post.fc_wheelchair %} checked="" {% endif %}>Wheelchair accessible</label>
+        </div>
+    </div>    
+    </div>
+    <div class="col-md-12">
+        <h4 class="st-house-sub-header" data-toggle="collapse" data-target="#house_rules">House rules</h4>
+    </div>
+    <div class="collapse" id="house_rules">
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="hr_events" {% if post.hr_events %} checked="" {% endif %}>Suitable for events</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="hr_pets" {% if post.hr_pets %} checked="" {% endif %}>Pets allowed</label>
+        </div>
+    </div>    
+    <div class="col-md-4" style="margin-bottom: 30px;">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="hr_smoking" {% if post.hr_smoking %} checked="" {% endif %}>Smoking allowed</label>
+        </div>
+    </div>        
+    </div>
+</div>

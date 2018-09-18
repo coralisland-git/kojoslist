@@ -1,0 +1,446 @@
+{% extends "_base.html" %} 
+{% load staticfiles %} 
+
+{% block extra_css %}
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/my-ads.css' type='text/css' media='all' /> 
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/dropdown-menu-style.css?v=1' type='text/css' media='all' /> 
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/bootstrap-datetimepicker.css' type='text/css' media='all' /> 
+
+{% block own_css %}
+{% endblock %} 
+{% endblock %} 
+
+{% block page_content %}
+
+<div id="page" class="site">
+  <div class="site-inner">
+    <div id="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="admin-content-menu-and-content-section clearfix">
+            <!-- Content Left Section -->
+            <div class="col-md-2 col-sm-12 md-media-full-widht no-padding admin-content-left-section">
+              <!-- Logo Section -->
+              <div class="logo-section clearfix">
+
+                <div class="navbar-brand-profile">
+                  <a href="/" class="custom-logo-link" rel="home" itemprop="url"><img width="240" height="67" src="/static/img/cropped-logo.png" class="custom-logo" alt="" itemprop="logo" /></a>
+                </div>
+              </div>
+              <!-- End Logo Section -->
+
+              <!-- Header -->
+              <header>
+                <div class="left-menu-bar">
+                  <div class="cd-dropdown-wrapper">
+                    <div class="menu-button-center">
+                      <a class="cd-dropdown-trigger" href="#0"><i class="fa fa-bars" aria-hidden="true"></i></a>
+                    </div>
+
+                    <nav class="cd-dropdown">
+                      <a href="#0" class="cd-close">Close</a>
+                      <div class="menu-profile-side-menu-container">
+                        <ul id="menu-profile-side-menu" class="cd-dropdown-content">
+                          <li id="menu-item-42" class="home menu-item menu-item-type-custom menu-item-object-custom menu-item-42"><a href="/profile/" class="">Home</a></li>
+                          <li id="menu-item-43" class="explorer-campaign menu-item menu-item-type-custom menu-item-object-custom menu-item-43"><a href="/explorer-campaigns" class="">Explorer Campaigns</a></li>
+
+                          {% if user.is_authenticated %}
+                            <li id="menu-item-43" class="ads menu-item menu-item-type-custom menu-item-object-custom menu-item-43"><a href="/post-ads" class="">Post Ads</a></li>
+                            <li id="menu-item-43" class="my-ads menu-item menu-item-type-custom menu-item-object-custom menu-item-43"><a href="/my-ads" class="">My Ads</a></li>
+                            <li id="menu-item-43" class="campaign menu-item menu-item-type-custom menu-item-object-custom menu-item-43"><a href="/my-campaigns" class="">My Campaigns</a></li>
+                            <li id="menu-item-44" class="account menu-item menu-item-type-custom menu-item-object-custom menu-item-44"><a href="/my-account" class="">My Account</a></li>
+                            <li id="menu-item-260" class="subscription menu-item menu-item-type-post_type menu-item-object-page menu-item-260"><a href="/my-subscriptions" class="">Subscription</a></li>
+                            <li id="menu-item-45" class="favorites menu-item menu-item-type-custom menu-item-object-custom menu-item-45"><a href="/my-favourites" class="">My Favorites</a></li>
+                            <li id="menu-item-46" class="logout menu-item menu-item-type-custom menu-item-object-custom menu-item-46"><a href="/logout" class="">Log Out</a></li>
+                          {% endif %}
+                        </ul>
+                      </div>
+                    </nav>
+                    <!-- .cd-dropdown -->
+                  </div>
+                </div>
+              </header>
+              <!-- End Header -->
+            </div>
+
+            <div class="col-md-10 col-sm-12 md-media-full-widht no-padding">
+              <!-- Content Right Header -->
+              <div class="col-sm-12 no-padding">
+                <!-- Header User Section -->
+                <div class="header-user-section clearfix">
+                {% if user.is_authenticated %}
+                  <div class="header-user-section-welcome">
+                    <a href="/logout">
+                      <i style="margin: -3px 5px; font-size: 18px; color: #999;" class="fa fa-sign-out" aria-hidden="true"></i>
+                    </a>
+                  </div>
+
+                  <div class="header-user-section-welcome">
+                    {% if user.first_name %}
+                      {{ user.first_name }} {{ user.last_name }}
+                    {% else %}
+                      {{ user.username }}!
+                    {% endif %}
+                  </div>
+                  <div class="header-user-section-ico">
+                    <a href="/my-account"><img src="/static/media/avatar/{{ user.avatar }}" alt=""></a>
+                  </div>
+                  <div class="header-user-section-welcome">
+                    <a href="/static/chat/index.html?uid={{ user.email }}" target="_blank">
+                      <i style="margin: -10px 8px;font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
+                    </a>
+                  </div>                  
+                {% else %}
+                  <div class="header-user-section-welcome" style="margin: 0px 12px; font-size: 16px; color: #aaa;">
+                    <a href="/accounts/login" style="color: #aaa;">
+                      <span>Login</span><i style="margin: 0px 6px; font-size: 18px; color: #aaa;" class="fa fa-sign-in" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                {% endif %}
+                </div>
+                <!-- End Header User Section -->
+              </div>
+
+              {% block right_content %}
+              <div class="col-sm-12">
+                <div class="content-right-content">
+                  <nav class="breadcrumb"></nav>
+                  <div id="container"></div>
+
+                  <!-- Content Full Select Country -->
+                  <h3 id="title_of_list"></h3>
+
+                  <div class="content-select-country clearfix"></div>
+
+                  <div class="btn-view-all-center">
+                    <a href="" class="btn btn-default btn-view-all" style="display: none;">
+                      View All Ads
+                    </a>
+                  </div>
+
+                </div>
+                <div class="loader_content"></div>
+
+              </div>
+              {% endblock %}
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} 
+
+{% block extra_js %}
+<script src="/static/js/moment-with-locales.js"></script>
+<script src="/static/js/bootstrap-datetimepicker.js"></script>
+
+{% block load_highcharts_js %}
+<script src="/static/js/highmaps.js"></script>
+<script src="/static/js/index.js"></script>
+
+{% endblock %}
+
+{% block own_js %}
+<script type="text/javascript">
+  var baseMapPath = "https://code.highcharts.com/mapdata/";
+
+  var mapName = 'custom/world';
+  var state, isState, city;
+
+  // redirect to last loc for /profile
+  if (!location.hash) {
+    location.hash = '{% if user.default_site %}{{ user.default_site }}{% endif %}';
+  }
+
+  analyseHash();
+  loadMap();
+
+  function analyseHash() {
+    state = '';
+    isState = false;
+    city = '';    
+
+    if (location.hash) {
+      var urls = location.hash.substring(1).split('@');
+      mapName = urls[0];
+
+      if (urls.length > 1) {
+        state = urls[1];
+        isState = true;
+      }
+
+      if (urls.length > 2) {
+        city = urls[2];
+      }
+    }
+
+    if (!isState) {
+      findState();    
+    }
+  }
+
+  function loadMap() {
+    // console.log(mapName);
+    // console.log(state);
+    // console.log(isState);
+    // console.log(city);
+
+    breadcrumb();
+    showRegions();
+
+    if (Highcharts.charts[0]) {
+      Highcharts.charts[0].showLoading('<i class="fa fa-spinner fa-spin fa-2x"></i>');
+    }
+
+    if (Highcharts.maps[mapName]) {
+      mapReady();
+    } else {
+      $.getScript(baseMapPath+mapName+'.js', mapReady);
+    }    
+  }  
+
+  function breadcrumb() {
+    $.ajax({
+      type: 'post',
+      url: '/breadcrumb',
+      data: {
+        mapName: mapName,
+        state: state,
+        is_state: isState,
+        city: city
+      },
+      success: function(res) {
+        $('.breadcrumb').html(res);
+      }
+    });   
+  }
+
+  function showRegions() {
+    $.ajax({
+      type: 'get',
+      url: '/get_regions',
+      data: {
+        mapName: mapName,
+        state: state,
+        is_state: isState,
+        city: city
+      },
+      success: function(res) {
+        $('#title_of_list').html(res.title);
+        $('.content-select-country').html(res.html);
+
+        if ($(window).width() > 768) {
+          $('.category a').attr('data-toggle', 'coll');
+          $('.sub-category').removeClass('collapse');
+        }
+
+        if (res.link) {
+          $('.btn-view-all').attr('href', res.link);
+          $('.btn-view-all').show();
+        } else {
+          $('.btn-view-all').hide();
+        }
+      }
+    });    
+  }
+
+  var _this = {};
+
+  function mapReady() {
+    var mapGeoJSON = Highcharts.maps[mapName],
+        data = [];
+
+    $.each(mapGeoJSON.features, function(index, feature) {
+      data.push({
+        key: feature.properties['hc-key'],
+        value: index
+      });
+    });
+
+    $("#container").highcharts('Map', {
+      title: {
+        text: ''
+      },
+      mapNavigation: {
+        enabled: true,
+      },
+      colorAxis: {
+        min: 0,
+        stops: [
+          [0, '#EFEFFF'],
+          [0.5, Highcharts.getOptions().colors[0]],
+          [1, Highcharts.Color(Highcharts.getOptions().colors[0]).brighten(-0.5).get()]
+        ]
+      },
+      legend: {
+        layout: 'vertical',
+        align: 'left',
+        verticalAlign: 'bottom'
+      },
+
+      series: [{
+        data: data,
+        mapData: mapGeoJSON,
+        joinBy: ['hc-key', 'key'],
+        name: 'Random data',
+        states: {
+          hover: {
+            color: Highcharts.getOptions().colors[2]
+          }
+        },
+        dataLabels: {
+          //enabled: showDataLabels,
+          //format: '{point.name}',
+          formatter: function() {
+            return mapName === 'custom/world' ?
+              (this.point.properties && this.point.properties['hc-a2']) :
+              this.point.name;
+          }
+        },
+        point: {
+          events: {
+            // On click, look for a detailed map
+            click: function() {
+              handleClick(this);
+            },
+            mouseOver: function() {
+              if('ontouchstart' in document.documentElement)
+                handleClick(this);
+            }            
+          }
+        }
+      }, {
+        type: 'mapline',
+        name: "Separators",
+        data: Highcharts.geojson(mapGeoJSON, 'mapline'),
+        nullColor: 'gray',
+        showInLegend: false,
+        enableMouseTracking: false
+      }]
+    });    
+  }
+
+  function handleClick(obj) {
+    var key = obj.key;
+    var mapname;
+    // console.log(key+'####');
+
+    if (_this.running) {
+      return;
+    }
+    _this.running = true;
+
+    state = '';
+    mapname = mapName;
+    mapName = 'countries/' + key.substr(0, 2) + '/' + key + '-all';
+    isState = false;
+    city = '';
+    
+    findState();
+
+    if (state) {                // available data for country or state
+      if (key.length == 2) {    // country
+        location.hash = mapName;
+      } else {                  // state
+        location.hash = mapName + '@' + state;
+      }
+
+      loadMap();
+    } else {                    // no data
+      mapName = mapname;
+    }
+    _this.running = false;
+  }
+
+  function findState() {
+    $.each(Highcharts.mapDataIndex, function(mapGroup, maps) {
+      if (mapGroup !== "version") {
+        $.each(maps, function(desc, path) {
+          if (mapName+'.js' == path)
+            state = desc.split(',')[0];
+        });
+      }
+    });
+  }  
+
+  function findMapname(state) {
+    var secname, mapname='';
+    $.each(Highcharts.mapDataIndex, function(mapGroup, maps) {
+      if (mapGroup !== "version") {
+        $.each(maps, function(desc, path) {
+          secname = desc.split(',')[0];
+          if (secname == state) {
+            mapname = path.slice(0, -3);
+            return false;
+          }
+        });
+      }
+    });
+    return mapname;
+  }
+
+  $("body").on('click', '.country_id', function() {
+    var key = $(this).data('id');
+    mapName = 'countries/'+key+'/'+key+'-all';
+    isState = false;
+    location.hash = mapName;
+    loadMap();
+  });
+
+  $("body").on('click', '.city_id', function() {
+    var city_name = $(this).text();
+    city = $(this).data('id');
+    location.hash = location.hash.substring(1) + '@' + city;
+    loadMap();
+  });  
+
+  $("body").on('click', '.region_id', function() {
+    state = $(this).data('id');
+    var mapname = findMapname(state);
+    if (mapname) 
+      mapName = mapname;
+    
+    location.hash = mapName + '@' + state;
+    isState = true;
+    loadMap();
+  });  
+
+  $("body").on('click', 'a.breadcrumb-item', function() {
+    location.hash = $(this).data('mapname');
+    analyseHash();
+    loadMap();
+  });
+</script>
+{% endblock %}
+
+<script type="text/javascript">
+  //open/close mega-navigation for mobile
+  $('.cd-dropdown-trigger').on('click', function(event) {
+    event.preventDefault();
+    toggleNav();
+  });
+
+  //close meganavigation
+  $('.cd-dropdown .cd-close').on('click', function(event) {
+    event.preventDefault();
+    toggleNav();
+  });
+
+  function toggleNav() {
+    var navIsVisible = (!$('.cd-dropdown').hasClass('dropdown-is-active')) ? true : false;
+    $('.cd-dropdown').toggleClass('dropdown-is-active', navIsVisible);
+    $('.cd-dropdown-trigger').toggleClass('dropdown-is-active', navIsVisible);
+    if (!navIsVisible) {
+      $('.cd-dropdown').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function() {
+        $('.has-children ul').addClass('is-hidden');
+        $('.move-out').removeClass('move-out');
+        $('.is-active').removeClass('is-active');
+      });
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,7 @@
+<ul class='country-list {{ css_class }}'>
+    {% for country in countries %}
+        <li>
+            <a href="/profile#countries/{{ country.sortname|lower }}/{{ country.sortname|lower }}-all" class="show_country" data-country="{{ country.sortname }}">{{ country.name }}</a>
+        </li>
+    {% endfor %}
+</ul>

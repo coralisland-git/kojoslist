@@ -1,0 +1,17 @@
+{
+  "name": "lamejs",
+  "homepage": "https://github.com/zhuker/lamejs",
+  "description": "Fast mp3 encoder written in JavaScript. On my machine it works 20x faster than realtime (it will encode 132 second long sample in 6.5 seconds) both on node and chrome. lamejs is a rewrite of jump3r-code which is a rewrite of libmp3lame",
+  "source": "https://github.com/zhuker/lamejs.git",
+  "main": "lame.min.js",
+  "version": "1.2.0",
+  "_release": "1.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.2.0",
+    "commit": "bfb7f6c6d7877e0fe1ad9e72697a871676119a0e"
+  },
+  "_source": "https://github.com/zhuker/lamejs.git",
+  "_target": "*",
+  "_originalSource": "lamejs"
+}

@@ -1,0 +1,298 @@
+.admin-content-menu-and-content-section {
+    background-color: #F3F3F3;
+    position: absolute;
+    width: 100%;
+    min-height: 100%;
+}
+.col-sm-12.full-h{
+	min-height: calc(100% - 113px);
+}
+.content-right-content.my-ads{
+	padding: 40px 40px;
+    min-height: calc(100vh - 70px);
+}
+.content-right-content.my-ads h2 {
+    font-size: 25px;
+    margin: 20px 0 10px 15px;
+    padding: 0 0 10px;
+    text-align: left;
+    text-transform: none;
+}
+.content-right-content.my-ads .ads_search{
+    padding: 0 5px;
+	position: relative;
+}
+.content-right-content.my-ads .ads_search input{
+	padding: 8px 15px;
+    width: 100%;
+    border-radius: 7px;
+    border: 1px solid #EAEAEA;
+    font-size: 17px;
+    outline: none;
+}
+.content-right-content.my-ads .ads_search input::-webkit-input-placeholder {color:rgb(225, 225, 225); text-shadow: 0px 0px 1px;}
+.content-right-content.my-ads .ads_search input::-moz-placeholder          {color:rgb(225, 225, 225); text-shadow: 0px 0px 1px;}
+.content-right-content.my-ads .ads_search input:-moz-placeholder           {color:rgb(225, 225, 225); text-shadow: 0px 0px 1px;}
+.content-right-content.my-ads .ads_search input:-ms-input-placeholder      {color:rgb(225, 225, 225); text-shadow: 0px 0px 1px;}
+.content-right-content.my-ads .ads_search.search:after{
+	content: '';
+    background-image: url(../img/search.png);
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 2%;
+    top: 10px;
+}
+.content-right-content .ads_list{
+
+}
+.content-right-content .ads_list .ads_add{
+	width: 100%;
+    height: 100px;
+    border-top: 1px solid #eaeaea;
+    /*border-bottom: 1px solid #eaeaea;*/
+    display: block;
+	box-sizing: content-box;
+	cursor:pointer;
+}
+.content-right-content .ads_list .ads_add .photo{
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #CCCCCC;
+    display: block;
+    margin: 15px;
+	position: relative;
+    float: left;
+	cursor:pointer;
+}
+.content-right-content .ads_list .ads_add .photo:before{
+    content: '';
+    width: 18px;
+    height: 2px;
+    background: #CCCCCC;
+    position: absolute;
+    box-shadow: 0px 0px 1px 0px;
+    left: calc(50% - 9px);
+    top: calc(50% - 1px);
+}
+.content-right-content .ads_list .ads_add .photo:after{
+	content: '';
+    width: 2px;
+    height: 18px;
+    background: #CCCCCC;
+    position: absolute;
+    box-shadow: 0px 0px 1px 0px;
+    left: calc(50% - 1px);
+    top: calc(50% - 9px);
+}
+
+.content-right-content .ads_list .ads_add .text{
+	color: rgb(204, 204, 204);
+    text-shadow: 0px 0px 1px;
+    letter-spacing: 2px;
+    font-weight: 300;
+    position: relative;
+    float: left;
+    margin: 43px 10px;
+}
+.content-right-content .ads_list .my_add{
+    min-height: 120px;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+}
+.content-right-content .ads_list .my_add .photo{
+	width: 80px;
+    height: 80px;
+    position: relative;
+    float: left;
+    cursor: pointer;
+}
+
+
+@media (max-width: 600px)
+{
+	.content-right-content .ads_list .my_add .photo{
+    	/*width: 30%;*/
+    }
+
+    .content-right-content.my-ads{
+        padding: 40px 0px;
+    }
+
+    .content-right-content.my-ads .ads_search.search:after{
+        content: '';
+        background-image: url(../img/search.png);
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        right: 6%;
+        top: 16px;
+    }
+}
+
+.content-right-content .ads_list .my_add .title{
+    /*height: 42px;*/
+}
+.content-right-content .ads_list .my_add .title h3{
+    font-size: 16px;
+    text-align: left;
+    color: #484848;
+    letter-spacing: 1px;
+    margin: 10px 0px 13px;
+    padding-left: 10px;
+    font-weight: 500;
+}
+.content-right-content .ads_list .my_add .title h3 a{
+    color: #484848;
+}
+.content-right-content .ads_list .my_add .title span{
+	color: #919191;
+    font-size: 12px;
+    font-weight: 300;
+    padding-left: 10px;
+    text-shadow: 0px 0px 1px rgba(145, 145, 145, 0.15);
+}
+.content-right-content .ads_list .my_add .price{
+	position: relative;
+    font-size: 16px;
+    color: #484848;
+    letter-spacing: 1px;
+    width: 220px;
+    text-align: center;
+}
+.content-right-content .ads_list .my_add .actions{
+    margin: 30px 10px auto;
+}
+@media (max-width: 1023px)
+{
+    .content-right-content .ads_list .my_add .actions{
+        margin: 10px 85px auto;
+    }
+}
+.content-right-content .ads_list .my_add .actions .status{
+    color: #4DBEE2;
+    font-size: 13px;
+    display: inline-block;
+    width: 92px;
+	margin-right: 10px;
+	cursor: pointer;
+}
+.content-right-content .ads_list .my_add .actions .status:after{
+	content: '';
+    position: absolute;
+    border-bottom: 0px;
+    border-top: 6px solid #CCCCCC;
+    border-right: 6px solid transparent;
+    border-left: 6px solid transparent;
+    right: 0px;
+    top: 3px;
+}
+.content-right-content .ads_list .my_add .actions .status:focus,.content-right-content .ads_list .my_add .actions .status:hover,.content-right-content .ads_list .my_add .actions .status:active{
+	background-color: transparent!important;
+	outline: none!important;
+	border: 0px!important;
+}
+
+.edit-profile{
+    margin-bottom: 25px !important;
+    display: inline-block;
+    width: 100%;
+}
+.edit-profile label {
+    color: #7c7c7c;
+    font-size: 12px;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+.content-right-content.my-ads h2.description-title {
+    border-bottom: 1px solid #eeeeee;
+    margin: 50px 0 20px;
+    padding-bottom: 10px;
+}
+
+@media screen and (min-width: 640px){
+
+    .update-btn {
+        border-color: #4dbee2;
+        box-shadow: 0 0 11px rgba(91, 192, 222, 0.6);
+        color: #ffffff;
+        width: 130px;
+    }
+    .upload-btn, .my-ads .pages .page .change_pass, .update-btn {
+        border-radius: 5px;
+        font-size: 16px;
+        /*font-weight: 600;*/
+        height: 50px;
+        line-height: 48px;
+        padding: 0;
+        transition: all 0.2s ease 0s;
+    }
+    .update-btn:hover {
+        background: #ffffff none repeat scroll 0 0;
+        border-color: #4dbee2;
+        box-shadow: none;
+        color: #4dbee2;
+    }
+}
+.view-mode {
+    margin-top: -7px;
+    margin-bottom: 10px;
+    float: right;
+    padding: 3px 18px 3px 6px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    width: 90px;
+}
+
+.pl-div-image {
+    width: 90px;
+}
+
+.pl-div-desc {
+    margin-left: 92px;
+    margin-right: 5px;
+}
+
+.pl-budget {
+    font-size:  13px !important;
+    color:  black !important;
+    border: 1px solid #aaa;
+    padding: 5px 7px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+.pl-category {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    display: inline-block;
+    padding-bottom: 8px;
+    /*white-space: nowrap;    */
+}
+
+.pl-location {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding-left: 3px;
+    display: inline-block;
+    padding-bottom: 8px;
+    line-height: 17px;
+    /*white-space: nowrap;*/
+}
+
+.pl-date {
+    padding-left: 3px;
+    display: inline-block;
+}

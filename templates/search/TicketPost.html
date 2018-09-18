@@ -1,0 +1,38 @@
+<div class="row">     
+    <div class="col-md-4">
+        <div class="form-group edit-profile">
+            <label>Event date</label>
+            <div class="clearfix"></div>
+            <div class="col-sm-6">
+                <input type="text" name="event_date__gte" class="form-control edit-post-wrap cl_datepicker" placeholder="Min date">
+                </div>
+                <div class="col-sm-6">
+                <input type="text" name="event_date__lte" class="form-control edit-post-wrap cl_datepicker" placeholder="Max date">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Number of tickets available</label>
+            <div class="clearfix"></div>
+            <div class="col-sm-6">
+            <input type="number" name="num_avail__gte" class="form-control edit-post-wrap" placeholder="" min="0">
+            </div>
+            <div class="col-sm-6">
+            <input type="number" name="num_avail__lte" class="form-control edit-post-wrap" placeholder="" min="0">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group edit-profile">
+            <label>Venue</label>
+            <input type="text" name="venue" class="form-control edit-post-wrap" required value="{{ post.venue }}" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Cryptocurrency ok</label>
+            <input type="checkbox" name="cryptocurrency_ok" class="edit-post-wrap" style="display: block;" {% if post.cryptocurrency_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,110 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+
+        <div class="content-right-content my-ads">
+            <h2 style="color: #5bc0de;">My Subscription List</h2>            
+            <div class="table-responsive">
+                <table class="table table-striped ">
+                    <thead>
+                      <tr style="color: #5bc0de;">
+                        <th>Alert</th>
+                        <th>Keyword</th>
+                        <th>Search Title</th>
+                        <th>Has Image</th>
+                        <th>Category</th>
+                        <th>Region</th>
+                        <th>Created At</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% if searches %}
+                    {% for search in searches %}            
+                    <tr>
+                        <td><input type="checkbox" data-id="{{ search.id }}" class="alert" {% if search.alert %} checked {% endif %}></td>
+                        <td>
+                            {% if search.keyword %}
+                            {{ search.keyword }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;"><input type="checkbox" disabled="" {% if search.search_title %} checked="" {% endif %}></td>
+                        <td style="text-align: center;"><input style="margin: 4px;" type="checkbox" disabled="" {% if search.has_image %} checked="" {% endif %}></td>
+                        <td>
+                            {% if search.category %}
+                            {{ search.category.name }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if search.city %}
+                                {{ search.city.state.country.name }} / {{ search.city.state.name }} / {{ search.city.name }}
+                            {% else %}
+                                {{ search.state.country.name }} / {{ search.state.name }}
+                            {% endif %}
+                        </td>                
+                        <td>
+                            {{ search.created_at }}
+                        </td>
+                        <td style="font-size: 17px;">
+                            <a href="/subscriptions/{{ search.id }}" class="edit-subscription" ><i class="fa fa-pencil" aria-hidden="true"></i></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                            <a href="#" class="remove-subscription" data-id="{{ search.id }}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr><td colspan="9">No subscription</td></tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+   
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script>
+$('.remove-subscription').click(function() {
+    var r = confirm("Do you confirm to delete?");
+    if (r == true) {
+        var id = $(this).data('id');
+        jQuery.ajax({
+            type: 'post',
+            url: '/remove-subscription',
+            data: {
+                sub_id: id,
+            },
+            success: function(data) {
+                location.reload();
+            }
+        });    
+    }
+});
+
+$('.alert').click(function() {
+    jQuery.ajax({
+        type: 'post',
+        url: '/update_alert',
+        data: {
+            alert: $(this).prop('checked'),
+            sid: $(this).data('id')
+        },
+        success: function(data) {
+        }
+    });        
+});
+</script>
+
+{% endblock %}

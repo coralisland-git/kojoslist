@@ -1,0 +1,310 @@
+/* popups */
+.popups {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .47);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+.importWrap,
+.passWrap,
+.profileWrap {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+.popup {
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    background: #fff;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s, top 0.5s;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+.popup_details {
+    width: 80%;
+    max-width: 460px;
+    border: 1px solid #f2f4f5;
+}
+.popup_file_folder {
+    width: 600px;
+}
+.popup_password {
+    width: 460px;
+}
+.popup_attach,
+.popup_avatar {
+    padding: 5px;
+}
+.open_map {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 450px;
+    max-height: 300px;
+}
+.send_map,
+.send_map:hover {
+    opacity: 1;
+    margin: 10px auto 0;
+    display: block;
+    width: 140px;
+    height: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: uppercase;
+    color: #bebebe;
+    text-align: center;
+    vertical-align: middle;
+}
+.send_map.is-active {
+    color: #17d04b;
+}
+.popup_delete,
+.popup_import,
+.popup_leave,
+.popup_logout {
+    width: 400px;
+    height: 195px;
+    border: 1px solid #f2f4f5;
+}
+.disconnect {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    left: 0;
+    top: -70px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s, height .5s;
+    z-index: 3;
+}
+.disconnect.disconnected {
+    height: 70px;
+    opacity: 1;
+    visibility: visible;
+    background-color: rgba(150, 150, 150, 0.4);
+}
+.popup_connect {
+    width: 100px;
+    height: 100px;
+}
+.popup_geo_info {
+    width: 400px;
+    height: 98px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #f2f4f5;
+}
+#chatConnecting.popup {
+    transition: none;
+    background: none;
+}
+.popup-alert {
+    height: 100%;
+}
+.popup_contacts,
+.popup_profile,
+.popup_search,
+.temp-box {
+    max-width: 460px;
+    width: 90%;
+    height: 586px;
+}
+.popup-header {
+    margin-top: -1px;
+    padding: 0 20px;
+    background: #f2f4f5;
+    border-bottom: 1px solid #f2f4f5;
+}
+.popup-header h3 {
+    font-size: 18px;
+    line-height: 60px;
+    color: #333;
+}
+.popup-form {
+    height: 50px;
+    padding: 10px;
+    border-bottom: 1px solid #f2f4f5;
+}
+.popup-content {
+    height: calc(100% - 170px);
+}
+.not-selected .popup-content {
+    height: calc(100% - 110px);
+}
+.not-selected .popup-footer {
+    display: none;
+}
+.popup-footer_changepass {
+    height: 60px;
+}
+.popup-alert {
+    height: calc(100% - 45px);
+    text-align: center;
+}
+.popup-controls {
+    padding-bottom: 25px;
+    text-align: center;
+}
+.popup-control-button {
+    font-size: 20px;
+    line-height: 20px;
+    text-transform: uppercase;
+}
+.popup-control-button_cancel {
+    margin-right: 35px;
+    color: #999;
+}
+.popup-control-button_ok {
+    margin-right: 15px;
+    color: #0d70b3;
+}
+.popup_import .popup-control-button_ok {
+    margin-right: 0;
+}
+.popup-nofriends {
+    height: calc(586px - 61px);
+}
+/* alerts */
+.alert {
+    color: #333;
+}
+.alert_logout {
+    font-size: 20px;
+    line-height: 26px;
+}
+.alert_import {
+    font-size: 18px;
+    line-height: 24px;
+}
+.alert_delete {
+    font-size: 26px;
+    line-height: 32px;
+}
+.alert_geo_info {
+    font-size: 18px;
+    line-height: 24px;
+}
+/* location */
+.attach_map {
+    width: 286px;
+    height: 200px;
+}
+/* attach message */
+.attach-file {
+    display: inline-block;
+    padding-left: 18px;
+    line-height: 25px;
+    color: #0d70b3;
+    background: url('../images/icon-attach.svg') no-repeat 0 0;
+    background-size: 10px auto;
+    word-break: break-all;
+}
+.attach-size {
+    margin-left: 5px;
+    font-size: 14px;
+    color: #999;
+}
+.attach-upload {
+    display: inline-block;
+    width: 100%;
+    font-size: 13px;
+    font-weight: normal;
+}
+.attach-upload .progressbar-control {
+    float: left;
+    top: 13px;
+    width: 55% !important;
+    height: 4px !important;
+    margin: 0 10px;
+    border: 0;
+}
+.message_attach_row .progressbar-control {
+    top: 17px;
+}
+.attach-upload .progressbar-control .item-bar {
+    height: 4px;
+    margin: 0;
+    border: 0;
+}
+/* attach/avatar popup */
+.attach-photo,
+.avatar-pic {
+    max-width: 80vw;
+    max-height: 80vh;
+    margin-bottom: 5px;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+}
+.attach-video {
+    width: 640px !important;
+    height: 481px !important;
+    margin-bottom: 20px;
+}
+.attach-audio {
+    width: 430px;
+}
+.file-download {
+    position: absolute;
+    top: 0;
+    right: -108px;
+    font-size: 13px
+}
+.attach-description,
+.avatar-description {
+    font-size: 16px;
+}
+.attach-name,
+.avatar-name {
+    color: #999;
+    height: 20px;
+    line-height: 20px;
+    display: block;
+    max-width: 680px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.attach-download {
+    color: #0d70b3;
+}
+.temp-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+}
+.chat-category {
+    display: flex;
+    background: #eee;
+}
+.chat-category label {
+    padding: 16px;
+    color: orange;
+}
+.chat-category select {
+    color: red;
+    display: flex;
+    padding-left: 10px;
+}
+
+@media screen and (max-width: 340px) {
+    .popup_contacts, .popup_profile, .popup_search, .temp-box {
+        height: 486px;
+    }
+}

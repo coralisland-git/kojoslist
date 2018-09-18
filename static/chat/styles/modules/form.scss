@@ -1,0 +1,226 @@
+/* form elements */
+.form-header {
+    margin: 7vh 0 5vh;
+    font-size: 3.4vh;
+    font-weight: normal;
+    color: #333;
+}
+.input-field {
+    margin: 0 0 8px;
+}
+.input_field {
+    width: 304px;
+    height: 56px;
+    background-color: #ffffff;
+}
+input.input_email[type=email],
+input.input_pass[type=password],
+input.input_tel[type=tel],
+input.input_text[type=text] {
+    width: 304px;
+    height: 17px;
+    margin: 0 0 7px;
+    padding: 20px 0 10px;
+    background-color: #ffffff;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    color: #1f1f1f;
+    border-bottom: 2px solid #959595;
+    box-shadow: inset 0 99px 0 0 #fff;
+}
+input.input_email[type=email]:focus:not([readonly]),
+input.input_pass[type=password]:focus:not([readonly]),
+input.input_tel[type=tel]:focus:not([readonly]),
+input.input_text[type=text]:focus:not([readonly]) {
+    border-bottom: 2px solid #28ca4a;
+    box-shadow: inset 0 99px 0 0 #fff;
+}
+.input-field label {
+    left: 0;
+    top: 18px;
+    color: #959595;
+}
+input.input_email[type=email]:focus:not([readonly])+label,
+input.input_pass[type=password]:focus:not([readonly])+label,
+input.input_tel[type=tel]:focus:not([readonly])+label,
+input.input_text[type=text]:focus:not([readonly])+label {
+    color: #28ca4a;
+}
+input.form-input-search.without_M[type=search],
+input.form-input-search.without_M[type=search]:focus:not([readonly]) {
+    width: 100%;
+    height: 32px;
+    padding: 5px 16px 5px 10px;
+    font-size: 15px;
+    line-height: 20px;
+    border: 1px solid #bebebe;
+    border-radius: 18px;
+    -webkit-appearance: none;
+    border-radius: 4px;
+    border: none;
+    background-color: #f2f4f5;
+    background-image: url(../images/ic_search.svg);
+    background-repeat: no-repeat;
+    background-position: 9px 6px;
+    background-size: 20px 20px;
+}
+input.form-input-search.without_M[type=search]:focus:not([readonly]) {
+    border-color: #00bf28;
+    background-image: none;
+}
+.formSearch {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.clean-button {
+    position: absolute;
+    display: none;
+    width: 22px;
+    height: 22px;
+    top: 15px;
+    right: 15px;
+    color: #ccc;
+    cursor: pointer;
+}
+#searchContacts .clean-button {
+    right: 64px;
+    top: 18px;
+}
+.form-input-message {
+    width: 96%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 10px 40px 5px 5px;
+    font-size: 15px;
+    line-height: 20px;
+    border-bottom: 1px solid #bebebe;
+    resize: none;
+    word-wrap: break-word;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+.form-input-message::-webkit-input-placeholder {
+    position: relative;
+    color: #ccc;
+    line-height: 33px;
+}
+.form-input-message::-moz-placeholder {
+    position: relative;
+    color: #ccc;
+    line-height: 33px;
+}
+.form-input-message:-moz-placeholder {
+    position: relative;
+    color: #ccc;
+    line-height: 33px;
+}
+.form-input-message:-ms-input-placeholder {
+    position: relative;
+    color: #ccc;
+    line-height: 33px;
+}
+.form-label {
+    display: block;
+    margin: 1vh 0 5vh;
+    font-size: 2vh;
+    color: #666;
+}
+.form-checkbox {
+    margin-left: 1vh;
+    vertical-align: middle;
+}
+.form-checkbox[type="checkbox"]:checked,
+.form-checkbox[type="checkbox"]:not(:checked) {
+    position: relative;
+    left: initial;
+    opacity: initial;
+}
+.form-file {
+    position: relative;
+    width: 100%;
+    height: 6vh;
+    margin: 2vh 0 4vh;
+}
+.form-file:hover .form-file-custom {
+    opacity: 0.6;
+}
+.form-file-custom {
+    height: 100%;
+}
+.form-file-default {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+// reset Materailize styles
+input.without_M:not([type]),
+input.without_M[type=date],
+input.without_M[type=datetime-local],
+input.without_M[type=datetime],
+input.without_M[type=email],
+input.without_M[type=number],
+input.without_M[type=password],
+input.without_M[type=search],
+input.without_M[type=tel],
+input.without_M[type=text],
+input.without_M[type=time],
+input.without_M[type=url],
+textarea.without_M.materialize-textarea {
+    background-color: transparent;
+    border: none;
+    border-bottom: none;
+    border-radius: initial;
+    outline: none;
+    height: auto;
+    width: auto;
+    font-size: initial;
+    margin: auto;
+    padding: initial;
+    box-shadow: none;
+    box-sizing: initial;
+    transition: initial;
+}
+input.without_M[type=search] {
+    box-sizing: inherit;
+}
+input.without_M:not([type]):focus:not([readonly]),
+input.without_M[type=date]:focus:not([readonly]),
+input.without_M[type=datetime-local]:focus:not([readonly]),
+input.without_M[type=datetime]:focus:not([readonly]),
+input.without_M[type=email]:focus:not([readonly]),
+input.without_M[type=number]:focus:not([readonly]),
+input.without_M[type=password]:focus:not([readonly]),
+input.without_M[type=search]:focus:not([readonly]),
+input.without_M[type=tel]:focus:not([readonly]),
+input.without_M[type=text]:focus:not([readonly]),
+input.without_M[type=time]:focus:not([readonly]),
+input.without_M[type=url]:focus:not([readonly]),
+textarea.without_M.materialize-textarea:focus:not([readonly]) {
+    border-bottom: none;
+    outline: 0;
+    box-shadow: none;
+}
+input.without_M:not([type]):focus:not([readonly]),
+input.without_M[type=text]:focus:not([readonly]),
+input.without_M[type=password]:focus:not([readonly]),
+input.without_M[type=email]:focus:not([readonly]),
+input.without_M[type=url]:focus:not([readonly]),
+input.without_M[type=time]:focus:not([readonly]),
+input.without_M[type=date]:focus:not([readonly]),
+input.without_M[type=datetime]:focus:not([readonly]),
+input.without_M[type=datetime-local]:focus:not([readonly]),
+input.without_M[type=tel]:focus:not([readonly]),
+input.without_M[type=number]:focus:not([readonly]),
+input.without_M[type=search]:focus:not([readonly]),
+textarea.without_M.materialize-textarea:focus:not([readonly]) {
+    border-bottom: none;
+    box-shadow: none;
+}

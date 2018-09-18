@@ -1,0 +1,14 @@
+{% load account %}
+{% user_display user as user_display %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Hello,
+
+You're receiving this email from Global Board to verify your email address.
+
+Click link to confirm. 
+
+{{ activate_url }}
+{% endblocktrans %}
+{% endautoescape %}
+

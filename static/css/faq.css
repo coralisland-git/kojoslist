@@ -1,0 +1,49 @@
+.site-inner{
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+#content{
+	 min-height: calc(100% - 330px);
+}
+.title_page{
+	text-align: center;
+    /*font-family: "Raleway-Thin";*/
+    color: #4d4d4d;
+    font-size: 25px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    word-spacing: -4px;
+    padding: 10px;
+    margin: 50px 0px;
+    /*text-shadow: 0px 0px 1px;*/
+    font-weight: 300;
+}
+.content{
+	font-size: 16px;
+    line-height: 19px;
+    color: #6d6d6d;
+    max-width: 890px;
+    padding: 0px 0px 0px;
+    margin: 0px auto 130px;
+    min-width: 150px;	
+}
+.content ul {
+	position: relative;
+    width: 100%;
+    padding: 20px 0px 20px 20px;
+    border-bottom: 2px solid #f5f5f5;
+}
+.content ul li{
+	color: rgba(77, 190, 226, 0.73);
+	cursor: pointer;
+}
+.content ul li + div{
+	
+}
+.content ul div{
+	display: none;
+	padding: 30px 0px 10px;
+    line-height: 28px;
+    color: #333;
+}

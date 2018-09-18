@@ -1,0 +1,7 @@
+django==1.10
+Pillow
+sendgrid
+django-allauth
+twilio
+stripe
+psycopg2

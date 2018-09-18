@@ -1,0 +1,35 @@
+<div class="row">     
+    <div class="col-md-6">
+        <div class="form-group edit-profile">
+            <label>garage sale dates</label>
+            <input type="text" class="form-control edit-post-wrap cl_datepicker" name="sale_date1" required="" value="{{ post.sale_date1 }}">
+            <input type="text" class="form-control edit-post-wrap cl_datepicker" name="sale_date2" value="{{ post.sale_date2 }}" required="">
+            <input type="text" class="form-control edit-post-wrap cl_datepicker" name="sale_date3" value="{{ post.sale_date3 }}" required="">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group edit-profile">
+            <label>start time</label>
+            <input type="text" placeholder="e.g) 9:30" class="form-control edit-post-wrap cl_timepicker" name="start_time" required=""  value="{{ post.start_time }}">
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-6">
+        <div class="form-group edit-profile">
+            <label>language of posting</label>
+            <select name="language" class="form-control edit-post-wrap" required>
+                <option value="english" {% if post.language == "english" %} selected="" {% endif %}>English</option>
+                <option value="spanish" {% if post.language == "spanish" %} selected="" {% endif %}>Spanish</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6" style="padding-top: 10px;">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" style="margin-top: -2px;" {% if post.include_ads %}checked {% endif %} name="include_ads" value="">Include "more ads by this user" link
+            </label>
+        </div>
+    </div>
+    
+</div>

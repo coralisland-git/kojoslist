@@ -1,0 +1,385 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group edit-profile">
+            <label>Service Fee (in USD)</label>
+            <input type="number" step="0.01" min="0" name="service_fee" class="form-control edit-post-wrap" value="{{ post.service_fee }}" required/>
+        </div>
+    </div>    
+    <div class="col-md-9">
+        <div class="form-group edit-profile">
+            <label>Address</label>
+            <input type="text" name="address" class="form-control edit-post-wrap" value="{{ post.address }}" placeholder="Apt, Suite, Bldg, Street number" required/>
+        </div>
+    </div>    
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>ZIP code</label>
+            <input type="text" name="zip_code" class="form-control edit-post-wrap" value="{{ post.zip_code }}" />
+        </div>
+    </div>    
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Beds</label>
+            <select name="beds" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.beds == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Bedrooms</label>
+            <select name="bedrooms" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.bedrooms == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Bathrooms</label>
+            <select name="bathrooms" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.bathrooms == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>    
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Home Type</label>
+            <select name="type" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="Entire place" {% if post.type == "Entire place" %}selected{% endif %}>Entire place</option>
+                <option value="Private room" {% if post.type == "Private room" %}selected{% endif %}>Private room</option>
+                <option value="Shared room" {% if post.type == "Shared room" %}selected{% endif %}>Shared room</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Adults</label>
+            <select name="num_adults" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 1|rangee:17 %}
+                    <option value="{{ ii }}" {% if post.num_adults == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Children</label>
+            <select name="num_children" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:6 %}
+                    <option value="{{ ii }}" {% if post.num_children == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Infants</label>
+            <select name="num_infants" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                {% for ii in 0|rangee:6 %}
+                    <option value="{{ ii }}" {% if post.num_infants == ii %} selected="" {% endif %}>{{ ii }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3 col-xs-6">
+        <div class="form-group edit-profile">
+            <label>Instant Booking</label>
+            <input type="checkbox" name="instant_book" class="edit-post-wrap" style="display: block;" {% if post.instant_book %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12">
+        <h4 class="st-house-sub-header">Amenities</h4>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_kitchen" {% if post.amd_kitchen %} checked="" {% endif %}>Kitchen</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_shampoo" {% if post.amd_shampoo %} checked="" {% endif %}>Shampoo</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_heating" {% if post.amd_heating %} checked="" {% endif %}>Heating</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_washer" {% if post.amd_washer %} checked="" {% endif %}>Washer</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_wireless" {% if post.amd_wireless %} checked="" {% endif %}>Wireless Internet</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_kid_friendly" {% if post.amd_kid_friendly %} checked="" {% endif %}>Family/kid friendly</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_buzzer" {% if post.amd_buzzer %} checked="" {% endif %}>Buzzer/wireless intercom</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_hangers" {% if post.amd_hangers %} checked="" {% endif %}>Hangers</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_hair_dryer" {% if post.amd_hair_dryer %} checked="" {% endif %}>Hair dryer</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_bedroom_locker" {% if post.amd_bedroom_locker %} checked="" {% endif %}>Lock on bedroom door</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_tv" {% if post.amd_tv %} checked="" {% endif %}>TV</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_air_condition" {% if post.amd_air_condition %} checked="" {% endif %}>Air conditioning</label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_dryer" {% if post.amd_dryer %} checked="" {% endif %}>Dryer</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_breakfast" {% if post.amd_breakfast %} checked="" {% endif %}>Breakfast</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_indoor_fireplace" {% if post.amd_indoor_fireplace %} checked="" {% endif %}>Indoor fireplace</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_doorman" {% if post.amd_doorman %} checked="" {% endif %}>Doorman</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_iron" {% if post.amd_iron %} checked="" {% endif %}>Iron</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_laptop_workspace" {% if post.amd_laptop_workspace %} checked="" {% endif %}>Laptop friendly workspace</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="amd_self_checkin" {% if post.amd_self_checkin %} checked="" {% endif %}>Self Check-In</label>
+        </div>
+    </div>    
+    <div class="col-md-12">
+        <h4 class="st-house-sub-header">Facilities</h4>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_elevator" {% if post.fc_elevator %} checked="" {% endif %}>Elevator</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_gym" {% if post.fc_gym %} checked="" {% endif %}>Gym</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_pool" {% if post.fc_pool %} checked="" {% endif %}>Pool</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_free_parking" {% if post.fc_free_parking %} checked="" {% endif %}>Free parking on premises</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_hottub" {% if post.fc_hottub %} checked="" {% endif %}>Hot tub</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="fc_wheelchair" {% if post.fc_wheelchair %} checked="" {% endif %}>Wheelchair accessible</label>
+        </div>
+    </div>    
+    <div class="col-md-12">
+        <h4 class="st-house-sub-header">House rules</h4>
+    </div>
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="hr_events" {% if post.hr_events %} checked="" {% endif %}>Suitable for events</label>
+        </div>
+    </div>    
+    <div class="col-md-4">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="hr_pets" {% if post.hr_pets %} checked="" {% endif %}>Pets allowed</label>
+        </div>
+    </div>    
+    <div class="col-md-4" style="margin-bottom: 30px;">
+        <div class="checkbox">
+            <label>
+            <input type="checkbox" name="hr_smoking" {% if post.hr_smoking %} checked="" {% endif %}>Smoking allowed</label>
+        </div>
+    </div>        
+    <div class="clearfix"></div>
+    <div class="col-md-12" style="margin-bottom: 35px;">
+        <div id='calendar'></div>
+    </div>
+    <input type="hidden" name="calendar" id="json_calendar" value="{% if post.calendar %} {{ post.calendar }} {% endif %}">
+</div>
+
+<script type="text/javascript">
+var calendar_mode;
+var cal_event;
+
+$(document).ready(function() {
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next',
+            center: 'title',
+            right: ''
+        },
+        navLinks: true, // can click day/week names to navigate views
+        selectable: true,
+        selectHelper: true,
+        select: function(start, end) {
+            calendar_mode = 0;  // create
+            $('#eventName').val('');
+            $('.event_start').val(start);
+            $('.event_end').val(end);
+            $('.rent_avail').prop('checked', true);
+            $('.event-tag span').removeClass('selected');
+            $('.event-tag span.bgm-teal').addClass('selected');
+            $('#deleteEvent').addClass('hidden');
+
+            $('#addNew-event').modal();
+        },
+        eventClick: function(calEvent, jsEvent, view) {
+            if (calEvent.color != '#ff9800') {
+                cal_event = calEvent;
+                calendar_mode = 1;  // edit
+                $('#eventName').val(calEvent.title);
+                $('.rent_avail').prop('checked', calEvent.avail);
+                $('.event_start').val(calEvent.start);
+                $('.event_end').val(calEvent.end);
+                $('.event-tag span').removeClass('selected');
+                $('.event-tag span[data-color="'+calEvent.color+'"]').addClass('selected');
+                $('#deleteEvent').removeClass('hidden');
+
+                $('#addNew-event').modal();                
+            }
+        },
+        allDayDefault: true,
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: JSON.parse($('#json_calendar').val().trim() || "[]") 
+    });
+
+    $('.event-tag span').on('click', function() {
+        $(this).siblings().removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+    $('.addEvent').on('submit', function(e) {
+        if (calendar_mode == 0) {
+            var eventData = {
+                start: $('.event_start').val(), 
+                end: $('.event_end').val(), 
+                title: $('#eventName').val(),
+                avail: $('.rent_avail').is(':checked'),
+                color: $('.event-tag span.selected').data('color')
+            };
+            $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
+            $('#calendar').fullCalendar('unselect');            
+        } else if (calendar_mode == 1) {
+            cal_event.start = $('.event_start').val();
+            cal_event.end = $('.event_end').val(); 
+            cal_event.title = $('#eventName').val();
+            cal_event.avail = $('.rent_avail').is(':checked');
+            cal_event.color = $('.event-tag span.selected').data('color');
+            $('#calendar').fullCalendar('updateEvent', cal_event);
+        }
+
+        e.preventDefault();
+        $('#addNew-event').modal('toggle');
+    });
+
+    $('#deleteEvent').click(function() {
+        var r = confirm("Do you confirm to delete?");
+        if (r == true) {        
+            $('#calendar').fullCalendar('removeEvents', cal_event._id);
+        }
+    });
+});
+   
+function store_calendar() {
+    $('#json_calendar').val(JSON.stringify($('#calendar').fullCalendar( 'clientEvents').map(function(e) {  
+        return {
+            start: (new Date(e.start)).toDateString(), 
+            end: (new Date(e.end)).toDateString(), 
+            title: e.title,
+            avail: e.avail,
+            color: e.color,
+            url: e.url
+        };
+    })));
+}
+</script>

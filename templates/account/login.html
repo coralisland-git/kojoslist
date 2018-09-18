@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block meta_main %}
+<div class="header-menu">
+    <div class="container auth">
+        <h1 class="auth-header">{% trans "Sign In" %}</h1> 
+
+        <div class="socialaccount_ballot" style="padding: 10px; ">
+            <div class="btn-group linkedin">
+                <a class='btn disabled'><i class="fa fa-linkedin" style="width:14px;"></i></a>
+                <a class='btn' href='/accounts/linkedin_oauth2/login/?process=login' style="width:12em;"> Sign in with Linkedin</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="btn-group facebook">
+                <a class='btn disabled'><i class="fa fa-facebook" style="width:14px;"></i></a>
+                <a class='btn' href='/accounts/facebook/login/?process=login' style="width:12em"> Sign in with Facebook</a>
+            </div>
+        </div>
+
+        <form class="login form-horizontal" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {% for _, error in form.errors.items %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+
+            <div class="form-group m-t-15">
+                <label class="control-label col-sm-2" for="id_login">E-mail:</label>
+                <div class="col-sm-6">
+                    <input autofocus="autofocus" id="id_login" name="login" placeholder="E-mail address" type="email" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="id_password">Password:</label>
+                <div class="col-sm-6">
+                    <input id="id_password" name="password" placeholder="Password" type="password" class="input-xlarge form-control" required="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="id_remember">Remember Me:</label>
+                <div class="col-sm-6">
+                    <input id="id_remember" name="remember" type="checkbox">
+                </div>
+            </div>
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> {% endif %}
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-5">
+                    <button type="submit" class="primaryAction btn btn-success">{% trans "Sign In" %}</button>
+                    <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password" %}</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

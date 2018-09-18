@@ -1,0 +1,72 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+
+        <div class="content-right-content my-ads row">
+            <h2>My Campaigns</h2>
+            <div class="ads_list">
+                <div class="ads_add">
+                    <a href="/post-camp/">
+                        <div class="photo"></div>
+                        <div class="text">New campaign</div>
+                    </a>
+                </div>
+            </div>
+           
+            <div class="col-md-12 no-padding">
+                {% include '_camp_list.html' %}            
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script>
+    jQuery(document).ready(function(){
+        // jQuery("body").on("change", ".active_deactive",function(){
+        //     var status = jQuery(this).val();
+        //     var ads_id = jQuery(this).data('value');
+            
+        //     jQuery.ajax({
+        //         type: 'post',
+        //         url: '/active_deactive_ads',
+        //         dataType:'json',
+        //         data: {
+        //             ads_id:ads_id,
+        //             status: status,
+        //         },
+        //         success: function (data) {
+        //         }
+        //     });
+        // });
+
+        jQuery("body").on("click", ".camp_post_delete",function(){
+            var r = confirm("Do you confirm to delete?");
+            if (r == true) {
+                var camp_id = jQuery(this).data('value');
+                jQuery.ajax({
+                    type: 'post',
+                    url: '/delete_camp',
+                    dataType:'json',
+                    data: {
+                        camp_id: camp_id,
+                    },
+                    success: function (data) {
+                        location.reload();
+                    }
+                });
+            }            
+        });
+    });     
+</script>
+
+{% endblock %}

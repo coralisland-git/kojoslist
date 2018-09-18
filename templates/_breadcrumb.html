@@ -1,0 +1,23 @@
+<a class="breadcrumb-item" href="javascript:void();" data-mapname="custom/world">
+	worldwide
+</a>
+{% if args|length > 1 %}
+<a class="breadcrumb-item country-brcm" href="javascript:void();" data-mapname="{{ args.0 }}">
+    <i class="fa fa-long-arrow-right" aria-hidden="true"></i>{{ args.1 }}
+</a>        
+{% endif %}
+{% if args|length > 3 %}
+<a class="breadcrumb-item state-brcm" href="javascript:void();" data-mapname="{{ args.2 }}">
+    <i class="fa fa-long-arrow-right" aria-hidden="true"></i>{{ args.3 }}
+</a>
+{% endif %}
+{% if args|length > 5 %}
+<a class="breadcrumb-item city-brcm" href="javascript:void();" data-mapname="{{ args.4 }}">
+    <i class="fa fa-long-arrow-right" aria-hidden="true"></i>{{ args.5 }}
+</a>        
+{% endif %}
+{% if args|length > 7 %}
+<a class="breadcrumb-item city-brcm" href="javascript:void();" data-mapname="{{ args.6 }}">
+    <i class="fa fa-long-arrow-right" aria-hidden="true"></i>{{ args.7 }}
+</a>        
+{% endif %}

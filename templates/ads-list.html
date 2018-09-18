@@ -1,0 +1,238 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+
+        <div class="content-right-content my-ads row">
+            <nav class="breadcrumb">                                        
+            {% autoescape off %}{{ breadcrumb }}{% endautoescape %}
+            </nav>
+
+            <h2>
+                Ads List 
+                {% if category %}
+                    <small> (
+                    {% if category.parent.parent %}
+                        {{ category.parent.parent.name }} / 
+                    {% elif category.parent %}
+                        {{ category.parent.name }} / 
+                    {% endif %}
+                    {{ category.name }}
+                    )</small>
+                {% endif %}
+            </h2>            
+            <form method="post" class="search-form">
+            {% csrf_token %}
+            <input type="hidden" name="others" value="true">
+            <input type="hidden" name="is_world" value="{{ is_world }}">
+            <div class="{% if no_subscription %} col-md-10 {% else %} col-md-8 {% endif %} ads_search search">
+                <input type="text" class="search-input ads_search_input" name="keyword" placeholder="Search for ads name...">
+            </div>
+            <div class="col-md-2 ads_search">
+                <input type="button" id="search_ads" class="btn btn-info" value="Search">
+            </div>
+            {% if not no_subscription %}
+                <div class="col-md-2 ads_search">
+                    <input type="button" class="btn btn-info subscribe" value="Subscribe" style="line-height: 17px;">
+                </div>
+            {% endif %}
+            <div class="col-md-12 m-t-15">
+                <a class="" href="javascript: void();" onclick="$('.filters').toggle();"><i class="fa fa-filter"></i> More filters</a>
+                <select class="view-mode" name="view_mode">
+                    <option value="_post_list.html">List View</option>
+                    <option value="_gads_list.html">Gallery</option>
+                </select>
+            </div>
+            <div class="col-md-12 m-t-15 filters well" style="display: none;">
+                <div class="row" style="margin-bottom: 12px;">
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="ck_search_title" style="margin-top: 0;" value="true" name="ck_search_title">Search titles only</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="ck_has_image" style="margin-top: 0;" value="true" name="ck_has_image"> Has image</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="ck_posted_today" name="ck_posted_today" style="margin-top: 0;" value="true"> Posted today</label>
+                    </div>
+                </div>
+                <div class="col-md-6 form-inline">
+                    <div class="form-group">
+                        <label for="email" style="margin-right:12px;">Price: </label>
+                        <input type="number" min="0" name="price__gte" id="price__gte" class="form-control" placeholder="Min price">
+                        <input type="number" min="0" name="price__lte" id="price__lte" class="form-control" placeholder="Max price">
+                    </div>
+                </div>
+                </div>
+                <input type="hidden" name="model" value="{{ category.form }}">
+                {% if category %}
+                    {% include 'search/'|add:category.form|add:'.html' %}
+                {% endif %}
+            </div>
+            </form>
+            <div class="ads_list" id="ads_list">
+            {% include '_post_list.html' %}            
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+
+<script type="text/javascript">
+    var price = 200; 
+
+    var handler = StripeCheckout.configure({
+        key: '{{ skey }}',
+        locale: 'auto',
+        token: function(token) {
+            save_subscription(token.id);
+        }
+    });
+
+    function save_subscription(token) {
+        jQuery.ajax({
+            type: 'post',
+            url: '/create-subscription',
+            data: {
+                keyword: jQuery('.ads_search_input').val(),
+                search_title: $('#ck_search_title').prop('checked'),
+                has_image: $('#ck_has_image').prop('checked'),
+                min_price: $('#price__gte').val(),
+                max_price: $('#price__lte').val(),
+                stripeToken: token
+            },
+            success: function (data) {
+                alert('Subscribed successfully!');
+            }
+        }); 
+    }
+
+    $('.subscribe').on('click', function(e) {
+        var keyword = jQuery('.ads_search_input').val();
+
+        if (!logged_in) {
+            var r = confirm("You need to login for subscription!");
+            if (r == true) {
+                location.href = "/accounts/login/?next="+url;
+            }
+            return;
+        }
+
+        // if (keyword.trim() == '') {
+        //     alert('Please specify the keyword!');
+        //     $('.ads_search_input').focus();
+        //     return;
+        // }
+        // save_subscription('');
+
+        handler.open({
+            name: "Globalboard",
+            description: "Create a new subscription",
+            currency: "usd",
+            amount: price
+        });
+    });    
+</script>
+
+<script>
+    var logged_in = {% if user.is_authenticated %} true {% else %} false {% endif %};
+    var url = "{{ request.path }}";
+
+    jQuery(document).ready(function(){                
+        jQuery('#search_ads').click(function() {
+            search_ads();
+        });
+
+        jQuery('.ads_search_input').keypress(function(e) {
+            var key = e.which;
+            if (key == 13) {
+                search_ads();
+            }
+        });
+
+        $('.view-mode').change(function() {
+            search_ads();
+        });
+
+        $('#ck_search_title').click(function() {
+            search_ads();
+        });
+
+        $('#ck_has_image').click(function() {
+            search_ads();
+        });
+
+        $('#ck_posted_today').click(function() {
+            search_ads();
+        });
+
+        function search_ads() {
+            var min_val = +$('#price__gte').val(),
+                max_val = +$('#price__lte').val();
+
+            if ($('#price__lte').val() && min_val > max_val) {
+                alert('Filter for price is wrong.');
+                $('#price__gte').val('');
+                $('#price__lte').val('');
+                $('#price__gte').focus();
+            }
+
+            jQuery.ajax({
+                type: 'post',
+                url: '/search_ads',
+                data: $('.search-form').serialize(),
+                success: function (data) {
+                    jQuery('#ads_list').html(data);
+                }
+            });                     
+        }
+    });  
+
+    $("body").on('click', 'a.breadcrumb-item', function() {
+        location.href = '/profile#' + $(this).data('mapname');
+    });
+
+    $('.cl_datepicker').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+
+    $('.cl_timepicker').datetimepicker({
+        format: 'H:m'
+    });        
+
+    $('.favourite').click(function(e) {
+        e.stopPropagation();
+        var tthis = this;
+        jQuery.ajax({
+            type: 'post',
+            url: '/toggle_favourite',
+            data: {
+                ads_id: $(tthis).data('id'),
+            },
+            success: function(res) {
+                if (res == 'success') {
+                    $(tthis).toggleClass('like');                    
+                } else {
+                    alert('You need to login for saving this in your favourites.');
+                }
+            }
+        });
+        return false;
+    });
+</script>
+
+{% endblock %}

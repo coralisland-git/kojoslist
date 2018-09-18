@@ -1,0 +1,52 @@
+{% extends "index.html" %} 
+{% load staticfiles %} 
+
+{% block extra_css %} 
+    <link rel='stylesheet' href='/static/css/with-map.css' type='text/css' />
+{% endblock %}
+
+
+{% block meta_main %}
+<div class="site-content" id="content">
+<div class="content-area" id="primary">
+	<main class="site-main" id="main" role="main">
+		
+
+
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="why-content content-right-content">
+<div class="container">
+<div class="row">
+<div class="col-md-12">
+<h2>contact us</h2>
+<p></p></div>
+<div class="col-md-12 why-content-items">
+<div class="col-sm-6 col-sm-offset-3">
+<div class="my-modal-body contact-us-form">
+                        <div class="wpcf7" id="wpcf7-f23-p24-o1" role="form" lang="en-GB" dir="ltr">
+<div class="screen-reader-response"></div>
+<form class="wpcf7-form" action="/contact-us/" method="post" novalidate="novalidate">
+{% csrf_token %}
+<p><label>Username<span class="wpcf7-form-control-wrap your-name"><input name="your-name" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" aria-invalid="false" aria-required="true" type="text" size="40" value="" required=""></span> </label></p>
+<p><span class="wpcf7-form-control-wrap your-subject"><select name="your-subject" class="wpcf7-form-control wpcf7-select wpcf7-validates-as-required" aria-invalid="false" aria-required="true"><option value="">subject</option><option value="Complaint">Complaint</option><option value="Customer Service">Customer Service</option><option value="Payment">Payment</option></select></span></p>
+<p><span class="wpcf7-form-control-wrap your-message"><textarea name="your-message" class="wpcf7-form-control wpcf7-textarea" aria-invalid="false" placeholder="Your message..." rows="1" cols="40"></textarea></span></p>
+<p><input class="wpcf7-form-control wpcf7-submit btn btn-default btn-view-all advanced-search" type="submit" value="Send"><span class="ajax-loader"></span></p>
+<div class="wpcf7-response-output wpcf7-display-none"></div></form></div>
+                    </div>
+<p></p></div>
+<p></p></div>
+<p></p></div>
+<p></p></div>
+</div>
+	</div>
+</div>
+
+	</main><!-- .site-main -->
+
+	
+</div><!-- .content-area -->
+
+		</div>
+{% endblock %}

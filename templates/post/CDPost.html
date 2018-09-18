@@ -1,0 +1,45 @@
+{% load extra %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group edit-profile">
+            <label>Media type</label>
+            <select name="media_type" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="cd" {% if post.media_type == "cd" %}selected{% endif %}>cd</option>
+                <option value="vinyl" {% if post.media_type == "vinyl" %}selected{% endif %}>vinyl</option>
+                <option value="other audio" {% if post.media_type == "other audio" %}selected{% endif %}>other audio</option>
+                <option value="blue ray" {% if post.media_type == "blue ray" %}selected{% endif %}>blue ray</option>
+                <option value="dvd" {% if post.media_type == "dvd" %}selected{% endif %}>dvd</option>
+                <option value="vhs" {% if post.media_type == "vhs" %}selected{% endif %}>vhs</option>
+                <option value="other video" {% if post.media_type == "other video" %}selected{% endif %}>other video</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group edit-profile">
+            <label>Condition</label>
+            <select name="condition" class="form-control edit-post-wrap" required>
+                <option value="">-</option>
+                <option value="new" {% if post.condition == "new" %}selected{% endif %}>new</option>
+                <option value="like new" {% if post.condition == "like new" %}selected{% endif %}>like new</option>
+                <option value="excellent" {% if post.condition == "excellent" %}selected{% endif %}>excellent</option>
+                <option value="good" {% if post.condition == "good" %}selected{% endif %}>good</option>
+                <option value="fair" {% if post.condition == "fair" %}selected{% endif %}>fair</option>
+                <option value="salvage" {% if post.condition == "salvage" %}selected{% endif %}>salvage</option>
+            </select>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Cryptocurrency ok</label>
+            <input type="checkbox" name="cryptocurrency_ok" class="edit-post-wrap" style="display: block;" {% if post.cryptocurrency_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="form-group edit-profile">
+            <label>Include "more ads by this user" link</label>
+            <input type="checkbox" name="include_ads" class="edit-post-wrap" style="display: block;" {% if post.include_ads %} checked="" {% endif %}>
+        </div>
+    </div>
+</div>

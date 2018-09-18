@@ -1,0 +1,35 @@
+<div class="row">     
+    <div class="col-md-4">
+        <div class="form-group edit-profile">
+            <label>Event date</label>
+            <input type="text" name="event_date" class="form-control edit-post-wrap cl_datepicker" required value="{{ post.event_date|date:'m/d/Y' }}" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group edit-profile">
+            <label>Number of tickets available</label>
+            <input type="number" name="num_avail" class="form-control edit-post-wrap" required value="{{ post.num_avail }}" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group edit-profile">
+            <label>Venue</label>
+            <input type="text" name="venue" class="form-control edit-post-wrap" required value="{{ post.venue }}" />
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <div class="col-md-3">
+        <div class="form-group edit-profile">
+            <label>Cryptocurrency ok</label>
+            <input type="checkbox" name="cryptocurrency_ok" class="edit-post-wrap" style="display: block;" {% if post.cryptocurrency_ok %} checked="" {% endif %}>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="form-group edit-profile">
+            <label>Include "more ads by this user" link</label>
+            <input type="checkbox" name="include_ads" class="edit-post-wrap" style="display: block;" {% if post.include_ads %} checked="" {% endif %}>
+        </div>
+    </div>
+
+</div>

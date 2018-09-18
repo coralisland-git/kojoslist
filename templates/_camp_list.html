@@ -1,0 +1,39 @@
+{% load humanize %}
+{% load extra %}
+
+{% for post in campaigns %}
+<div class="col-md-3 col-sm-4">
+    <a href="/campaigns/{{ post.id }}">
+    <div class="campaign-card">        
+        <img src="/static/media/campaigns/{{ post.over_image }}" class="img-responsive" />
+        <div class="card-body">
+            <div class="ctitle">{{ post.title }}</div>
+            <div class="tagline">{{ post.tagline }}</div>
+            <div class="category">{{ post.category.name }}</div>
+            <div class="budget">
+                <span class="raised">${{ post.raised|floatformat:2|intcomma }}</span> USD raised
+                <span class="percent">{{ post|raised_percent }}%</span>
+            </div>
+            <div id="myProgress">
+                <div id="myBar" style="width: {{ post|raised_percent:1 }}%;"></div>
+            </div>            
+            <div class="duration"><i class="fa fa-clock-o" aria-hidden="true"></i>
+              {% with flag=post|is_expired %} 
+                {% if flag %}                
+                    ended
+                {% else %}
+                    {{ post|ramained_days }} days left
+                {% endif %}
+              {% endwith %}
+            </div>
+            <div class="camp-link">
+                globalboard.world/campaigns/{{ post.id }}
+                {% if mine %}
+                <!-- <a class="camp_post_delete pull-right" data-value="{{ post.id }}" href="#"><i class="fa fa-trash"></i></a> -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    </a>
+</div>
+{% endfor %}  

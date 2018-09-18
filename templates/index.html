@@ -1,0 +1,202 @@
+{% extends "_base.html" %} 
+{% load staticfiles %} 
+
+{% block page_content %}
+<div id="page" class="site">
+    <div class="site-inner">
+
+        <!-- Header -->
+        <header>
+            <!-- Header Menu -->
+            <div class="header-menu">
+                <nav class="navbar">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#myNavbar">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <div class="navbar-brand">
+                                <a href="/" class="custom-logo-link" rel="home" itemprop="url"><img width="240" height="67" src="/static/img/cropped-logo.png" class="custom-logo" alt="" itemprop="logo" /></a>
+                            </div>
+                        </div>
+                        <div class="collapse navbar-collapse" id="myNavbar">
+
+                            <div id="site-header-menu" class="site-header-menu">
+                                <nav id="site-navigation" class="main-navigation" role="navigation" aria-label="Primary Menu">
+                                    <div class="menu-main-menu-container">
+                                        <ul id="menu-main-menu" class="nav navbar-nav navbar-right">
+                                            {% if user.is_authenticated %}
+                                                <li><a href="/logout">Log Out</a></li>
+                                                <li><a href="/post-ads/">Post Ads</a></li>
+                                            {% else %}
+                                                <li><a href="/accounts/signup" data-toggle="modal">Sign Up</a></li>
+                                                <li><a href="/accounts/login" data-toggle="modal">Login</a></li>
+                                            {% endif %}
+                                            <li id="menu-item-13" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-13"><a href="/about/">About</a></li>
+                                            <li id="menu-item-27" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-27"><a href="/contact-us/">Contact Us</a></li>
+                                        </ul>
+                                    </div>
+                                </nav>
+                                <!-- .main-navigation -->
+                            </div>
+                            <!-- .site-header-menu -->
+
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <!-- End Header Menu -->
+        </header>
+        <!-- End Header -->
+
+        {% block meta_main %}
+        <div id="content" class="site-content">
+            <!-- Content -->
+
+            <div id="content">
+
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="full-map-section">
+
+                            <div id="main_map"></div>
+                            <div class="container hedle_zoom">
+
+                                <div class="row">
+
+                                    <div class="col-md-12">
+
+                                        <h1>view <span style="color: #4dbee2;">ads</span> from all over the world</h1>
+                                        <div class="btn-view-all-center"><a href="/region-ads/wd/" id="main_page_button" class="btn btn-default btn-view-all">View Ads from All Countries</a></div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="home-page-country">
+
+                            <div class="container">
+
+                                <div class="row">
+
+                                    <div class="col-md-12">
+
+                                        <div class="content-select-country clearfix">
+                                            {% autoescape off %}{{ rndr_str }}{% endautoescape %}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- End Content -->
+        </div>
+        {% endblock %}
+
+        {% block page_body %}
+        {% endblock %}
+
+        <!-- .site-content -->
+        <footer id="colophon" class="site-footer" role="contentinfo">
+
+            <div class="container">
+                <div class="row">
+                    <!-- Footer Top -->
+                    <div class="footer-top clearfix">
+                        <div class="col-sm-3 col-xs-6">
+                            <section id="text-2" class="widget widget_text">
+                                <h4 class="widget-title">About Us</h4>
+                                <div class="textwidget">
+                                    <ul>
+                                        <li><a href="/why-global-board/">Why Global Board?</a></li>
+                                        <li><a href="/about/">GlobalBoard Is</a></li>
+                                        <li><a href="/contact-us/">Contact Us</a></li>
+                                    </ul>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-sm-3 col-xs-6">
+                            <section id="text-3" class="widget widget_text">
+                                <h4 class="widget-title">Services</h4>
+                                <div class="textwidget">
+                                    <ul>
+                                        <li><a href="/how-it-works/">How it works?</a></li>
+                                        <li><a href="/why-use/">Why use?</a></li>
+                                        <li><a href="/terms-of-use/">Terms & Privacy</a></li>
+                                    </ul>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-sm-3 col-xs-6">
+                            <section id="text-4" class="widget widget_text">
+                                <h4 class="widget-title">Global Board</h4>
+                                <div class="textwidget">
+                                    <ul>
+                                        <li><a href="/customer-support/">Customer Support</a></li>
+                                        <li><a href="/faq/">FAQ</a></li>
+                                        <!--<li><a href="#">Press Center</a></li>-->
+                                    </ul>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-sm-3 col-xs-6">
+                            <section id="text-5" class="widget widget_text">
+                                <h4 class="widget-title">Follow Us</h4>
+                                <div class="textwidget">
+                                    <ul class="social-icons">
+                                        <li>
+                                            <a href="https://www.facebook.com/globalboard.world"><i class="fa fa-facebook" aria-hidden="true"></i>
+</a>
+                                            <a href="https://www.linkedin.com/public-profile/settings?trk=d_flagship3_profile_self_view_public_profile"><i class="fa fa-linkedin" aria-hidden="true"></i>
+</a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i>
+</a>
+                                            <a href="https://www.instagram.com/globalboard.world/"><i class="fa fa-instagram" aria-hidden="true"></i>
+</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="site-info">
+                    &copy Copyright 2018 GlobalBoard </div>
+                <!-- .site-info -->
+        </footer>
+        <!-- .site-footer -->
+        </div>
+        <!-- .site-inner -->
+    </div>
+    <!-- .site -->
+    
+{% endblock %}
+
+{% block extra_js %} 
+<script type="text/javascript">
+    var mode = '{{ request.GET.q }}';
+    console.log(mode);
+    if (mode != '')
+        parent.location.href = '/?q='+mode;
+</script>
+{% endblock %}

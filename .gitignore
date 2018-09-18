@@ -1,0 +1,7 @@
+*.pyc
+*.php
+*.sql*
+nohup.out
+settings.py
+migrations
+static/media

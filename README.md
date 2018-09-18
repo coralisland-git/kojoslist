@@ -1,1 +1,1 @@
-# kojoslist
+# GlobalBoardWorld

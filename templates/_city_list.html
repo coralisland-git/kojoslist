@@ -1,0 +1,11 @@
+<ul class='country-list'>
+{% if cities %}
+    {% for city in cities %}
+		<li>
+			<a href="javascript:void();" class="city_id" data-id="{{ city.id }}">{{ city.name }}</a>
+		</li>
+    {% endfor %}
+{% else %}
+	No city found   
+{% endif %}
+</ul>
