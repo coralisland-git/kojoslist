@@ -86,7 +86,7 @@ def rating_notify(sender, instance, **kwargs):
 def post_purchase_notify(sender, instance, **kwargs):    
     try:
         # send email to the owner
-        content = "Ads <a href='{0}/ads/{1}'>{2}</a> ( ${3} ) is purchased by {4} {5} at {6}<br><br>Contact Info:<br>" \
+        content = "Ads <a href='{0}/ads/{1}'>{2}</a> (${3}) is purchased by {4} {5} at {6}<br><br>Contact Info:<br>" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at)
         if instance.type == 'direct':
