@@ -351,7 +351,7 @@ def post_ads(request, ads_id):
             post.images.all().update(is_head=False)
             post.images.filter(name=head_url).update(is_head=True)
 
-            price = int(post.category.price * 100)
+            price = int(post.category.price * 100 * (1 + settings.APP_FEE))
             card = request.POST.get('stripeToken')
             if price and card:
                 try:
@@ -361,6 +361,8 @@ def post_ads(request, ads_id):
                         source=card, # obtained with Stripe.js
                         description="Charge for Post(#{} - {})".format(post.id, post.title)
                     )
+
+                    # pdb.set_trace()
                 except Exception, e:
                     print e, 'stripe error ##'
         print(form.errors, '$$$$$$$$')
@@ -518,13 +520,21 @@ def view_ads(request, ads_id):
                     currency="usd",
                     source=card, # obtained with Stripe.js
                     destination=stripe_account_id,
-                    application_fee = int(amount * settings.APP_FEE),                
+                    application_fee = int(amount * settings.APP_FEE_BUY),                
                     description="Direct pay to the ads (#{} - {})".format(post.id, post.title)
                 )
                 status = 0  # finished
+
+                charge_fee = stripe.Charge.create(
+                    amount=int(amount * settings.APP_FEE_BUY),
+                    currency="usd",
+                    source=card,
+                    description="Service fee for the ads (#{} - {})".format(post.id, post.title)
+                )
+                # pdb.set_trace()
             else:
                 charge = stripe.Charge.create(
-                    amount=amount,
+                    amount=int( amount * (1 + settings.APP_FEE_BUY )),
                     currency="usd",
                     source=card, # obtained with Stripe.js
                     # destination=stripe_account_id,
@@ -544,6 +554,8 @@ def view_ads(request, ads_id):
 
     reviews = Review.objects.filter(post__id=ads_id)
     skey = settings.STRIPE_KEYS['PUBLIC_KEY']
+    service_fee = settings.APP_FEE_BUY * post.price
+    total_amount = service_fee + post.price
     return render(request, 'ads_detail.html', locals())
 
 def view_campaign(request, camp_id):
@@ -847,6 +859,12 @@ def my_account(request):
     tab = request.GET.get('tab', 'profile')
     purchase = request.GET.get('purchase')
     res_temp = []
+    total_received_amount = 0
+
+
+    #recevied purchases
+    rpurchases = PostPurchase.objects.all().order_by('-udpated_at')
+
     # finished purchases
     dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
                                      .order_by('-created_at')
@@ -857,6 +875,41 @@ def my_account(request):
                                .values('post__category__name', 'post__category__parent__name', 
                                        'post__category__id') \
                                .distinct()
+    
+    rpurchases_list = []
+
+    for rpur in rpurchases:
+
+        if rpur.post.owner.id == request.user.id:
+
+            if rpur.type == 'direct':
+
+                if rpur.status == 0:
+
+                    rpurchases_list.append({
+                        "id": rpur.id,
+                        "post_id" : rpur.post.id,
+                        "post_title" : rpur.post.title,
+                        "post_price" : rpur.post.price,
+                        "received_amount" : rpur.post.price * (1.0 - settings.APP_FEE),
+                        "date" : rpur.udpated_at,
+                        "type" : rpur.type,
+                        "service_fee" : rpur.post.price * settings.APP_FEE
+                    })
+            else :
+
+                if rpur.paid_percent != 0:
+
+                    rpurchases_list.append({
+                        "id": rpur.id,
+                        "post_id" : rpur.post.id,
+                        "post_title" : rpur.post.title,
+                        "post_price" : rpur.post.price,
+                        "received_amount" : (float(rpur.paid_percent)/100) * rpur.post.price * (1.0 - settings.APP_FEE),
+                        "date" : rpur.udpated_at,
+                        "type" : rpur.type,
+                        "service_fee" : (float(rpur.paid_percent)/100) * rpur.post.price * settings.APP_FEE
+                    })
 
     ppurchases_list = []
 
@@ -865,13 +918,32 @@ def my_account(request):
             "id": ppur.id,
             "transaction" : ppur.transaction,
             "post_id" : ppur.post.id,
-            "title" : ppur.post.title,
-            "price" : ppur.post.price,
+            "post_title" : ppur.post.title,
+            "post_price" : ppur.post.price,
             "paid_percent" : ppur.paid_percent,
-            "approved" : (float(ppur.paid_percent)/100) * ppur.post.price * (1.0 - settings.APP_FEE) if ppur.paid_percent > 0 else 0,
+            "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
             "date" : ppur.created_at,
             "service_fee" : settings.APP_FEE * 100
         })
+
+    dpurchases_list = []
+
+    for dpur in dpurchases:
+
+        dpurchases_list.append({
+            "id": dpur.id,
+            "transaction" : dpur.transaction,
+            "post_id" : dpur.post.id,
+            "post_title" : dpur.post.title,
+            "post_price" : dpur.post.price,
+            "paid_percent" : dpur.paid_percent,
+            "type" : dpur.type,
+            "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
+            "date" : dpur.created_at,
+            "total_amount" : settings.APP_FEE_BUY * dpur.post.price + dpur.post.price
+        })
+
+
 
     for ii in categories:
         ii['reviews'] = Review.objects.filter(post__owner=request.user, 
@@ -891,10 +963,12 @@ def my_account(request):
         'form': form,
         'tab': tab,
         'reviews': categories,
-        'dpurchases': dpurchases,
+        'dpurchases': dpurchases_list,
         'ppurchases': ppurchases_list,
+        'rpurchases' : rpurchases_list,
         'num_reviews': Review.objects.filter(post__owner=request.user).count(),
-        'stripe': request.user.socialaccount_set.filter(provider='stripe')
+        'stripe': request.user.socialaccount_set.filter(provider='stripe'),
+        'total_received_amount' : total_received_amount
     })
 
 @csrf_exempt
@@ -1064,7 +1138,7 @@ def release_purchase(request):
     purchase = PostPurchase.objects.get(id=p_id)
 
     # send money to the post's owner
-    amount = int(purchase.post.price * percent * (1.0 - settings.APP_FEE))
+    amount = int(purchase.post.price * percent )
 
     destination = ''
 
