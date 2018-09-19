@@ -252,7 +252,14 @@
             <h4 class="modal-title">{{ post.title }}</h4>
           </div>
           <div class="modal-body">
-            <div class="modal-price">Price: <b class="pay-price">${{ post.price }}</b> USD</div>
+            <div class="modal-price">
+                Price: <span class="pay-price">${{ post.price }}</span> USD
+            </div>
+            <div class="modal-price">
+                Service Fee: <span class="pay-price">${{ service_fee }}</span> USD <span class="badge" data-toggle="tooltip" data-placement="top" title="This non refundable fee helps us to run our platform " style="margin-top: -2px;">?</span>
+            </div>
+            <div  style="border-bottom: 1px solid #ddd; margin-bottom : 20px; width : 45%;"></div>
+            <div class="modal-price">Total Price: <b class="pay-price">${{ total_amount }}</b> USD</div>
             <div class="form-group" style="padding: 12px;">
                 <div class="radio">
                   <label title="Direct pay to owner"><input style="margin-top: -1px;" type="radio" name="optpay" value="direct" checked="">Direct Pay</label>
