@@ -172,27 +172,30 @@
                     </div>
                 </div>
                 <div id="purchase" class="tab-pane fade {% if tab == 'purchase' %}active in{% endif %}">
-                    <div class="pages balance">
+                    <div class="pages balance" id="purchases_laptop">
                         <div class="rv-title">Pending Purchases</div>
                         <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
-                            <div class="col-md-3">Title</div>
-                            <div class="col-md-2">Price</div>
-                            <div class="col-md-2">Released Percent</div>
-                            <div class="col-md-2">Released Amount</div>
-                            <div class="col-md-2">Purchase Date</div>
-                            <div class="col-md-1"></div>
+                            <div class="col-md-3 col-xs-2">Title</div>
+                            <div class="col-md-2 col-xs-2">Price</div>
+                            <div class="col-md-1 col-xs-1">Released Percent</div>
+                            <div class="col-md-1 col-xs-1">Service Fee</div>
+                            <div class="col-md-1 col-xs-2">Released Amount</div>
+                            <div class="col-md-2 col-xs-2">Purchase Date</div>
+                            <div class="col-md-2 col-xs-2"></div>
                         </div>
                         <hr>
+                        
                         {% if ppurchases %}
                         {% for purchase in ppurchases %}
                             <div class="row" style="font-size: 17px;">
-                                <div class="col-md-3">{{ purchase.title }}</div>
-                                <div class="col-md-2">${{ purchase.price|floatformat:2|intcomma }}</div>
-                                <div class="col-md-2">{{ purchase.paid_percent }}%</div>
-                                <div class="col-md-2">${{ purchase.approved|floatformat:2|intcomma }}</div>
-                                <div class="col-md-2">{{ purchase.date|date:"M d, Y" }}</div>
-                                <div class="col-md-1 pull-right">
-                                    <button class="btn btn-primary btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}">Release</button>
+                                <div class="col-md-3  col-xs-2"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.title }}</a></div>
+                                <div class="col-md-2  col-xs-2">${{ purchase.price|floatformat:2|intcomma }}</div>
+                                <div class="col-md-1  col-xs-1">{{ purchase.paid_percent }}%</div>
+                                <div class="col-md-1  col-xs-1">{{ purchase.service_fee }}%</div>
+                                <div class="col-md-1  col-xs-2"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
+                                <div class="col-md-2  col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
+                                <div class="col-md-2  col-xs-2 pull-right">
+                                    <button class="btn btn-primary btn-sm btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}">Release</button>
                                 </div>
                             </div>
                             <hr>
@@ -204,25 +207,106 @@
                         {% endif %}
                         <div class="rv-title" style="margin-top: 36px;">Finished Purchases</div>
                         <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
-                            <div class="col-md-4">Title</div>
-                            <div class="col-md-1">Price</div>
-                            <div class="col-md-3">Transaction ID</div>
-                            <div class="col-md-2">Purchase Date</div>
-                            <div class="col-md-2">Pay Type</div>
+                            <div class="col-md-3 col-xs-3">Title</div>
+                            <div class="col-md-2 col-xs-2">Price</div>
+                            <div class="col-md-3 col-xs-3">Transaction ID</div>
+                            <div class="col-md-2 col-xs-2">Purchase Date</div>
+                            <div class="col-md-2 col-xs-2">Pay Type</div>
                         </div>
                         <hr>
                         {% if dpurchases %}
                         {% for purchase in dpurchases %}
                             <div class="row" style="font-size: 17px;">
-                                <div class="col-md-4">{{ purchase.post.title }}</div>
-                                <div class="col-md-1">${{ purchase.post.price|floatformat:2|intcomma }}</div>
-                                <div class="col-md-3">{{ purchase.transaction }}</div>
-                                <div class="col-md-2">{{ purchase.created_at|date:"M d, Y" }}</div>
-                                <div class="col-md-1">{{ purchase.type|title }}</div>
-                                <div class="col-md-1">
+                                <div class="col-md-3 col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post.title }}</a></div>
+                                <div class="col-md-2 col-xs-2">${{ purchase.post.price|floatformat:2|intcomma }}</div>
+                                <div class="col-md-3 col-xs-3" style="word-wrap: break-word;line-height: 20px;">{{ purchase.transaction }}</div>
+                                <div class="col-md-2 col-xs-2">{{ purchase.created_at|date:"M d, Y" }}</div>
+                                <div class="col-md-1 col-xs-1">{{ purchase.type|title }}</div>
+                                <div class="col-md-1 col-xs-1">
                                     {% if purchase|can_rate %}
                                         <button class="btn btn-warning btn-rate-later" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post.id }}">Rate</button>
                                     {% endif %}
+                                </div>
+                            </div>
+                            <hr>
+                        {% endfor %}                    
+                        {% else %}
+                            <div class="row" style="font-size: 18px;">
+                                <div class="col-md-4">No record</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="pages balance" id="purchases_mobile">
+                        <div class="rv-title">Pending Purchases</div>
+                        {% if ppurchases %}
+                        {% for purchase in ppurchases %}
+                            <div class="row" style="font-size: 17px;">
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Title</div>
+                                    <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.title }}</a></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Price</div>
+                                    <div class="col-xs-6">${{ purchase.price|floatformat:2|intcomma }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Released Percent</div>
+                                    <div class="col-xs-6">{{ purchase.paid_percent }}%</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Service Fee</div>
+                                    <div class="col-xs-6">{{ purchase.service_fee }}%</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Released Amount</div>
+                                    <div class="col-xs-6"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Purchase Date</div>
+                                    <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 pull-right">
+                                        <button class="btn btn-primary btn-sm btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" style="margin-top : 15px;">Release</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        {% endfor %}
+                        {% else %}
+                            <div class="row" style="font-size: 18px;">
+                                <div class="col-md-4">No record</div>
+                            </div>
+                        {% endif %}
+                        {% if dpurchases %}
+                        {% for purchase in dpurchases %}
+                            <div class="row" style="font-size: 17px;">
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Title</div>
+                                    <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post.title }}</a></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Price</div>
+                                    <div class="col-xs-6">${{ purchase.post.price|floatformat:2|intcomma }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Tranaction ID</div>
+                                    <div class="col-xs-6" style="word-wrap: break-word;    line-height: 20px;">{{ purchase.transaction }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Purchase Date</div>
+                                    <div class="col-xs-6">{{ purchase.created_at|date:"M d, Y" }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 purchase_title">Pay Type</div>
+                                    <div class="col-xs-6">{{ purchase.type|title }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        {% if purchase|can_rate %}
+                                            <button class="btn btn-warning btn-rate-later" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post.id }}">Rate</button>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             <hr>

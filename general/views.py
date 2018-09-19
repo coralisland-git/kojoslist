@@ -869,7 +869,8 @@ def my_account(request):
             "price" : ppur.post.price,
             "paid_percent" : ppur.paid_percent,
             "approved" : (float(ppur.paid_percent)/100) * ppur.post.price * (1.0 - settings.APP_FEE) if ppur.paid_percent > 0 else 0,
-            "date" : ppur.created_at
+            "date" : ppur.created_at,
+            "service_fee" : settings.APP_FEE * 100
         })
 
     for ii in categories:

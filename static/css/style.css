@@ -5072,6 +5072,13 @@ div.userpro-head{
     }
 }
 
+@media screen and (min-width: 641px) {
+
+    #purchases_mobile {
+        display: none;
+    }
+}
+
 @media screen and (max-width: 1600px){
 	.advanced-search-full .advanced-search-btn, .advanced-search-full .payment-btn{
 		font-size: 13px !important;
@@ -5507,6 +5514,21 @@ div.userpro-head{
 }
 
 @media screen and (max-width: 640px){
+
+    #purchases_laptop {
+        display: none;
+    }
+
+    .purchase_title{
+        font-size: 18px; 
+        color: #4DBEE2;
+    }
+
+    #purchases_mobile .row {
+        padding : 3px 15px;
+    }   
+
+
     .upload-btn, .my-ads .pages .page .change_pass, .update-btn, .post-add-btn-cancel, .strong-btn, .filter-btn, .btn-default.btn-view-all, .add-credit-btn #cancel_card_form{
         width: 110px;
         height: 40px;
@@ -5709,6 +5731,7 @@ div.userpro-head{
 }
 
 @media screen and (max-width: 600px){
+
 	.content-select-country ul li.content-select-country-part-li-sections{
 		width: 50%;
 		min-height: 840px;
@@ -5754,6 +5777,7 @@ div.userpro-head{
 }
 
 @media screen and (max-width: 500px){
+
     .content-right-content .ads_list .my_add .actions{
         margin: 5px 0 0 0;
         float: left;
@@ -5966,7 +5990,6 @@ div.userpro-head{
 		float: left;
 		width: auto;
 	}
-
 }
 
 @media screen and (max-width: 461px){
