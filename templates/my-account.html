@@ -251,7 +251,7 @@
                         </div>
                         <hr>
                         
-                        {% if ppurchases %}
+                        {% if rpurchases %}
                         {% for purchase in rpurchases %}
                             <div class="row" style="font-size: 17px;">
                                 <div class="col-md-3  col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
@@ -359,7 +359,7 @@
                         <div class="rv-title" style="margin-top: 36px;">Received Transactions</div>
                         <hr>
                         
-                        {% if ppurchases %}
+                        {% if rpurchases %}
                         {% for purchase in rpurchases %}
                             <div class="row" style="font-size: 17px;">
                                 <div class="row">
