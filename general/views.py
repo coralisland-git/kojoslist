@@ -351,7 +351,7 @@ def post_ads(request, ads_id):
             post.images.all().update(is_head=False)
             post.images.filter(name=head_url).update(is_head=True)
 
-            price = int(post.category.price * 100 * (1 + settings.APP_FEE))
+            price = int(post.price * 100 * settings.APP_FEE)
             card = request.POST.get('stripeToken')
             if price and card:
                 try:
@@ -361,7 +361,6 @@ def post_ads(request, ads_id):
                         source=card, # obtained with Stripe.js
                         description="Charge for Post(#{} - {})".format(post.id, post.title)
                     )
-
                     # pdb.set_trace()
                 except Exception, e:
                     print e, 'stripe error ##'
@@ -516,7 +515,7 @@ def view_ads(request, ads_id):
             if optpay == "direct":
                 stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
                 charge = stripe.Charge.create(
-                    amount=amount,
+                    amount=int(amount * ( 1 + settings.APP_FEE_BUY)),
                     currency="usd",
                     source=card, # obtained with Stripe.js
                     destination=stripe_account_id,
@@ -525,16 +524,10 @@ def view_ads(request, ads_id):
                 )
                 status = 0  # finished
 
-                charge_fee = stripe.Charge.create(
-                    amount=int(amount * settings.APP_FEE_BUY),
-                    currency="usd",
-                    source=card,
-                    description="Service fee for the ads (#{} - {})".format(post.id, post.title)
-                )
                 # pdb.set_trace()
             else:
                 charge = stripe.Charge.create(
-                    amount=int( amount * (1 + settings.APP_FEE_BUY )),
+                    amount=int(amount * (1 + settings.APP_FEE_BUY )),
                     currency="usd",
                     source=card, # obtained with Stripe.js
                     # destination=stripe_account_id,
