@@ -238,6 +238,7 @@
                     </div>
                     <div class="pages balance" id="purchases_mobile">
                         <div class="rv-title">Pending Purchases</div>
+                        <hr>
                         {% if ppurchases %}
                         {% for purchase in ppurchases %}
                             <div class="row" style="font-size: 17px;">
@@ -278,6 +279,8 @@
                                 <div class="col-md-4">No record</div>
                             </div>
                         {% endif %}
+                        <div class="rv-title" style="margin-top: 36px;">Finished Purchases</div>
+                        <hr>
                         {% if dpurchases %}
                         {% for purchase in dpurchases %}
                             <div class="row" style="font-size: 17px;">
