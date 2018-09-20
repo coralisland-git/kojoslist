@@ -115,7 +115,6 @@
                                     {% endif %}
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label class="control-label col-sm-2" for="id_password">Birth Date:</label>
                                 <div class="col-sm-6">
@@ -210,7 +209,7 @@
                             <div class="col-md-2 col-xs-2">Price</div>
                             <div class="col-md-2 col-xs-2">Transaction ID</div>
                             <div class="col-md-2 col-xs-2">Total Amount</div>
-                            <div class="col-md-1 col-xs-1">Pay Type</div>
+                            <div class="col-md-1 col-xs-1">Payment Type</div>
                             <div class="col-md-2 col-xs-2">Purchased Date</div>
                         </div>
                         <hr>
@@ -246,7 +245,7 @@
                             <div class="col-md-2 col-xs-2">Price</div>
                             <div class="col-md-2 col-xs-2">Service Fee</div>
                             <div class="col-md-2 col-xs-2">Recevied Amount</div>
-                            <div class="col-md-1 col-xs-1">Pay Type</div>
+                            <div class="col-md-1 col-xs-1">Payment Type</div>
                             <div class="col-md-2 col-xs-2">Received Date</div>
                         </div>
                         <hr>
@@ -331,7 +330,7 @@
                                     <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-6 purchase_title">Pay Type</div>
+                                    <div class="col-xs-6 purchase_title">Payment Type</div>
                                     <div class="col-xs-6">{{ purchase.type|title }}</div>
                                 </div>
                                 <div class="row">
@@ -379,7 +378,7 @@
                                     <div class="col-xs-6" style="color : red">${{ purchase.received_amount|floatformat:2|intcomma }}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-6 purchase_title">Pay Type</div>
+                                    <div class="col-xs-6 purchase_title">Payment Type</div>
                                     <div class="col-xs-6">{{ purchase.type }}</div>
                                 </div>
                                 <div class="row">
