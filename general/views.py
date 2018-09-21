@@ -865,7 +865,7 @@ def my_account(request):
 
     # finished purchases
     dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
-                                     .order_by('-created_at')
+                                     .order_by('-udpated_at')
     # escrow purchases
     ppurchases = PostPurchase.objects.filter(purchaser=request.user).exclude(status=0) \
                                      .order_by('-created_at')
@@ -962,7 +962,7 @@ def my_account(request):
                 "type" : dpur.type,
                 "paid_amount" : dpur.post.price * float(dpur.paid_percent/100.0),
                 "approved" : dpur.post.price * float(dpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
-                "date" : dpur.created_at,
+                "date" : dpur.udpated_at,
                 "service_fee" : settings.APP_FEE_BUY * dpur.post.price * float(dpur.paid_percent/100.0),
                 "total_service_fee" : settings.APP_FEE_BUY * dpur.post.price,
                 "refund_amount" : dpur.post.price * float((100 - dpur.paid_percent)/100.0),
@@ -1063,7 +1063,7 @@ def search_txs(request):
     if tx_type == "cancelled":
 
         cpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
-                                     .order_by('-created_at')
+                                     .order_by('-udpated_at')
 
         cpurchases_list = []
 
@@ -1074,16 +1074,19 @@ def search_txs(request):
                 if ( keyword != None and keyword.lower() in cpur.post.title.lower()) or keyword == None  :
 
                     cpurchases_list.append({
-                        "id": cpur.id,
+                       "id": cpur.id,
                         "transaction" : cpur.transaction,
                         "post_id" : cpur.post.id,
                         "post_title" : cpur.post.title,
                         "post_price" : cpur.post.price,
                         "paid_percent" : cpur.paid_percent,
                         "type" : cpur.type,
-                        "approved" : (float(cpur.paid_percent)/100) * cpur.post.price * (1.0 - settings.APP_FEE) if cpur.paid_percent > 0 else 0,
-                        "date" : cpur.created_at,
-                        "service_fee" : settings.APP_FEE_BUY * cpur.post.price,
+                        "paid_amount" : cpur.post.price * float(cpur.paid_percent/100.0),
+                        "approved" : cpur.post.price * float(cpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
+                        "date" : cpur.udpated_at,
+                        "service_fee" : settings.APP_FEE_BUY * cpur.post.price * float(cpur.paid_percent/100.0),
+                        "total_service_fee" : settings.APP_FEE_BUY * cpur.post.price,
+                        "refund_amount" : cpur.post.price * float((100 - cpur.paid_percent)/100.0),
                         "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price
                     })
 
@@ -1377,9 +1380,13 @@ def cancel_purchase(request):
 
         purchase.save()
 
-        return JsonResponse({"message" :"success"}, safe=False)
+        return JsonResponse({"message" :"The tranasction is Cancelled successfully."}, safe=False)
 
     except Exception as e:
+
+        purchase.status = 0
+
+        purchase.save()
 
         print(e, "~~~~~~~~~")
 

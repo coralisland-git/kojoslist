@@ -569,7 +569,7 @@
                         purchase_id: purchase_id
                     },
                     success: function(res) {
-                        alert('The tranasction is Cancelled successfully.');
+                        alert(res.message);
                         location.href = '/my-account?tab=purchase';
                     }
                 });
