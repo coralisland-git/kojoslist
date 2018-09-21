@@ -1380,7 +1380,6 @@ def cancel_purchase(request):
 
         purchase.save()
 
-        return JsonResponse({"message" :"The tranasction is Cancelled successfully."}, safe=False)
 
     except Exception as e:
 
@@ -1390,7 +1389,7 @@ def cancel_purchase(request):
 
         print(e, "~~~~~~~~~")
 
-        return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
+    return JsonResponse({"message" :"The tranasction is Cancelled successfully."}, safe=False)
 
 
 
