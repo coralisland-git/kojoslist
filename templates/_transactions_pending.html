@@ -1,0 +1,79 @@
+{% load extra %}
+{% load humanize %}
+
+<div id="purchases_laptop">
+    <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
+        <div class="col-md-2">Title</div>
+        <div class="col-md-2">Price</div>
+        <div class="col-md-2">Released Percent</div>
+        <div class="col-md-2">Released Amount</div>
+        <div class="col-md-2">Purchased Date</div>
+        <div class="col-md-2"></div>
+    </div>
+    <hr>
+
+    {% if ppurchases %}
+    {% for purchase in ppurchases %}
+        <div class="row" style="font-size: 17px;">
+            <div class="col-md-2"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
+            <div class="col-md-2">${{ purchase.post_price|floatformat:2|intcomma }}</div>
+            <div class="col-md-2">{{ purchase.paid_percent }}%</div>
+            <div class="col-md-2"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
+            <div class="col-md-2">{{ purchase.date|date:"M d, Y" }}</div>
+            <div class="col-md-2 pull-right">
+                <button class="btn btn-primary btn-xs btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}">Release</button>
+
+                <button class="btn btn-danger btn-xs btn-cancelled " data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}">Cancel</button>
+            </div>
+        </div>
+        <hr>
+    {% endfor %}
+    {% else %}
+        <div class="row" style="font-size: 18px;">
+            <div class="col-md-4">No record</div>
+            <hr>
+        </div>
+    {% endif %}
+</div>
+
+<div id="purchases_mobile">
+{% if ppurchases %}
+{% for purchase in ppurchases %}
+    <div class="row" style="font-size: 17px;">
+        <div class="row">
+            <div class="col-xs-6 purchase_title">Title</div>
+            <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 purchase_title">Price</div>
+            <div class="col-xs-6">${{ purchase.post_price|floatformat:2|intcomma }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 purchase_title">Released Percent</div>
+            <div class="col-xs-6">{{ purchase.paid_percent }}%</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 purchase_title">Released Amount</div>
+            <div class="col-xs-6"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 purchase_title">Purchased Date</div>
+            <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 pull-right" style="margin-top : 15px;">
+                <button class="btn btn-primary btn-xs btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}">Release</button>
+
+                <button class="btn btn-danger btn-xs btn-cancelled " data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <hr>
+{% endfor %}
+{% else %}
+    <div class="row" style="font-size: 18px;">
+        <div class="col-md-4">No record</div>
+        <hr>
+    </div>
+{% endif %}
+</div>

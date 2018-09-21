@@ -302,8 +302,7 @@
         <form id="rate-form">
         <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="well">
-                <p>Thank you for your purchase</p>
-                <p>Transaction ID: {{ result }}</p>
+                <p>Thank you for your purchasing "{{ post.title }}"</p>
                 <p style="margin-top: 15px;">You have 30 days to review the user.</p>
             </div>
                 <h4>Please rate the item</h4>
@@ -319,8 +318,8 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" class="btn" id="btn-rate">Rate</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn" id="btn-rate">Rate</button>
           </div>
         </form>
         </div>
@@ -373,7 +372,6 @@
     {% else %}
     var is_total_ready = true;
     {% endif %}
-    
     {% if post.price %}
         var transaction = '{{ result }}',
             optpay = '{{ optpay }}';
