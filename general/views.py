@@ -513,6 +513,9 @@ def view_ads(request, ads_id):
             post.save()
 
         try:
+
+            status = 0
+
             if optpay == "direct":
                 stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
                 charge = stripe.Charge.create(
@@ -850,6 +853,7 @@ def remove_subscription(request):
 
 @login_required(login_url='/accounts/login/')
 def my_account(request):
+
     tab = request.GET.get('tab', 'profile')
     purchase = request.GET.get('purchase')
     res_temp = []
@@ -865,10 +869,13 @@ def my_account(request):
     # escrow purchases
     ppurchases = PostPurchase.objects.filter(purchaser=request.user).exclude(status=0) \
                                      .order_by('-created_at')
+
+
     categories = Review.objects.filter(post__owner=request.user) \
                                .values('post__category__name', 'post__category__parent__name', 
                                        'post__category__id') \
                                .distinct()
+
     
     rpurchases_list = []
 
@@ -899,15 +906,17 @@ def my_account(request):
                         "post_id" : rpur.post.id,
                         "post_title" : rpur.post.title,
                         "post_price" : rpur.post.price,
-                        "received_amount" : (float(rpur.paid_percent)/100) * rpur.post.price * (1.0 - settings.APP_FEE),
+                        "received_amount" : (float(rpur.paid_percent)/100.0) * rpur.post.price * (1.0 - settings.APP_FEE),
                         "date" : rpur.udpated_at,
                         "type" : rpur.type,
-                        "service_fee" : (float(rpur.paid_percent)/100) * rpur.post.price * settings.APP_FEE
+                        "service_fee" : (float(rpur.paid_percent)/100.0) * rpur.post.price * settings.APP_FEE
                     })
 
     ppurchases_list = []
 
+
     for ppur in ppurchases:
+
         ppurchases_list.append({
             "id": ppur.id,
             "transaction" : ppur.transaction,
@@ -915,34 +924,55 @@ def my_account(request):
             "post_title" : ppur.post.title,
             "post_price" : ppur.post.price,
             "paid_percent" : ppur.paid_percent,
-            "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
+            "approved" : (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0,
             "date" : ppur.created_at,
             "service_fee" : settings.APP_FEE * 100
         })
 
     dpurchases_list = []
 
+    cpurchases_list = []
+
     for dpur in dpurchases:
 
-        dpurchases_list.append({
-            "id": dpur.id,
-            "transaction" : dpur.transaction,
-            "post_id" : dpur.post.id,
-            "post_title" : dpur.post.title,
-            "post_price" : dpur.post.price,
-            "paid_percent" : dpur.paid_percent,
-            "type" : dpur.type,
-            "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
-            "date" : dpur.created_at,
-            "total_amount" : settings.APP_FEE_BUY * dpur.post.price + dpur.post.price
-        })
+        if dpur.paid_percent == 100:
 
+            dpurchases_list.append({
+                "id": dpur.id,
+                "transaction" : dpur.transaction,
+                "post_id" : dpur.post.id,
+                "post_title" : dpur.post.title,
+                "post_price" : dpur.post.price,
+                "paid_percent" : dpur.paid_percent,
+                "type" : dpur.type,
+                "approved" : (float(dpur.paid_percent)/100.0) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
+                "date" : dpur.created_at,
+                "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
+                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price
+            })
+
+        else :
+            cpurchases_list.append({
+                "id": dpur.id,
+                "transaction" : dpur.transaction,
+                "post_id" : dpur.post.id,
+                "post_title" : dpur.post.title,
+                "post_price" : dpur.post.price,
+                "paid_percent" : dpur.paid_percent,
+                "type" : dpur.type,
+                "paid_amount" : dpur.post.price * float(dpur.paid_percent/100.0),
+                "approved" : dpur.post.price * float(dpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
+                "date" : dpur.created_at,
+                "service_fee" : settings.APP_FEE_BUY * dpur.post.price * float(dpur.paid_percent/100.0),
+                "total_service_fee" : settings.APP_FEE_BUY * dpur.post.price,
+                "refund_amount" : dpur.post.price * float((100 - dpur.paid_percent)/100.0),
+                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price
+            })
 
 
     for ii in categories:
         ii['reviews'] = Review.objects.filter(post__owner=request.user, 
                                               post__category__id=ii['post__category__id'])       
-
 
 
     if request.method == 'GET':
@@ -959,11 +989,153 @@ def my_account(request):
         'reviews': categories,
         'dpurchases': dpurchases_list,
         'ppurchases': ppurchases_list,
+        'cpurchases': cpurchases_list,
         'rpurchases' : rpurchases_list,
         'num_reviews': Review.objects.filter(post__owner=request.user).count(),
         'stripe': request.user.socialaccount_set.filter(provider='stripe'),
         'total_received_amount' : total_received_amount
     })
+
+
+
+def search_txs(request):
+
+    tx_type = request.GET.get('tx_type')
+    keyword = request.GET.get('tx_key')
+
+    if tx_type == "pending":
+
+        ppurchases = PostPurchase.objects.filter(purchaser=request.user).exclude(status=0) \
+                                         .order_by('-created_at')
+
+        ppurchases_list = []
+
+        for ppur in ppurchases:
+
+            if ( keyword != None and keyword.lower() in ppur.post.title.lower()) or keyword == None  :
+                ppurchases_list.append({
+                    "id": ppur.id,
+                    "transaction" : ppur.transaction,
+                    "post_id" : ppur.post.id,
+                    "post_title" : ppur.post.title,
+                    "post_price" : ppur.post.price,
+                    "paid_percent" : ppur.paid_percent,
+                    "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
+                    "date" : ppur.created_at,
+                    "service_fee" : settings.APP_FEE * 100
+                })
+        rndr_str = render_to_string("_transactions_pending.html" , {'ppurchases': ppurchases_list}, request=request)
+
+        return HttpResponse(rndr_str)
+
+    if tx_type == "finished":
+
+        dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
+                                     .order_by('-created_at')
+
+        dpurchases_list = []
+
+        for dpur in dpurchases:
+
+            if dpur.paid_percent == 100:
+
+                if ( keyword != None and keyword.lower() in dpur.post.title.lower()) or keyword == None  :
+
+                    dpurchases_list.append({
+                        "id": dpur.id,
+                        "transaction" : dpur.transaction,
+                        "post_id" : dpur.post.id,
+                        "post_title" : dpur.post.title,
+                        "post_price" : dpur.post.price,
+                        "paid_percent" : dpur.paid_percent,
+                        "type" : dpur.type,
+                        "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
+                        "date" : dpur.created_at,
+                        "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
+                        "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price
+                    })
+
+        rndr_str = render_to_string("_transactions_finished.html" , {'dpurchases': dpurchases_list}, request=request)
+
+        return HttpResponse(rndr_str)
+
+
+    if tx_type == "cancelled":
+
+        cpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
+                                     .order_by('-created_at')
+
+        cpurchases_list = []
+
+        for cpur in cpurchases:
+
+            if cpur.paid_percent != 100:
+
+                if ( keyword != None and keyword.lower() in cpur.post.title.lower()) or keyword == None  :
+
+                    cpurchases_list.append({
+                        "id": cpur.id,
+                        "transaction" : cpur.transaction,
+                        "post_id" : cpur.post.id,
+                        "post_title" : cpur.post.title,
+                        "post_price" : cpur.post.price,
+                        "paid_percent" : cpur.paid_percent,
+                        "type" : cpur.type,
+                        "approved" : (float(cpur.paid_percent)/100) * cpur.post.price * (1.0 - settings.APP_FEE) if cpur.paid_percent > 0 else 0,
+                        "date" : cpur.created_at,
+                        "service_fee" : settings.APP_FEE_BUY * cpur.post.price,
+                        "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price
+                    })
+
+        rndr_str = render_to_string("_transactions_cancelled.html" , {'cpurchases': cpurchases_list}, request=request)
+
+        return HttpResponse(rndr_str)
+
+
+    if tx_type == "received":
+
+        rpurchases = PostPurchase.objects.all().order_by('-udpated_at')
+
+        rpurchases_list = []
+
+        for rpur in rpurchases:
+
+            if ( keyword != None and keyword.lower() in rpur.post.title.lower()) or keyword == None  :
+
+                if rpur.post.owner.id == request.user.id:
+
+                    if rpur.type == 'direct':
+
+                        if rpur.status == 0:
+
+                            rpurchases_list.append({
+                                "id": rpur.id,
+                                "post_id" : rpur.post.id,
+                                "post_title" : rpur.post.title,
+                                "post_price" : rpur.post.price,
+                                "received_amount" : rpur.post.price * (1.0 - settings.APP_FEE),
+                                "date" : rpur.udpated_at,
+                                "type" : rpur.type,
+                                "service_fee" : rpur.post.price * settings.APP_FEE
+                            })
+                    else :
+
+                        if rpur.paid_percent != 0:
+
+                            rpurchases_list.append({
+                                "id": rpur.id,
+                                "post_id" : rpur.post.id,
+                                "post_title" : rpur.post.title,
+                                "post_price" : rpur.post.price,
+                                "received_amount" : (float(rpur.paid_percent)/100) * rpur.post.price * (1.0 - settings.APP_FEE),
+                                "date" : rpur.udpated_at,
+                                "type" : rpur.type,
+                                "service_fee" : (float(rpur.paid_percent)/100) * rpur.post.price * settings.APP_FEE
+                            })
+
+        rndr_str = render_to_string("_transactions_received.html" , {'rpurchases': rpurchases_list}, request=request)
+
+        return HttpResponse(rndr_str)
 
 @csrf_exempt
 def send_vcode(request):
@@ -1164,7 +1336,9 @@ def release_purchase(request):
 
             return JsonResponse(result, safe=False)
 
-        except:
+        except Exception as e:
+
+            print(e, "~~~~~~~~~")
 
             return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
 
@@ -1174,7 +1348,45 @@ def release_purchase(request):
 
         return JsonResponse({"message" : message}, safe=False)
 
-    
+
+@csrf_exempt    
+def cancel_purchase(request):
+
+    post_id = request.POST.get('p_id')
+
+    purchase_id = request.POST.get('purchase_id')
+
+    purchase = PostPurchase.objects.get(id=purchase_id)
+
+    destination=purchase.purchaser.socialaccount_set.get(provider='stripe').uid
+
+    amount = int((100 - purchase.paid_percent ) * purchase.post.price * (1 + settings.APP_FEE_BUY ))
+
+    try:
+
+        destination=purchase.post.owner.socialaccount_set.get(provider='stripe').uid
+
+        transfer = stripe.Transfer.create(
+            amount=amount,
+            currency="usd",
+            source_transaction=purchase.transaction,
+            destination=destination
+        )
+
+        purchase.status = 0
+
+        purchase.save()
+
+        return JsonResponse({"message" :"success"}, safe=False)
+
+    except Exception as e:
+
+        print(e, "~~~~~~~~~")
+
+        return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
+
+
+
 @csrf_exempt    
 def update_alert(request):
     sid = request.POST.get('sid')

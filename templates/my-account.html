@@ -171,228 +171,67 @@
                     </div>
                 </div>
                 <div id="purchase" class="tab-pane fade {% if tab == 'purchase' %}active in{% endif %}">
-                    <div class="pages balance" id="purchases_laptop">
+                    <div class="pages balance">
                         <div class="rv-title">Pending Transactions</div>
-                        <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
-                            <div class="col-md-3 col-xs-3">Title</div>
-                            <div class="col-md-2 col-xs-2">Price</div>
-                            <div class="col-md-2 col-xs-2">Released Percent</div>
-                            <div class="col-md-2 col-xs-2">Released Amount</div>
-                            <div class="col-md-2 col-xs-2">Purchased Date</div>
-                            <div class="col-md-1 col-xs-1"></div>
+                        <div class="search-form_d row">
+                            <div class="input-group col-md-3 pull-right">
+                                <input type="text" class="input-xlarge form-control " name="tx_key" placeholder="Filter..." id="tx_key_p">
+                                <input type="hidden" name="tx_type" value="pending">
+                                <span class="input-group-addon sym_phone" id="search_txs_p" style="cursor : pointer;">
+                                    <i class="fa fa-filter" style="width: 14px;"></i>
+                                </span>
+                            </div>
                         </div>
                         <hr>
-                        
-                        {% if ppurchases %}
-                        {% for purchase in ppurchases %}
-                            <div class="row" style="font-size: 17px;">
-                                <div class="col-md-3  col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                                <div class="col-md-2  col-xs-2">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                                <div class="col-md-2  col-xs-2">{{ purchase.paid_percent }}%</div>
-                                <div class="col-md-2  col-xs-2"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
-                                <div class="col-md-2  col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
-                                <div class="col-md-1  col-xs-1 pull-right">
-                                    <button class="btn btn-primary btn-xs btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}">Release</button>
-                                </div>
-                            </div>
-                            <hr>
-                        {% endfor %}
-                        {% else %}
-                            <div class="row" style="font-size: 18px;">
-                                <div class="col-md-4">No record</div>
-                                <hr>
-                            </div>
-                        {% endif %}
+                        <div id="ppurchases_list">
+                            {% include '_transactions_pending.html' %}    
+                        </div>
+
                         <div class="rv-title" style="margin-top: 36px;">Finished Transactions</div>
-                        <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
-                            <div class="col-md-3 col-xs-3">Title</div>
-                            <div class="col-md-2 col-xs-2">Price</div>
-                            <div class="col-md-2 col-xs-2">Transaction ID</div>
-                            <div class="col-md-2 col-xs-2">Total Amount</div>
-                            <div class="col-md-1 col-xs-1">Payment Type</div>
-                            <div class="col-md-2 col-xs-2">Purchased Date</div>
+                        <div class="search-form_d row">
+                            <div class="input-group col-md-3 pull-right">
+                                <input type="text" class="input-xlarge form-control " name="tx_key" placeholder="Filter..." id="tx_key_d">
+                                <input type="hidden" name="tx_type" value="finished">
+                                <span class="input-group-addon sym_phone" id="search_txs_d" style="cursor : pointer;">
+                                    <i class="fa fa-filter" style="width: 14px;"></i>
+                                </span>
+                            </div>
                         </div>
                         <hr>
-                        {% if dpurchases %}
-                        {% for purchase in dpurchases %}
-                            <div class="row" style="font-size: 17px;">
-                                <div class="col-md-3 col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                                <div class="col-md-2 col-xs-2">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                                <div class="col-md-2 col-xs-2" style="word-wrap: break-word;line-height: 20px;">{{ purchase.transaction }}</div>
-                                <div class="col-md-2 col-xs-2"  style="color : red">${{ purchase.total_amount|floatformat:2|intcomma }}</div>
-                                <div class="col-md-1 col-xs-1">{{ purchase.type|title }}</div>
-                                <div class="col-md-2 col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
-                                {% comment %}
-                                <div class="col-md-2 col-xs-2">
-                                    {% if purchase|can_rate %}
-                                        <button class="btn btn-warning btn-rate-later" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}">Rate</button>
-                                    {% endif %}
-                                </div>
-                                {% endcomment %}
+                        <div id="dpurchases_list">
+                            {% include '_transactions_finished.html' %}    
+                        </div>
+
+                        <div class="rv-title" style="margin-top: 36px;">Cancelled Transactions</div>
+                        <div class="search-form_c row">
+                            <div class="input-group col-md-3 pull-right">
+                                <input type="text" class="input-xlarge form-control " name="tx_key" placeholder="Filter..." id="tx_key_c">
+                                <input type="hidden" name="tx_type" value="cancelled">
+                                <span class="input-group-addon sym_phone" id="search_txs_c" style="cursor : pointer;">
+                                    <i class="fa fa-filter" style="width: 14px;"></i>
+                                </span>
                             </div>
-                            <hr>
-                        {% endfor %}                    
-                        {% else %}
-                            <div class="row" style="font-size: 18px;">
-                                <div class="col-md-4">No record</div>
-                            </div>
-                            <hr>
-                        {% endif %}
+                        </div>
+                        <hr>
+                        <div id="cpurchases_list">
+                            {% include '_transactions_cancelled.html' %}    
+                        </div>
 
                         <div class="rv-title" style="margin-top: 36px;">Received Transactions</div>
-                        <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
-                            <div class="col-md-3 col-xs-3">Title</div>
-                            <div class="col-md-2 col-xs-2">Price</div>
-                            <div class="col-md-2 col-xs-2">Service Fee</div>
-                            <div class="col-md-2 col-xs-2">Recevied Amount</div>
-                            <div class="col-md-1 col-xs-1">Payment Type</div>
-                            <div class="col-md-2 col-xs-2">Received Date</div>
+                        <div class="search-form_r row">
+                            <div class="input-group col-md-3 pull-right">
+                                <input type="text" class="input-xlarge form-control " name="tx_key" placeholder="Filter..." id="tx_key_r">
+                                <input type="hidden" name="tx_type" value="received">
+                                <span class="input-group-addon sym_phone" id="search_txs_r" style="cursor : pointer;">
+                                    <i class="fa fa-filter" style="width: 14px;"></i>
+                                </span>
+                            </div>
                         </div>
                         <hr>
-                        
-                        {% if rpurchases %}
-                        {% for purchase in rpurchases %}
-                            <div class="row" style="font-size: 17px;">
-                                <div class="col-md-3  col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                                <div class="col-md-2  col-xs-2">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                                <div class="col-md-2  col-xs-2">${{ purchase.service_fee|floatformat:2|intcomma }}</div>
-                                <div class="col-md-2  col-xs-2" style="color : red">${{ purchase.received_amount|floatformat:2|intcomma }}</div>
-                                <div class="col-md-1  col-xs-1">{{ purchase.type }}</div>
-                                <div class="col-md-2  col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
-                            </div>
-                            <hr>
-                        {% endfor %}
-                        {% else %}
-                            <div class="row" style="font-size: 18px;">
-                                <div class="col-md-4">No record</div>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="pages balance" id="purchases_mobile">
-                        <div class="rv-title">Pending Transactions</div>
-                        <hr>
-                        {% if ppurchases %}
-                        {% for purchase in ppurchases %}
-                            <div class="row" style="font-size: 17px;">
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Title</div>
-                                    <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Price</div>
-                                    <div class="col-xs-6">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Released Percent</div>
-                                    <div class="col-xs-6">{{ purchase.paid_percent }}%</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Released Amount</div>
-                                    <div class="col-xs-6"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Purchased Date</div>
-                                    <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 pull-right">
-                                        <button class="btn btn-primary btn-xs btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" style="margin-top : 15px;">Release</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                        {% endfor %}
-                        {% else %}
-                            <div class="row" style="font-size: 18px;">
-                                <div class="col-md-4">No record</div>
-                                <hr>
-                            </div>
-                        {% endif %}
-                        <div class="rv-title" style="margin-top: 36px;">Finished Transactions</div>
-                        <hr>
-                        {% if dpurchases %}
-                        {% for purchase in dpurchases %}
-                            <div class="row" style="font-size: 17px;">
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Title</div>
-                                    <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Price</div>
-                                    <div class="col-xs-6">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Tranaction ID</div>
-                                    <div class="col-xs-6" style="word-wrap: break-word;    line-height: 20px;">{{ purchase.transaction }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Purchased Date</div>
-                                    <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Payment Type</div>
-                                    <div class="col-xs-6">{{ purchase.type|title }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Total Amount</div>
-                                    <div class="col-xs-6">${{ purchase.total_amount|floatformat:2|intcomma}}</div>
-                                </div>
-                                {% comment %}
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        {% if purchase|can_rate %}
-                                            <button class="btn btn-warning btn-rate-later" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post.id }}">Rate</button>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% endcomment %}
-                            </div>
-                            <hr>
-                        {% endfor %}                    
-                        {% else %}
-                            <div class="row" style="font-size: 18px;">
-                                <div class="col-md-4">No record</div>
-                                <hr>
-                            </div>
-                        {% endif %}
-                        <div class="rv-title" style="margin-top: 36px;">Received Transactions</div>
-                        <hr>
-                        
-                        {% if rpurchases %}
-                        {% for purchase in rpurchases %}
-                            <div class="row" style="font-size: 17px;">
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Title</div>
-                                    <div class="col-xs-6><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Price</div>
-                                    <div class="col-xs-6">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Service Fee</div>
-                                    <div class="col-xs-6">${{ purchase.service_fee|floatformat:2|intcomma }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Received Amount</div>
-                                    <div class="col-xs-6" style="color : red">${{ purchase.received_amount|floatformat:2|intcomma }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Payment Type</div>
-                                    <div class="col-xs-6">{{ purchase.type }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6 purchase_title">Received Date</div>
-                                    <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
-                                </div>
-                            </div>
-                            <hr>
-                        {% endfor %}
-                        {% else %}
-                            <div class="row" style="font-size: 18px;">
-                                <div class="col-md-4">No record</div>
-                            </div>
-                        {% endif %}
+                        <div id="rpurchases_list">
+                            {% include '_transactions_received.html' %}    
+                        </div>
+
                     </div>
                 </div>                         
             </div>
@@ -412,8 +251,9 @@
         <form id="rate-form">
         <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="well">
-                <p>Thank you for your purchase</p>
-                <p>Transaction ID: <span id="transaction_id">{{ result }}</span></p>
+                <p>Thank you for your purchasing "<span id="post_title">{{ result }}</span>"</p> 
+                {# <p>Transaction ID: <span id="transaction_id">{{ result }}</span></p> <p>Title: </p> #}
+                
                 <p style="margin-top: 15px;">You have 30 days to review this user.</p>
             </div>
                 <h4>Please rate the item</h4>
@@ -429,8 +269,8 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" class="btn" id="btn-rate">Rate</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn" id="btn-rate">Rate</button>
           </div>
         </form>
         </div>
@@ -449,9 +289,10 @@
         <form id="release-form">
           <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="well" style="line-height: 24px;">
+                <p>Title: <span class="post_title"></span></p>
                 <p>Total Price: $<span class="ptotal-price">89.99</span></p>
                 <p>Paid Amount: <span class="ppaid-amount">$30</span> ( <span class="ppaid-percent">25%</span> )</p>
-                <p>Transaction: <span class="plast-transaction"></span></p>
+                {# <p>Transaction: <span class="plast-transaction"></span></p> #}
             </div>
                 <h4>Release Amount</h4>
                 <div style="padding: 10px 0;">
@@ -504,6 +345,131 @@
 
     jQuery(document).ready(function() {
 
+        jQuery('#search_txs_p').click(function(e) {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'pending' ,
+                        tx_key: $('#tx_key_p').val()
+                    },
+                success: function (data) {
+                    jQuery('#ppurchases_list').html(data);
+                }
+            });                     
+        });
+
+        jQuery('#tx_key_p').keypress(function(e) {
+            var key = e.which;
+            if (key == 13) {
+                jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'pending' ,
+                        tx_key: $('#tx_key_p').val()
+                    },
+                success: function (data) {
+                    jQuery('#ppurchases_list').html(data);
+                }
+            });   
+            }
+        });
+
+        jQuery('#search_txs_d').click(function() {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'finished' ,
+                        tx_key: $('#tx_key_d').val()
+                    },
+                success: function (data) {
+                    jQuery('#dpurchases_list').html(data);
+                }
+            });                     
+        });
+
+        jQuery('#tx_key_d').keypress(function(e) {
+            var key = e.which;
+            if (key == 13) {
+                jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'finished' ,
+                        tx_key: $('#tx_key_d').val()
+                    },
+                success: function (data) {
+                    jQuery('#dpurchases_list').html(data);
+                }
+            });      
+            }
+        });
+
+        jQuery('#search_txs_c').click(function() {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'cancelled' ,
+                        tx_key: $('#tx_key_c').val()
+                    },
+                success: function (data) {
+                    jQuery('#cpurchases_list').html(data);
+                }
+            });                     
+        });
+
+        jQuery('#tx_key_c').keypress(function(e) {
+            var key = e.which;
+            if (key == 13) {
+                jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'cancelled' ,
+                        tx_key: $('#tx_key_c').val()
+                    },
+                success: function (data) {
+                    jQuery('#cpurchases_list').html(data);
+                }
+            });    
+            }
+        });
+
+        jQuery('#search_txs_r').click(function() {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'received' ,
+                        tx_key: $('#tx_key_r').val()
+                    },
+                success: function (data) {
+                    jQuery('#rpurchases_list').html(data);
+                }
+            });                     
+        });
+
+        jQuery('#tx_key_r').keypress(function(e) {
+            var key = e.which;
+            if (key == 13) {
+                jQuery.ajax({
+                    type: 'get',
+                    url: '/search-txs',
+                    data: {
+                            tx_type: 'received' ,
+                            tx_key: $('#tx_key_r').val()
+                        },
+                    success: function (data) {
+                        jQuery('#rpurchases_list').html(data);
+                    }
+                });   
+            }
+        });
+
+
         $('#result-modal').on('hidden.bs.modal', function () {
             location.href = '/my-account?tab=purchase';
         });
@@ -551,6 +517,7 @@
                         {
                             if (res.finished) {
                                 $('#transaction_id').html(res.transaction);
+                                $('#post_title').html(post_title);
                                 $('.post-id').val(post_id);
                                 $('.purchase-id').val(purchase_id);
                                 $('#result-modal').modal();
@@ -569,6 +536,7 @@
                 transaction = $(this).data('transaction'),
                 percent = $(this).data('percent'),
                 htmlPercents = '';
+                post_title = $(this).data('post-title'),
 
             purchase_id = $(this).data('id');
             post_id = $(this).data('post-id');
@@ -577,6 +545,7 @@
             $('.plast-transaction').html(transaction);
             $('.ppaid-amount').html('$'+(amount * percent / 100).toFixed(2));
             $('.ppaid-percent').html(percent+'%');
+            $('.post_title').html(post_title);
 
             for (i = 10; i <= 100-parseInt(percent); i+=10) {
                 htmlPercents += "<option value='"+i+"'>"+i+" %</option>";
@@ -584,6 +553,27 @@
 
             $('.release-amount').html(htmlPercents);
             $('#release-modal').modal();
+        });
+
+        jQuery("body").on("click", ".btn-cancelled", function() {
+            var r = confirm("Do you confirm to release?");
+            purchase_id = $(this).data('id');
+            post_id = $(this).data('post-id');
+
+            if (r == true) {
+                jQuery.ajax({
+                    type: 'post',
+                    url: '/cancel_purchase',
+                    data: {
+                        post_id: post_id,
+                        purchase_id: purchase_id
+                    },
+                    success: function(res) {
+                        alert('The tranasction is Cancelled successfully.');
+                        location.href = '/my-account?tab=purchase';
+                    }
+                });
+            }                    
         });
 
         // profile management        
