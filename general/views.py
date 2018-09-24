@@ -1041,10 +1041,14 @@ def search_txs(request):
                             "paid_percent" : ppur.paid_percent,
                             "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
                             "date" : ppur.created_at,
-                            "service_fee" : settings.APP_FEE * 100
+                            "service_fee" : settings.APP_FEE * 100,
                         })
 
-        rndr_str = render_to_string("_transactions_pending.html" , {'ppurchases': ppurchases_list}, request=request)
+        rndr_str = render_to_string("_transactions_pending.html" , {
+                    'ppurchases': ppurchases_list,
+                    'APP_FEE' : settings.APP_FEE,
+                    'APP_FEE_BUY' : settings.APP_FEE_BUY
+                    }, request=request)
 
         return HttpResponse(rndr_str)
 
