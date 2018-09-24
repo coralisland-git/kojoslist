@@ -173,13 +173,38 @@
                 <div id="purchase" class="tab-pane fade {% if tab == 'purchase' %}active in{% endif %}">
                     <div class="pages balance">
                         <div class="rv-title">Pending Transactions</div>
-                        <div class="search-form_d row">
-                            <div class="input-group col-md-3 pull-right">
-                                <input type="text" class="input-xlarge form-control " name="tx_key" placeholder="Filter..." id="tx_key_p">
+                        <br>
+                        <div class="search-form_d row form-inline filter_tx">
+                            <div class="input-group  col-md-2 col-xs-12">
+                                <input type="text" class="form-control" name="tx_key" placeholder="title..." id="tx_key_p">
                                 <input type="hidden" name="tx_type" value="pending">
-                                <span class="input-group-addon sym_phone" id="search_txs_p" style="cursor : pointer;">
-                                    <i class="fa fa-filter" style="width: 14px;"></i>
-                                </span>
+                            </div>
+                            <div class="input-group col-md-2 col-xs-12">
+                                <select class="input-xlarge form-control release-amount" id="tx_pm_p">
+                                    <option>All Payment Methods</option>
+                                    <option>Paypal</option>
+                                    <option>Stripe</option>
+                                    <option>Bank</option>
+                                </select>
+                            </div>
+                            <div class="input-group col-md-2 col-xs-12" style="margin-right: 5px;">
+                                <select class="input-xlarge form-control" id="tx_category_p">
+                                    <option value="">All Categories</option>
+                                    {% for category in category_list %}
+                                        <option value="{{ category.name }}">{{category.name}}</option>
+                                    {% endfor%}
+                                </select>
+                            </div>
+                            <span class="property_title">From:</span>
+                            <div class="input-group col-md-1 col-xs-12">
+                                <input type="Date" class="input-xlarge form-control " placeholder="From" id="tx_start_date_p">
+                            </div>
+                            <span class="property_title">To:</span>
+                            <div class="input-group col-md-1 col-xs-12">
+                                <input type="Date" class="input-xlarge form-control " placeholder="To" id="tx_end_date_p">
+                            </div>
+                            <div class="input-group col-md-1  col-xs-12 ">
+                                <button type="button" class=" btn btn-md btn-primary pull-right" id="search_txs_p">Search</button>
                             </div>
                         </div>
                         <hr>
@@ -289,9 +314,11 @@
         <form id="release-form">
           <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="well" style="line-height: 24px;">
-                <p>Title: <span class="post_title"></span></p>
                 <p>Total Price: $<span class="ptotal-price">89.99</span></p>
+                <p>Total Service Fee: <span class="total-service-fee">89.99</span></p>
+                <hr class="min-hr">
                 <p>Paid Amount: <span class="ppaid-amount">$30</span> ( <span class="ppaid-percent">25%</span> )</p>
+                <p>Paid Service Fee: <span class="service-fee"></span></p>
                 {# <p>Transaction: <span class="plast-transaction"></span></p> #}
             </div>
                 <h4>Release Amount</h4>
@@ -312,7 +339,41 @@
         </div>
 
       </div>
-    </div>        
+    </div>      
+
+    <div id="cancel-modal" class="modal fade perk-modal" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Cancel the transaction from escrow</h4>
+              </div>
+            <form id="cancel-form">
+              <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+                <div class="well" style="line-height: 24px;">
+                    <p>Title: <span class="post_title"></span></p>
+                    <br>
+                    <p>Total Price: $<span class="ptotal-price">89.99</span></p>
+                    <p>Total Service Fee: <span class="total-service-fee">89.99</span></p>
+                    <hr class="min-hr">
+                    <p>Paid Amount: <span class="ppaid-amount">$30</span> ( <span class="ppaid-percent">25%</span> )</p>
+                    <p>Paid Service Fee: <span class="service-fee"></span></p>
+                    <hr class="min-hr">
+                    <p>Refunds: <span class="refunds"></span></p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn" style="background-color: #4DBEE2;" id="btn-cancel-confirm">Continue</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </form>
+            </div>
+          </div>
+        </div> 
+
+      
 
 {% endblock %}
 
@@ -351,7 +412,11 @@
                 url: '/search-txs',
                 data: {
                         tx_type: 'pending' ,
-                        tx_key: $('#tx_key_p').val()
+                        tx_key: $('#tx_key_p').val(),
+                        tx_payment_method: $('#tx_pm_p').val(),
+                        tx_category: $('#tx_category_p').val(),
+                        tx_start_date: $('#tx_start_date_p').val(),
+                        tx_end_date: $('#tx_end_date_p').val()
                     },
                 success: function (data) {
                     jQuery('#ppurchases_list').html(data);
@@ -359,22 +424,22 @@
             });                     
         });
 
-        jQuery('#tx_key_p').keypress(function(e) {
-            var key = e.which;
-            if (key == 13) {
-                jQuery.ajax({
-                type: 'get',
-                url: '/search-txs',
-                data: {
-                        tx_type: 'pending' ,
-                        tx_key: $('#tx_key_p').val()
-                    },
-                success: function (data) {
-                    jQuery('#ppurchases_list').html(data);
-                }
-            });   
-            }
-        });
+        // jQuery('#tx_key_p').keypress(function(e) {
+        //     var key = e.which;
+        //     if (key == 13) {
+        //         jQuery.ajax({
+        //         type: 'get',
+        //         url: '/search-txs',
+        //         data: {
+        //                 tx_type: 'pending' ,
+        //                 tx_key: $('#tx_key_p').val()
+        //             },
+        //         success: function (data) {
+        //             jQuery('#ppurchases_list').html(data);
+        //         }
+        //     });   
+        //     }
+        // });
 
         jQuery('#search_txs_d').click(function() {
             jQuery.ajax({
@@ -388,23 +453,6 @@
                     jQuery('#dpurchases_list').html(data);
                 }
             });                     
-        });
-
-        jQuery('#tx_key_d').keypress(function(e) {
-            var key = e.which;
-            if (key == 13) {
-                jQuery.ajax({
-                type: 'get',
-                url: '/search-txs',
-                data: {
-                        tx_type: 'finished' ,
-                        tx_key: $('#tx_key_d').val()
-                    },
-                success: function (data) {
-                    jQuery('#dpurchases_list').html(data);
-                }
-            });      
-            }
         });
 
         jQuery('#search_txs_c').click(function() {
@@ -421,23 +469,6 @@
             });                     
         });
 
-        jQuery('#tx_key_c').keypress(function(e) {
-            var key = e.which;
-            if (key == 13) {
-                jQuery.ajax({
-                type: 'get',
-                url: '/search-txs',
-                data: {
-                        tx_type: 'cancelled' ,
-                        tx_key: $('#tx_key_c').val()
-                    },
-                success: function (data) {
-                    jQuery('#cpurchases_list').html(data);
-                }
-            });    
-            }
-        });
-
         jQuery('#search_txs_r').click(function() {
             jQuery.ajax({
                 type: 'get',
@@ -450,23 +481,6 @@
                     jQuery('#rpurchases_list').html(data);
                 }
             });                     
-        });
-
-        jQuery('#tx_key_r').keypress(function(e) {
-            var key = e.which;
-            if (key == 13) {
-                jQuery.ajax({
-                    type: 'get',
-                    url: '/search-txs',
-                    data: {
-                            tx_type: 'received' ,
-                            tx_key: $('#tx_key_r').val()
-                        },
-                    success: function (data) {
-                        jQuery('#rpurchases_list').html(data);
-                    }
-                });   
-            }
         });
 
 
@@ -530,36 +544,11 @@
                 });
             }            
         });
-        // purchase / release management
-        $(".btn-release").click(function() {
-            var amount = $(this).data('amount'),
-                transaction = $(this).data('transaction'),
-                percent = $(this).data('percent'),
-                htmlPercents = '';
-                post_title = $(this).data('post-title'),
 
-            purchase_id = $(this).data('id');
-            post_id = $(this).data('post-id');
 
-            $('.ptotal-price').html(amount);
-            $('.plast-transaction').html(transaction);
-            $('.ppaid-amount').html('$'+(amount * percent / 100).toFixed(2));
-            $('.ppaid-percent').html(percent+'%');
-            $('.post_title').html(post_title);
-
-            for (i = 10; i <= 100-parseInt(percent); i+=10) {
-                htmlPercents += "<option value='"+i+"'>"+i+" %</option>";
-            }
-
-            $('.release-amount').html(htmlPercents);
-            $('#release-modal').modal();
-        });
-
-        jQuery("body").on("click", ".btn-cancelled", function() {
-            var r = confirm("Do you confirm to release?");
-            purchase_id = $(this).data('id');
-            post_id = $(this).data('post-id');
-
+        $('#cancel-form').submit(function(e) { 
+            e.preventDefault();
+            var r = confirm("Do you confirm to cancel?");
             if (r == true) {
                 jQuery.ajax({
                     type: 'post',
@@ -573,7 +562,64 @@
                         location.href = '/my-account?tab=purchase';
                     }
                 });
-            }                    
+            } 
+        });
+
+        // purchase / release management
+        $(".btn-release").click(function() {
+            var amount = $(this).data('amount'),
+                app_fee = $(this).data('app-fee'),
+                app_fee_buy = $(this).data('app-fee-buy'),
+                transaction = $(this).data('transaction'),
+                percent = $(this).data('percent'),
+                htmlPercents = '';
+                post_title = $(this).data('post-title'),
+                service_fee = '$'+( app_fee_buy * amount * percent / 100).toFixed(2),
+                total_service_fee = '$'+( app_fee_buy * amount ).toFixed(2),
+
+            purchase_id = $(this).data('id');
+            post_id = $(this).data('post-id');
+
+            $('.ptotal-price').html(amount);
+            $('.plast-transaction').html(transaction);
+            $('.ppaid-amount').html('$'+(amount * percent / 100).toFixed(2));
+            $('.ppaid-percent').html(percent+'%');
+            $('.post_title').html(post_title);
+            $('.service-fee').html(service_fee);
+            $('.total-service-fee').html(total_service_fee);
+
+            for (i = 10; i <= 100-parseInt(percent); i+=10) {
+                htmlPercents += "<option value='"+i+"'>"+i+" %</option>";
+            }
+
+            $('.release-amount').html(htmlPercents);
+            $('#release-modal').modal();
+        });
+
+        $(".btn-cancelled").click(function() {
+            var amount = $(this).data('amount'),
+                app_fee = $(this).data('app-fee'),
+                app_fee_buy = $(this).data('app-fee-buy'),
+                transaction = $(this).data('transaction'),
+                percent = $(this).data('percent'),
+                htmlPercents = '';
+                post_title = $(this).data('post-title'),
+                service_fee = '$'+( app_fee_buy * amount * percent / 100).toFixed(2),
+                total_service_fee = '$'+( app_fee_buy * amount ).toFixed(2),
+                refunds = '$'+( amount * (100-percent) / 100).toFixed(2);
+
+            purchase_id = $(this).data('id');
+            post_id = $(this).data('post-id');
+
+            $('.ptotal-price').html(amount);
+            $('.plast-transaction').html(transaction);
+            $('.ppaid-amount').html('$'+(amount * percent / 100).toFixed(2));
+            $('.ppaid-percent').html(percent+'%');
+            $('.post_title').html(post_title);
+            $('.service-fee').html(service_fee);
+            $('.total-service-fee').html(total_service_fee);
+            $('.refunds').html(refunds);
+            $('#cancel-modal').modal();
         });
 
         // profile management        

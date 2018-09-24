@@ -6068,3 +6068,24 @@ div.userpro-head{
     width: 100%;
 
 }
+
+.min-hr {
+    margin: 5px 0px;
+}
+
+.property_title {
+    margin-left : 5px;
+}
+
+.filter_tx {
+    margin : 0px;
+}
+
+
+.filter_tx div{
+    margin: 5px 0px;
+}
+
+.filter_tx span{
+    margin-top: 5px;
+}
