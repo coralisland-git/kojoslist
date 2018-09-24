@@ -876,7 +876,7 @@ def my_account(request):
                                        'post__category__id') \
                                .distinct()
 
-    
+   
     rpurchases_list = []
 
     for rpur in rpurchases:
@@ -993,7 +993,10 @@ def my_account(request):
         'rpurchases' : rpurchases_list,
         'num_reviews': Review.objects.filter(post__owner=request.user).count(),
         'stripe': request.user.socialaccount_set.filter(provider='stripe'),
-        'total_received_amount' : total_received_amount
+        'total_received_amount' : total_received_amount,
+        'APP_FEE' : settings.APP_FEE,
+        'APP_FEE_BUY' : settings.APP_FEE_BUY,
+        'category_list' : Category.objects.filter(parent=None)
     })
 
 
@@ -1002,28 +1005,45 @@ def search_txs(request):
 
     tx_type = request.GET.get('tx_type')
     keyword = request.GET.get('tx_key')
+    payment_method = request.GET.get('tx_payment_method')
+    category = request.GET.get('tx_category')
+    start_date = request.GET.get('tx_start_date')
+    end_date = request.GET.get('tx_end_date')
+
+    if start_date == '':
+        start_date = '1900-01-01'
+
+    if end_date == '':
+        end_date = datetime.datetime.today().strftime('%Y-%m-%d')
+
 
     if tx_type == "pending":
-
-        ppurchases = PostPurchase.objects.filter(purchaser=request.user).exclude(status=0) \
-                                         .order_by('-created_at')
-
+        
         ppurchases_list = []
 
-        for ppur in ppurchases:
+        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
 
-            if ( keyword != None and keyword.lower() in ppur.post.title.lower()) or keyword == None  :
-                ppurchases_list.append({
-                    "id": ppur.id,
-                    "transaction" : ppur.transaction,
-                    "post_id" : ppur.post.id,
-                    "post_title" : ppur.post.title,
-                    "post_price" : ppur.post.price,
-                    "paid_percent" : ppur.paid_percent,
-                    "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
-                    "date" : ppur.created_at,
-                    "service_fee" : settings.APP_FEE * 100
-                })
+            ppurchases = PostPurchase.objects.filter(purchaser=request.user, created_at__range=[start_date, end_date]).exclude(status=0) \
+                                             .order_by('-created_at')
+
+
+            for ppur in ppurchases:
+                
+                if category in ppur.post.category.name or category in ppur.post.category.parent.name:
+
+                    if ( keyword != None and keyword.lower() in ppur.post.title.lower()) or keyword == None  :
+                        ppurchases_list.append({
+                            "id": ppur.id,
+                            "transaction" : ppur.transaction,
+                            "post_id" : ppur.post.id,
+                            "post_title" : ppur.post.title,
+                            "post_price" : ppur.post.price,
+                            "paid_percent" : ppur.paid_percent,
+                            "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
+                            "date" : ppur.created_at,
+                            "service_fee" : settings.APP_FEE * 100
+                        })
+
         rndr_str = render_to_string("_transactions_pending.html" , {'ppurchases': ppurchases_list}, request=request)
 
         return HttpResponse(rndr_str)

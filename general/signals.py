@@ -85,6 +85,7 @@ def rating_notify(sender, instance, **kwargs):
         print e, '@@@@@ Error in rating_notify()'
 
 @receiver(post_save, sender=PostPurchase)
+
 def post_purchase_notify(sender, instance, **kwargs):    
     try:
         # send email to the owner
