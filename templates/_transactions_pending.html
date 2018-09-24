@@ -110,3 +110,68 @@
     </div>
 {% endif %}
 </div>
+
+{% block own_js %}
+
+
+<script>
+    jQuery(document).ready(function() {
+        $(".btn-release").click(function() {
+            var amount = $(this).data('amount'),
+                app_fee = $(this).data('app-fee'),
+                app_fee_buy = $(this).data('app-fee-buy'),
+                transaction = $(this).data('transaction'),
+                percent = $(this).data('percent'),
+                htmlPercents = '';
+                post_title = $(this).data('post-title'),
+                service_fee = '$'+( app_fee_buy * amount * percent / 100).toFixed(2),
+                total_service_fee = '$'+( app_fee_buy * amount ).toFixed(2),
+
+            purchase_id = $(this).data('id');
+            post_id = $(this).data('post-id');
+
+            $('.ptotal-price').html(amount);
+            $('.plast-transaction').html(transaction);
+            $('.ppaid-amount').html('$'+(amount * percent / 100).toFixed(2));
+            $('.ppaid-percent').html(percent+'%');
+            $('.post_title').html(post_title);
+            $('.service-fee').html(service_fee);
+            $('.total-service-fee').html(total_service_fee);
+
+            for (i = 10; i <= 100-parseInt(percent); i+=10) {
+                htmlPercents += "<option value='"+i+"'>"+i+" %</option>";
+            }
+
+            $('.release-amount').html(htmlPercents);
+            $('#release-modal').modal();
+        });
+
+        $(".btn-cancelled").click(function() {
+            var amount = $(this).data('amount'),
+                app_fee = $(this).data('app-fee'),
+                app_fee_buy = $(this).data('app-fee-buy'),
+                transaction = $(this).data('transaction'),
+                percent = $(this).data('percent'),
+                htmlPercents = '';
+                post_title = $(this).data('post-title'),
+                service_fee = '$'+( app_fee_buy * amount * percent / 100).toFixed(2),
+                total_service_fee = '$'+( app_fee_buy * amount ).toFixed(2),
+                refunds = '$'+( amount * (100-percent) / 100).toFixed(2);
+
+            purchase_id = $(this).data('id');
+            post_id = $(this).data('post-id');
+
+            $('.ptotal-price').html(amount);
+            $('.plast-transaction').html(transaction);
+            $('.ppaid-amount').html('$'+(amount * percent / 100).toFixed(2));
+            $('.ppaid-percent').html(percent+'%');
+            $('.post_title').html(post_title);
+            $('.service-fee').html(service_fee);
+            $('.total-service-fee').html(total_service_fee);
+            $('.refunds').html(refunds);
+            $('#cancel-modal').modal();
+        });
+    });
+</script>
+
+{% endblock %}
