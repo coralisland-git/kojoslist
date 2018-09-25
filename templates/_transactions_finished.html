@@ -3,46 +3,22 @@
 
 <div id="purchases_laptop">
     <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
-        {% comment %}
-            <div class="col-md-3 col-xs-3">Title</div>
-            <div class="col-md-2 col-xs-2">Price</div>
-            <div class="col-md-2 col-xs-2">Service Fee</div>
-            <div class="col-md-1 col-xs-2">Total Amount</div>
-            <div class="col-md-1 col-xs-1">Payment Type</div>
-            <div class="col-md-2 col-xs-2">Purchased Date</div>
-            <div class="col-md-1 col-xs-2"></div>
-        {% endcomment %}
-        <div class="col-md-6 col-xs-3">Title</div>
-        <div class="col-md-3 col-xs-2">Total Amount</div>
-        <div class="col-md-2 col-xs-2">Purchased Date</div>
-        <div class="col-md-1 col-xs-2"></div>
+        <div class="col-md-3 col-xs-3">Date</div>
+        <div class="col-md-3 col-xs-2">Category</div>
+        <div class="col-md-4 col-xs-2">Detail</div>
+        <div class="col-md-2 col-xs-2">Total Amount</div>
     </div>
     <hr>
     {% if dpurchases %}
     {% for purchase in dpurchases %}
         <div class="row" style="font-size: 17px;">
-            {% comment %}
-                <div class="col-md-3 col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                <div class="col-md-2 col-xs-2">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                <div class="col-md-2 col-xs-2" style="word-wrap: break-word;line-height: 20px;">${{ purchase.service_fee|floatformat:2|intcomma }}</div>
-                <div class="col-md-1 col-xs-2">${{ purchase.total_amount|floatformat:2|intcomma }}</div>
-                <div class="col-md-1 col-xs-1">{{ purchase.type|title }}</div>
-                <div class="col-md-2 col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
-                <div class="col-md-1 pull-right">
-                    <button class="btn btn-success btn-xs btn-finished " data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}" data-app-fee="{{ APP_FEE }}" data-app-fee-buy="{{ APP_FEE_BUY }}">view</button>
-                </div> 
-                <div class="col-md-2 col-xs-2">
-                    {% if purchase|can_rate %}
-                        <button class="btn btn-warning btn-rate-later" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}">Rate</button>
-                    {% endif %}
-                </div>
-            {% endcomment %}
-            <div class="col-md-6 col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-            <div class="col-md-3 col-xs-2">${{ purchase.total_amount|floatformat:2|intcomma }}</div>
-            <div class="col-md-2 col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
-            <div class="col-md-1 pull-right">
-                <button class="btn btn-success btn-xs btn-finished " data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}" data-app-fee="{{ APP_FEE }}" data-app-fee-buy="{{ APP_FEE_BUY }}">view</button>
-            </div> 
+            <div class="col-md-3 col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
+            <div class="col-md-3">{{ purchase.category}}</div>
+            <div class="col-md-4 col-xs-3">
+                <a href="/ads/{{ purchase.post_id }}">{{ purchase.post_title }}</a>
+                <div style="margin-top: 5px;">{{ purchase.transaction }}</div>
+            </div>
+            <div class="col-md-2 col-xs-2"  style="color : red">${{ purchase.total_amount|floatformat:2|intcomma }}</div>
         </div>
         <hr>
     {% endfor %}                    
@@ -57,58 +33,25 @@
 <div id="purchases_mobile">
     {% if dpurchases %}
     {% for purchase in dpurchases %}
-        {% comment %}
-            <div class="row" style="font-size: 17px;">
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Title</div>
-                    <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Price</div>
-                    <div class="col-xs-6">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Service Fee</div>
-                    <div class="col-xs-6" style="word-wrap: break-word;    line-height: 20px;">${{ purchase.service_fee|floatformat:2|intcomma }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Purchased Date</div>
-                    <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Payment Type</div>
-                    <div class="col-xs-6">{{ purchase.type|title }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Total Amount</div>
-                    <div class="col-xs-6">${{ purchase.total_amount|floatformat:2|intcomma}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 pull-right" style="margin-top : 15px;">
-                        <button class="btn btn-success btn-xs btn-finished " data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}" data-app-fee="{{ APP_FEE }}" data-app-fee-buy="{{ APP_FEE_BUY }}">view</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6">
-                        {% if purchase|can_rate %}
-                            <button class="btn btn-warning btn-rate-later" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post.id }}">Rate</button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        {% endcomment %}
-        <div class="row" style="font-size: 17px;">
-            <div class="row">
-                <div class="col-xs-6 purchase_title">Title</div>
-                <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 purchase_title">Total Amount</div>
-                <div class="col-xs-6">${{ purchase.total_amount|floatformat:2|intcomma}}</div>
-            </div>
+        <div class="row" style="font-size: 17px; line-height: 21px">
             <div class="row">
                 <div class="col-xs-6 purchase_title">Purchased Date</div>
                 <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Category</div>
+                <div class="col-xs-6">{{ purchase.category }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Detail</div>
+                <div class="col-xs-6">
+                    <a href="/ads/{{ purchase.post_id }}">{{ purchase.post_title }}</a>
+                    <div style="margin-top: 5px;word-break: break-word;">{{ purchase.transaction }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Total Amount</div>
+                <div class="col-xs-6"  style="color : red;">${{ purchase.total_amount|floatformat:2|intcomma}}</div>
             </div>
         </div>
         <hr>
@@ -120,3 +63,15 @@
         </div>
     {% endif %}
 </div>
+
+{% block own_js %}
+
+<script>
+    jQuery(document).ready(function() {
+        $(".btn-finished").click(function() {
+            alert('The details will be added soon.')
+        });
+    });
+</script>
+
+{% endblock %}
