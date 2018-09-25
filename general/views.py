@@ -889,13 +889,15 @@ def my_account(request):
 
                     rpurchases_list.append({
                         "id": rpur.id,
+                        "transaction" : rpur.transaction,
                         "post_id" : rpur.post.id,
                         "post_title" : rpur.post.title,
                         "post_price" : rpur.post.price,
                         "received_amount" : rpur.post.price * (1.0 - settings.APP_FEE),
                         "date" : rpur.udpated_at,
                         "type" : rpur.type,
-                        "service_fee" : rpur.post.price * settings.APP_FEE
+                        "service_fee" : rpur.post.price * settings.APP_FEE,
+                        "category" : rpur.post.category.parent.name if rpur.post.category.parent.name !='' else rpur.post.category.name
                     })
             else :
 
@@ -903,13 +905,15 @@ def my_account(request):
 
                     rpurchases_list.append({
                         "id": rpur.id,
+                        "transaction" : rpur.transaction,
                         "post_id" : rpur.post.id,
                         "post_title" : rpur.post.title,
                         "post_price" : rpur.post.price,
                         "received_amount" : (float(rpur.paid_percent)/100.0) * rpur.post.price * (1.0 - settings.APP_FEE),
                         "date" : rpur.udpated_at,
                         "type" : rpur.type,
-                        "service_fee" : (float(rpur.paid_percent)/100.0) * rpur.post.price * settings.APP_FEE
+                        "service_fee" : (float(rpur.paid_percent)/100.0) * rpur.post.price * settings.APP_FEE,
+                        "category" : rpur.post.category.parent.name  if rpur.post.category.parent.name !='' else rpur.post.category.name
                     })
 
     ppurchases_list = []
@@ -926,7 +930,7 @@ def my_account(request):
             "paid_percent" : ppur.paid_percent,
             "approved" : (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0,
             "date" : ppur.created_at,
-            "service_fee" : settings.APP_FEE * 100
+            "service_fee" : settings.APP_FEE * 100,
         })
 
     dpurchases_list = []
@@ -948,7 +952,8 @@ def my_account(request):
                 "approved" : (float(dpur.paid_percent)/100.0) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
                 "date" : dpur.created_at,
                 "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
-                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price
+                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
+                "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
             })
 
         else :
@@ -966,7 +971,8 @@ def my_account(request):
                 "service_fee" : settings.APP_FEE_BUY * dpur.post.price * float(dpur.paid_percent/100.0),
                 "total_service_fee" : settings.APP_FEE_BUY * dpur.post.price,
                 "refund_amount" : dpur.post.price * float((100 - dpur.paid_percent)/100.0),
-                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price
+                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
+                "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
             })
 
 
@@ -1054,30 +1060,36 @@ def search_txs(request):
 
     if tx_type == "finished":
 
-        dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
-                                     .order_by('-created_at')
-
         dpurchases_list = []
 
-        for dpur in dpurchases:
+        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
 
-            if dpur.paid_percent == 100:
+            dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0, created_at__range=[start_date, end_date]) \
+                                         .order_by('-created_at')
 
-                if ( keyword != None and keyword.lower() in dpur.post.title.lower()) or keyword == None  :
 
-                    dpurchases_list.append({
-                        "id": dpur.id,
-                        "transaction" : dpur.transaction,
-                        "post_id" : dpur.post.id,
-                        "post_title" : dpur.post.title,
-                        "post_price" : dpur.post.price,
-                        "paid_percent" : dpur.paid_percent,
-                        "type" : dpur.type,
-                        "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
-                        "date" : dpur.created_at,
-                        "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
-                        "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price
-                    })
+            for dpur in dpurchases:
+            
+                if category in dpur.post.category.name or category in dpur.post.category.parent.name:
+
+                    if dpur.paid_percent == 100:
+
+                        if ( keyword != None and keyword.lower() in dpur.post.title.lower()) or keyword == None  :
+
+                            dpurchases_list.append({
+                                "id": dpur.id,
+                                "transaction" : dpur.transaction,
+                                "post_id" : dpur.post.id,
+                                "post_title" : dpur.post.title,
+                                "post_price" : dpur.post.price,
+                                "paid_percent" : dpur.paid_percent,
+                                "type" : dpur.type,
+                                "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
+                                "date" : dpur.created_at,
+                                "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
+                                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
+                                "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
+                            })
 
         rndr_str = render_to_string("_transactions_finished.html" , {'dpurchases': dpurchases_list}, request=request)
 
@@ -1086,33 +1098,38 @@ def search_txs(request):
 
     if tx_type == "cancelled":
 
-        cpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
-                                     .order_by('-udpated_at')
-
         cpurchases_list = []
 
-        for cpur in cpurchases:
+        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
 
-            if cpur.paid_percent != 100:
+            cpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0, udpated_at__range=[start_date, end_date]) \
+                                         .order_by('-udpated_at')
 
-                if ( keyword != None and keyword.lower() in cpur.post.title.lower()) or keyword == None  :
+            for cpur in cpurchases:
 
-                    cpurchases_list.append({
-                       "id": cpur.id,
-                        "transaction" : cpur.transaction,
-                        "post_id" : cpur.post.id,
-                        "post_title" : cpur.post.title,
-                        "post_price" : cpur.post.price,
-                        "paid_percent" : cpur.paid_percent,
-                        "type" : cpur.type,
-                        "paid_amount" : cpur.post.price * float(cpur.paid_percent/100.0),
-                        "approved" : cpur.post.price * float(cpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
-                        "date" : cpur.udpated_at,
-                        "service_fee" : settings.APP_FEE_BUY * cpur.post.price * float(cpur.paid_percent/100.0),
-                        "total_service_fee" : settings.APP_FEE_BUY * cpur.post.price,
-                        "refund_amount" : cpur.post.price * float((100 - cpur.paid_percent)/100.0),
-                        "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price
-                    })
+                if category in cpur.post.category.name or category in cpur.post.category.parent.name:
+
+                    if cpur.paid_percent != 100:
+
+                        if ( keyword != None and keyword.lower() in cpur.post.title.lower()) or keyword == None  :
+
+                            cpurchases_list.append({
+                               "id": cpur.id,
+                                "transaction" : cpur.transaction,
+                                "post_id" : cpur.post.id,
+                                "post_title" : cpur.post.title,
+                                "post_price" : cpur.post.price,
+                                "paid_percent" : cpur.paid_percent,
+                                "type" : cpur.type,
+                                "paid_amount" : cpur.post.price * float(cpur.paid_percent/100.0),
+                                "approved" : cpur.post.price * float(cpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
+                                "date" : cpur.udpated_at,
+                                "service_fee" : settings.APP_FEE_BUY * cpur.post.price * float(cpur.paid_percent/100.0),
+                                "total_service_fee" : settings.APP_FEE_BUY * cpur.post.price,
+                                "refund_amount" : cpur.post.price * float((100 - cpur.paid_percent)/100.0),
+                                "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price,
+                                "category" : cpur.post.category.parent.name if cpur.post.category.parent.name !='' else cpur.post.category.name
+                            })
 
         rndr_str = render_to_string("_transactions_cancelled.html" , {'cpurchases': cpurchases_list}, request=request)
 
@@ -1121,44 +1138,52 @@ def search_txs(request):
 
     if tx_type == "received":
 
-        rpurchases = PostPurchase.objects.all().order_by('-udpated_at')
-
         rpurchases_list = []
 
-        for rpur in rpurchases:
+        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
 
-            if ( keyword != None and keyword.lower() in rpur.post.title.lower()) or keyword == None  :
+            rpurchases = PostPurchase.objects.filter(udpated_at__range=[start_date, end_date]).order_by('-udpated_at')
 
-                if rpur.post.owner.id == request.user.id:
+            for rpur in rpurchases:
 
-                    if rpur.type == 'direct':
+                if category in rpur.post.category.name or category in rpur.post.category.parent.name:
 
-                        if rpur.status == 0:
+                    if ( keyword != None and keyword.lower() in rpur.post.title.lower()) or keyword == None  :
 
-                            rpurchases_list.append({
-                                "id": rpur.id,
-                                "post_id" : rpur.post.id,
-                                "post_title" : rpur.post.title,
-                                "post_price" : rpur.post.price,
-                                "received_amount" : rpur.post.price * (1.0 - settings.APP_FEE),
-                                "date" : rpur.udpated_at,
-                                "type" : rpur.type,
-                                "service_fee" : rpur.post.price * settings.APP_FEE
-                            })
-                    else :
+                        if rpur.post.owner.id == request.user.id:
 
-                        if rpur.paid_percent != 0:
+                            if rpur.type == 'direct':
 
-                            rpurchases_list.append({
-                                "id": rpur.id,
-                                "post_id" : rpur.post.id,
-                                "post_title" : rpur.post.title,
-                                "post_price" : rpur.post.price,
-                                "received_amount" : (float(rpur.paid_percent)/100) * rpur.post.price * (1.0 - settings.APP_FEE),
-                                "date" : rpur.udpated_at,
-                                "type" : rpur.type,
-                                "service_fee" : (float(rpur.paid_percent)/100) * rpur.post.price * settings.APP_FEE
-                            })
+                                if rpur.status == 0:
+
+                                    rpurchases_list.append({
+                                        "id": rpur.id,
+                                        "transaction" : rpur.transaction,
+                                        "post_id" : rpur.post.id,
+                                        "post_title" : rpur.post.title,
+                                        "post_price" : rpur.post.price,
+                                        "received_amount" : rpur.post.price * (1.0 - settings.APP_FEE),
+                                        "date" : rpur.udpated_at,
+                                        "type" : rpur.type,
+                                        "service_fee" : rpur.post.price * settings.APP_FEE,
+                                        "category" : rpur.post.category.parent.name if rpur.post.category.parent.name !='' else rpur.post.category.name
+                                    })
+                            else :
+
+                                if rpur.paid_percent != 0:
+
+                                    rpurchases_list.append({
+                                        "id": rpur.id,
+                                        "post_id" : rpur.post.id,
+                                        "transaction" : rpur.transaction,
+                                        "post_title" : rpur.post.title,
+                                        "post_price" : rpur.post.price,
+                                        "received_amount" : (float(rpur.paid_percent)/100) * rpur.post.price * (1.0 - settings.APP_FEE),
+                                        "date" : rpur.udpated_at,
+                                        "type" : rpur.type,
+                                        "service_fee" : (float(rpur.paid_percent)/100) * rpur.post.price * settings.APP_FEE,
+                                        "category" : rpur.post.category.parent.name  if rpur.post.category.parent.name !='' else rpur.post.category.name
+                                    })
 
         rndr_str = render_to_string("_transactions_received.html" , {'rpurchases': rpurchases_list}, request=request)
 

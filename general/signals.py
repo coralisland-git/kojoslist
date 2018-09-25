@@ -89,23 +89,63 @@ def rating_notify(sender, instance, **kwargs):
 def post_purchase_notify(sender, instance, **kwargs):    
     try:
         # send email to the owner
-        content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) is purchased by {4} {5} at {6}<br><br>Contact Info:<br>" \
-                  .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
+        subject = ''
+
         if instance.type == 'direct':
             subject = 'Item purchased directly'
         else:
             subject = 'Item purchased via escrow'
+                       
+        if instance.type == 'escrow' and instance.paid_percent != 100 and instance.status == 0:
 
-        content += instance.contact
-        send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
-
-        content_to_self = "You have purchased <a href='{0}/ads/{1}'>{2}</a> (${3}) at {4}" \
+            content = "The transaction for <a href='{0}/ads/{1}'>{2}</a> (${3}) is cancelld by {4} {5} at {6}<br><br>Contact Info:<br>" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                           instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
 
-        content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
-        send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+            content += instance.contact
+
+            content_to_self = "You have cancelled the transaction for <a href='{0}/ads/{1}'>{2}</a> (${3}) at {4}" \
+                      .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                               instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
+
+            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
+
+            send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
+            send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+
+        elif instance.type == 'escrow' and instance.paid_percent > 0:
+
+            content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) is purchased {7}% by {4} {5} at {6}<br><br>Contact Info:<br>" \
+                  .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"), instance.paid_percent)
+
+            content += instance.contact
+
+            content_to_self = "You have purchased {5}%  of <a href='{0}/ads/{1}'>{2}</a> (${3}) at {4}" \
+                      .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                               instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"), instance.paid_percent)
+
+            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
+
+            send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
+            send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+
+        else:
+
+            content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) is purchased by {4} {5} at {6}<br><br>Contact Info:<br>" \
+                  .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
+
+            content += instance.contact
+
+            content_to_self = "You have purchased <a href='{0}/ads/{1}'>{2}</a> (${3}) at {4}" \
+                      .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                               instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
+
+            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
+            
+            send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
+            send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
 
     except Exception, e:
         print e, '@@@@@ Error in post_purchase_notify()'
