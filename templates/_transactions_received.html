@@ -3,88 +3,75 @@
 
 <div id="purchases_laptop">
     <div class="row" style="font-size: 18px; color: #4DBEE2; margin-top: 10px;">
-        {% comment %}
-            <div class="col-md-3 col-xs-3">Title</div>
-            <div class="col-md-2 col-xs-2">Price</div>
-            <div class="col-md-2 col-xs-2">Service Fee</div>
-            <div class="col-md-2 col-xs-2">Recevied Amount</div>
-            <div class="col-md-1 col-xs-1">Payment Type</div>
-            <div class="col-md-2 col-xs-2">Received Date</div>
-        {% endcomment %}
-        <div class="col-md-6">Title</div>
-        <div class="col-md-6">Received Date</div>
+        <div class="col-md-3 col-xs-3">Date</div>
+        <div class="col-md-3 col-xs-2">Category</div>
+        <div class="col-md-4 col-xs-2">Detail</div>
+        <div class="col-md-2 col-xs-2">Total Amount</div>
     </div>
     <hr>
-
     {% if rpurchases %}
     {% for purchase in rpurchases %}
         <div class="row" style="font-size: 17px;">
-            {% comment %}
-                <div class="col-md-3  col-xs-3"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                <div class="col-md-2  col-xs-2">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                <div class="col-md-2  col-xs-2">${{ purchase.service_fee|floatformat:2|intcomma }}</div>
-                <div class="col-md-2  col-xs-2" style="color : red">${{ purchase.received_amount|floatformat:2|intcomma }}</div>
-                <div class="col-md-1  col-xs-1">{{ purchase.type }}</div>
-                <div class="col-md-2  col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
-            {% endcomment %}
-            <div class="col-md-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-            <div class="col-md-6">{{ purchase.date|date:"M d, Y" }}</div>
+            <div class="col-md-3 col-xs-2">{{ purchase.date|date:"M d, Y" }}</div>
+            <div class="col-md-3">{{ purchase.category}}</div>
+            <div class="col-md-4 col-xs-3">
+                <a href="/ads/{{ purchase.post_id }}">{{ purchase.post_title }}</a>
+                <div style="margin-top: 5px;">{{ purchase.transaction }}</div>
+            </div>
+            <div class="col-md-2 col-xs-2"  style="color : red">${{ purchase.received_amount|floatformat:2|intcomma }}</div>
         </div>
         <hr>
-    {% endfor %}
+    {% endfor %}                    
     {% else %}
         <div class="row" style="font-size: 18px;">
             <div class="col-md-4">No record</div>
         </div>
+        <hr>
     {% endif %}
 </div>
 
 <div id="purchases_mobile">
     {% if rpurchases %}
     {% for purchase in rpurchases %}
-        {% comment %}
-            <div class="row" style="font-size: 17px;">
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Title</div>
-                    <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Price</div>
-                    <div class="col-xs-6">${{ purchase.post_price|floatformat:2|intcomma }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Service Fee</div>
-                    <div class="col-xs-6">${{ purchase.service_fee|floatformat:2|intcomma }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Received Amount</div>
-                    <div class="col-xs-6" style="color : red">${{ purchase.received_amount|floatformat:2|intcomma }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Payment Type</div>
-                    <div class="col-xs-6">{{ purchase.type }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 purchase_title">Received Date</div>
-                    <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
-                </div>
-            </div>
-        {% endcomment %}
-        <div class="row" style="font-size: 17px;">
+        <div class="row" style="font-size: 17px; line-height: 21px">
             <div class="row">
-                <div class="col-xs-6 purchase_title">Title</div>
-                <div class="col-xs-6"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 purchase_title">Received Date</div>
+                <div class="col-xs-6 purchase_title">Purchased Date</div>
                 <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Category</div>
+                <div class="col-xs-6">{{ purchase.category }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Detail</div>
+                <div class="col-xs-6">
+                    <a href="/ads/{{ purchase.post_id }}">{{ purchase.post_title }}</a>
+                    <div style="margin-top: 5px;word-break: break-word;">{{ purchase.transaction }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Total Amount</div>
+                <div class="col-xs-6"  style="color : red;">${{ purchase.received_amount|floatformat:2|intcomma}}</div>
             </div>
         </div>
         <hr>
-    {% endfor %}
+    {% endfor %}                    
     {% else %}
         <div class="row" style="font-size: 18px;">
             <div class="col-md-4">No record</div>
+            <hr>
         </div>
     {% endif %}
 </div>
+
+{% block own_js %}
+
+<script>
+    jQuery(document).ready(function() {
+        $(".btn-received").click(function() {
+            alert('The details will be added soon.')
+        });
+    });
+</script>
+
+{% endblock %}
