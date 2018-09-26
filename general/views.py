@@ -1020,8 +1020,7 @@ def search_txs(request):
         start_date = '1900-01-01'
 
     if end_date == '':
-        end_date = datetime.datetime.today().strftime('%Y-%m-%d')
-
+        end_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
     if tx_type == "pending":
         
