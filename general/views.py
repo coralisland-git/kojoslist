@@ -854,6 +854,7 @@ def remove_subscription(request):
 @login_required(login_url='/accounts/login/')
 def my_account(request):
 
+
     tab = request.GET.get('tab', 'profile')
     purchase = request.GET.get('purchase')
     res_temp = []
@@ -1389,7 +1390,7 @@ def release_purchase(request):
 
         except Exception as e:
 
-            print(e, "~~~~~~~~~")
+            print(e, "~~~~~~~~~here")
 
             return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
 
