@@ -89,6 +89,7 @@ def rating_notify(sender, instance, **kwargs):
 def post_purchase_notify(sender, instance, **kwargs):    
     try:
         # send email to the owner
+
         subject = ''
 
         if instance.type == 'direct':
@@ -98,20 +99,24 @@ def post_purchase_notify(sender, instance, **kwargs):
                        
         if instance.type == 'escrow' and instance.paid_percent != 100 and instance.status == 0:
 
-            content = "The transaction for <a href='{0}/ads/{1}'>{2}</a> (${3}) is cancelld by {4} {5} at {6}<br><br>Contact Info:<br>" \
+            content = "The transaction for <a href='{0}/ads/{1}'>{2}</a> (${3}) is cancelld by {4} {5} at {6}" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
 
-            content += instance.contact
+            content += "<br><br>Total Price: ${0}<br>Total Service Fee: ${1}<br><br> Approved Amount: ${2}({3}%)<br>Paid Service Fee: ${4}" \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , settings.APP_FEE * instance.post.price * instance.paid_percent / 100.0 )
+
+            content += "<br><br>Contact Info:<br>" + instance.contact
+
 
             content_to_self = "You have cancelled the transaction for <a href='{0}/ads/{1}'>{2}</a> (${3}) at {4}" \
-                      .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                        .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                                instance.created_at.strftime("%Y-%m-%d %H:%M:%S %Z"))
 
-            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
+            content_to_self += "<br><br>Total Price: ${0}<br>Total Service Fee: ${1}<br><br> Paid Amount: ${2}({3}%)<br>Paid Service Fee: ${4}<br><br>Refunded: ${5}" \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE_BUY, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent, settings.APP_FEE_BUY * instance.post.price * instance.paid_percent / 100.0, instance.post.price * ( 1.0 - instance.paid_percent/100.0 ) )
 
-            send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
-            send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
 
         elif instance.type == 'escrow' and instance.paid_percent > 0:
 
@@ -127,9 +132,6 @@ def post_purchase_notify(sender, instance, **kwargs):
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
 
-            send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
-            send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
-
         else:
 
             content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) is purchased by {4} {5} at {6}<br><br>Contact Info:<br>" \
@@ -144,8 +146,11 @@ def post_purchase_notify(sender, instance, **kwargs):
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
             
-            send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
-            send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+        send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
+
+        send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+
 
     except Exception, e:
+
         print e, '@@@@@ Error in post_purchase_notify()'
