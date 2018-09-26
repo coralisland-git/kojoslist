@@ -212,7 +212,7 @@
                             {% include '_transactions_pending.html' %}    
                         </div>
 
-                        <div class="rv-title" style="margin-top: 36px;">Finished Transactions</div>
+                        <div class="rv-title" style="margin-top: 36px;">Completed Transactions</div>
                         <div class="search-form_d row form-inline filter_tx">
                             <div class="input-group  col-md-2 col-xs-12">
                                 <input type="text" class="form-control" name="tx_key" placeholder="Title..." id="tx_key_f">
@@ -249,45 +249,6 @@
                         <hr>
                         <div id="dpurchases_list">
                             {% include '_transactions_finished.html' %}    
-                        </div>
-
-                        <div class="rv-title" style="margin-top: 36px;">Cancelled Transactions</div>
-                        <div class="search-form_d row form-inline filter_tx">
-                            <div class="input-group  col-md-2 col-xs-12">
-                                <input type="text" class="form-control" name="tx_key" placeholder="Title..." id="tx_key_c">
-                                <input type="hidden" name="tx_type" value="pending">
-                            </div>
-                            <div class="input-group col-md-2 col-xs-12">
-                                <select class="input-xlarge form-control" id="tx_pm_c">
-                                    <option>All Payment Methods</option>
-                                    <option>Paypal</option>
-                                    <option>Stripe</option>
-                                    <option>Bank</option>
-                                </select>
-                            </div>
-                            <div class="input-group col-md-2 col-xs-12" style="margin-right: 5px;">
-                                <select class="input-xlarge form-control" id="tx_category_c">
-                                    <option value="">All Categories</option>
-                                    {% for category in category_list %}
-                                        <option value="{{ category.name }}">{{category.name}}</option>
-                                    {% endfor%}
-                                </select>
-                            </div>
-                            <span class="property_title">From:</span>
-                            <div class="input-group col-md-1 col-xs-12">
-                                <input type="Date" class="input-xlarge form-control " placeholder="From" id="tx_start_date_c">
-                            </div>
-                            <span class="property_title">To:</span>
-                            <div class="input-group col-md-1 col-xs-12">
-                                <input type="Date" class="input-xlarge form-control " placeholder="To" id="tx_end_date_c">
-                            </div>
-                            <div class="input-group col-md-1  col-xs-12 ">
-                                <button type="button" class=" btn btn-md btn-primary pull-right" id="search_txs_c">Search</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div id="cpurchases_list">
-                            {% include '_transactions_cancelled.html' %}    
                         </div>
 
                         <div class="rv-title" style="margin-top: 36px;">Received Transactions</div>
@@ -327,6 +288,45 @@
                         <hr>
                         <div id="rpurchases_list">
                             {% include '_transactions_received.html' %}    
+                        </div>
+
+                        <div class="rv-title" style="margin-top: 36px;">Cancelled Transactions</div>
+                        <div class="search-form_d row form-inline filter_tx">
+                            <div class="input-group  col-md-2 col-xs-12">
+                                <input type="text" class="form-control" name="tx_key" placeholder="Title..." id="tx_key_c">
+                                <input type="hidden" name="tx_type" value="pending">
+                            </div>
+                            <div class="input-group col-md-2 col-xs-12">
+                                <select class="input-xlarge form-control" id="tx_pm_c">
+                                    <option>All Payment Methods</option>
+                                    <option>Paypal</option>
+                                    <option>Stripe</option>
+                                    <option>Bank</option>
+                                </select>
+                            </div>
+                            <div class="input-group col-md-2 col-xs-12" style="margin-right: 5px;">
+                                <select class="input-xlarge form-control" id="tx_category_c">
+                                    <option value="">All Categories</option>
+                                    {% for category in category_list %}
+                                        <option value="{{ category.name }}">{{category.name}}</option>
+                                    {% endfor%}
+                                </select>
+                            </div>
+                            <span class="property_title">From:</span>
+                            <div class="input-group col-md-1 col-xs-12">
+                                <input type="Date" class="input-xlarge form-control " placeholder="From" id="tx_start_date_c">
+                            </div>
+                            <span class="property_title">To:</span>
+                            <div class="input-group col-md-1 col-xs-12">
+                                <input type="Date" class="input-xlarge form-control " placeholder="To" id="tx_end_date_c">
+                            </div>
+                            <div class="input-group col-md-1  col-xs-12 ">
+                                <button type="button" class=" btn btn-md btn-primary pull-right" id="search_txs_c">Search</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="cpurchases_list">
+                            {% include '_transactions_cancelled.html' %}    
                         </div>
 
                     </div>
