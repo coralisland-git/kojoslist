@@ -1412,7 +1412,7 @@ def cancel_purchase(request):
 
     destination=purchase.purchaser.socialaccount_set.get(provider='stripe').uid
 
-    amount = int((100 - purchase.paid_percent ) * purchase.post.price * (1 + settings.APP_FEE_BUY ))
+    amount = int((100 - purchase.paid_percent ) * purchase.post.price)
 
     try:
 
