@@ -240,7 +240,7 @@
         </div>
     </div>
 
-    <div id="pay-modal" class="perk-modal modal fade" role="dialog">
+    <div id="pay-modal" class="perk-modal modal fade" role="dialog" >
       <div class="modal-dialog">
 
         <!-- Modal content-->
@@ -426,7 +426,8 @@
                 alert('Please specify all information!');
                 return;
             } else {
-                $('#pay-modal').modal();                
+                $('#pay-modal').modal({backdrop: 'static', keyboard: false}); 
+                               
             }
         });
 
