@@ -87,78 +87,76 @@ def rating_notify(sender, instance, **kwargs):
 @receiver(post_save, sender=PostPurchase)
 
 def post_purchase_notify(sender, instance, **kwargs):    
-    # try:
+    try:
         # send email to the owner
 
-    subject = ''
+        subject = ''
 
-    if instance.type == 'direct':
-        subject = 'Item purchased directly'
-    else:
-        subject = 'Item purchased via escrow'
-                   
-    if instance.type == 'escrow' and instance.paid_percent != 100 and instance.status == 0:
+        if instance.type == 'direct':
+            subject = 'Item {0} purchased directly'.format(instance.post.title)
+        else:
+            subject = 'Item {0} purchased via escrow'.format(instance.post.title)
+                       
+        if instance.type == 'escrow' and instance.paid_percent != 100 and instance.status == 0:
 
-        subject = 'Item {0} cancelled via escrow'.format(instance.post.title)
+            subject = 'Item {0} cancelled via escrow'.format(instance.post.title)
 
-        content = "The transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) has been cancelled by {4} {5} on {6}" \
-              .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                      instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"))
-
-        content += "<br><br>Total Price: ${0}<br>Service Fee: ${1}<br><br> Received Amount: ${2}({3}%)<br> Cancelled Amount: ${4}" \
-                    .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)) )
-
-        content += "<br><br>Contact Info:<br>" + instance.contact
-
-
-        content_to_self = "You have cancelled the transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) on {4}" \
-                    .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                           instance.created_at.strftime("%b-%d-%Y at %H:%M%p"))
-
-        content_to_self += "<br><br>Total Price: ${0}<br>Service Fee: ${1}<br><br> Paid Amount: ${2}({3}%)<br> Cancelled Amount: ${4}" \
-                    .format(instance.post.price, instance.post.price * settings.APP_FEE_BUY, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent, instance.post.price * (1.0 - (instance.paid_percent / 100.0)) )
-
-        content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
-
-    elif instance.type == 'escrow' and instance.paid_percent > 0:
-
-        subject =  '{0}% item purchased via escrow'.format(instance.paid_percent)
-
-        content = "{7}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased by {4} {5} on {6}<br><br>Contact Info:<br>" \
-              .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                      instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent)
-
-        content += instance.contact
-
-        content_to_self = "You have purchased {5}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) on {4}" \
+            content = "The transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) has been cancelled by {4} {5} on {6}" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                           instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent)
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"))
 
-        content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
+            content += "<br><br>Total Price: ${0}<br>Service Fee: ${1}<br><br> Received Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Total Amount received: ${5} " \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)), instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
 
-    else:
+            content += "<br><br>Contact Info:<br>" + instance.contact
 
-        key = "purchased" if instance.type == "direct" else "via escrow"
+            content_to_self = "You have cancelled the transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) on {4}" \
+                        .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                               instance.created_at.strftime("%b-%d-%Y at %H:%M%p"))
 
-        content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) has been {7} by {4} {5} on {6}<br><br>Contact Info:<br>" \
-              .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                      instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), key)
+            content_to_self += "<br><br>Total Price: ${0}<br>Service Fee: ${1}<br><br> Paid Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Total Amount paid: ${5}" \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE_BUY, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent, instance.post.price * (1.0 - (instance.paid_percent / 100.0)), instance.post.price * (instance.paid_percent / 100.0 + settings.APP_FEE_BUY) )
 
-        content += instance.contact
+            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
 
+        elif instance.type == 'escrow' and instance.paid_percent > 0:
 
+            subject =  '{0}% item {1} purchased via escrow'.format(instance.paid_percent, instance.post.title)
 
-        content_to_self = "You have {5} <a href='{0}/ads/{1}'>{2}</a> (${3}) {6} on {4}" \
+            content = "{7}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased by {4} {5} on {6}<br><br>Contact Info:<br>" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                           instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), key if key=="purchased" else 'a', key if key=="via escrow" else '')
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent)
 
-        content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
-        
-    send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
+            content += instance.contact
 
-    send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+            content_to_self = "You have purchased {5}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) on {4}" \
+                      .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                               instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent)
+
+            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
+
+        else:
 
 
-    # except Exception, e:
+            content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased {7} by {4} {5} on {6}<br><br>Contact Info:<br>" \
+                  .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow")
 
-    #     print e, '@@@@@ Error in post_purchase_notify()'
+            content += instance.contact
+
+
+
+            content_to_self = "You purchased a <a href='{0}/ads/{1}'>{2}</a> (${3}) {6} on {4}" \
+                      .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
+                               instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow")
+
+            content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
+            
+        send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
+
+        send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
+
+
+    except Exception, e:
+
+        print e, '@@@@@ Error in post_purchase_notify()'
