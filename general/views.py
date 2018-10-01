@@ -1320,6 +1320,7 @@ def search_camps(request):
 
 @csrf_exempt
 def rate_ads(request):
+
     Review.objects.create(post_id=request.POST.get('post_id'),
                           rater=request.user,
                           purchase_id=request.POST.get('purchase_id'),
