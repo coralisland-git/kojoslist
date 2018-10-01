@@ -204,7 +204,7 @@
                                 <input type="Date" class="input-xlarge form-control " placeholder="To" id="tx_end_date_p">
                             </div>
                             <div class="input-group col-md-1  col-xs-12 ">
-                                <button type="button" class=" btn btn-md btn-primary pull-right" id="search_txs_p">Search</button>
+                                <button type="button" class=" btn btn-md pull-right action_button" id="search_txs_p">Search</button>
                             </div>
                         </div>
                         <hr>
@@ -243,7 +243,7 @@
                                 <input type="Date" class="input-xlarge form-control " placeholder="To" id="tx_end_date_f">
                             </div>
                             <div class="input-group col-md-1  col-xs-12 ">
-                                <button type="button" class=" btn btn-md btn-primary pull-right" id="search_txs_f">Search</button>
+                                <button type="button" class=" btn btn-md pull-right action_button" id="search_txs_f">Search</button>
                             </div>
                         </div>
                         <hr>
@@ -282,7 +282,7 @@
                                 <input type="Date" class="input-xlarge form-control " placeholder="To" id="tx_end_date_r">
                             </div>
                             <div class="input-group col-md-1  col-xs-12 ">
-                                <button type="button" class=" btn btn-md btn-primary pull-right" id="search_txs_r">Search</button>
+                                <button type="button" class=" btn btn-md pull-right action_button" id="search_txs_r">Search</button>
                             </div>
                         </div>
                         <hr>
@@ -321,7 +321,7 @@
                                 <input type="Date" class="input-xlarge form-control " placeholder="To" id="tx_end_date_c">
                             </div>
                             <div class="input-group col-md-1  col-xs-12 ">
-                                <button type="button" class=" btn btn-md btn-primary pull-right" id="search_txs_c">Search</button>
+                                <button type="button" class=" btn btn-md pull-right action_button" id="search_txs_c">Search</button>
                             </div>
                         </div>
                         <hr>
@@ -345,7 +345,7 @@
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">Purchase an Item</h4>
           </div>
-        <form id="rate-form">
+        <form class="rate-form">
         <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="well">
                 <p>Thank you for purchasing "<span id="post_title">{{ result }}</span>"</p> 
@@ -355,7 +355,7 @@
             </div>
                 <h4>Please rate the item</h4>
                 <div style="padding: 10px 0;">
-                    <input id="rating-input" name="rating" type="text" title="" value="5"/>
+                    <input class="rating-input" name="rating" type="text" title="" value="5"/>
                 </div>
                 <div class="form-group">
                     <label style="margin-top: 16px;margin-bottom: 7px;">Leave Review</label>
@@ -373,7 +373,45 @@
         </div>
 
       </div>
-    </div>        
+    </div> 
+
+    <div id="rating-modal" class="modal fade perk-modal" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Cancelled an Item</h4>
+          </div>
+        <form class="rate-form">
+        <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+            <div class="well">
+                <p>You have 30 days to review the user.</p>
+            </div>
+                <h4>Please rate the item</h4>
+                <div style="padding: 10px 0;">
+                    <input class="rating-input" name="rating" type="text" title="" value="5"/>
+                </div>
+                <div class="form-group">
+                    <label style="margin-top: 16px;margin-bottom: 7px;">Leave Review</label>
+                    <textarea class="form-control" name="content" rows=4 required=""></textarea>
+                </div>            
+                <input type="hidden" id="r_post_id" name="post_id" value="{{ post.id }}">
+                <input type="hidden" id="r_purchase_id" name="purchase_id" value="{{ purchase.id }}">
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn" style="background-color: #4DBEE2; color: white" id="btn-rate">Rate</button>
+          </div>
+        </form>
+        </div>
+
+      </div>
+    </div>
+
+
     <div id="release-modal" class="modal fade perk-modal" role="dialog">
       <div class="modal-dialog">
 
@@ -405,7 +443,7 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" class="btn" style="background-color: #4DBEE2;" id="btn-release-confirm">Continue</button>
+            <button type="submit" class="btn" style="background-color: #4DBEE2; color : white;" id="btn-release-confirm">Continue</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </form>
@@ -415,36 +453,35 @@
     </div>      
 
     <div id="cancel-modal" class="modal fade perk-modal" role="dialog">
-          <div class="modal-dialog">
+      <div class="modal-dialog">
 
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Cancel the transaction from escrow</h4>
-              </div>
-            <form id="cancel-form">
-              <div class="modal-body" style="font-size: 16px; line-height: 22px;">
-                <div class="well" style="line-height: 24px;">
-                    <p>Title: <span class="post_title"></span></p>
-                    <br>
-                    <p>Total Price: $<span class="ptotal-price">89.99</span></p>
-                    <p>Service Fee: <span class="total-service-fee">89.99</span></p>
-                    <hr class="min-hr">
-                    <p>Paid Amount: <span class="ppaid-amount">$30</span> ( <span class="ppaid-percent">25%</span> )</p>
-                    <hr class="min-hr">
-                    <p>Refunds: <span class="refunds"></span></p>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="submit" class="btn" style="background-color: #4DBEE2;" id="btn-cancel-confirm">Continue</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              </div>
-            </form>
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Cancel the transaction from escrow</h4>
+          </div>
+        <form id="cancel-form">
+          <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+            <div class="well" style="line-height: 24px;">
+                <p>Title: <span class="post_title"></span></p>
+                <br>
+                <p>Total Price: $<span class="ptotal-price">89.99</span></p>
+                <p>Service Fee: <span class="total-service-fee">89.99</span></p>
+                <hr class="min-hr">
+                <p>Paid Amount: <span class="ppaid-amount">$30</span> ( <span class="ppaid-percent">25%</span> )</p>
+                <hr class="min-hr">
+                <p>Refunds: <span class="refunds"></span></p>
             </div>
           </div>
-        </div> 
-
+          <div class="modal-footer">
+            <button type="submit" class="btn" style="background-color: #4DBEE2; color : white; " id="btn-cancel-confirm">Continue</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div> 
       
 
 {% endblock %}
@@ -458,7 +495,7 @@
 <script>
     var purchase_id = '{{ request.GET.pid }}', post_id;
 
-    $('#rating-input').rating({
+    $('.rating-input').rating({
         min: 0,
         max: 5,
         step: 0.5,
@@ -572,16 +609,16 @@
             location.href = '/my-account?tab=purchase';
         });
 
-        $('#rate-form').submit(function(e) {
+        $('.rate-form').submit(function(e) {
             e.preventDefault();
-
             jQuery.ajax({
                 type: 'post',
                 url: '/rate_ads',
                 data: $(this).serialize(),
                 success: function(res) {
                     alert('Thank you for your rating.');
-                    $('#result-modal').modal('hide');
+                    $('#rating-modal').modal('hide');
+                    location.href = '/my-account?tab=purchase';
                 }
             }); 
         });
@@ -642,8 +679,10 @@
                         purchase_id: purchase_id
                     },
                     success: function(res) {
-                        alert(res.message);
-                        location.href = '/my-account?tab=purchase';
+                        $('#cancel-modal').modal('hide');
+                        $('#r_post_id').val(post_id);
+                        $('#r_purchase_id').val(purchase_id);
+                        $('#rating-modal').modal();
                     }
                 });
             } 

@@ -101,18 +101,18 @@ def post_purchase_notify(sender, instance, **kwargs):
 
             subject = 'Item {0} cancelled via escrow'.format(instance.post.title)
 
-            content = "The transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) has been cancelled by {4} {5} on {6}" \
+            content = "The transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) has been cancelled by <a href='{0}/user_show/{7}'>{4} {5}</a> on {6}" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"))
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.purchaser.id)
 
             content += "<br><br>Total Price: ${0}<br>Received Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}<br>Total Amount Received: <span style='color: red'>${5}</span>" \
                         .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)), instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
 
             content += "<br><br>Contact Info:<br>" + instance.contact
 
-            content_to_self = "You have cancelled the transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) on {4}" \
+            content_to_self = "You have cancelled the transaction <a href='{0}/ads/{1}'>{2}</a> (${3}) from <a href='{0}/user_show/{5}'>{6} {7}</a> on {4}" \
                         .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                               instance.created_at.strftime("%b-%d-%Y at %H:%M%p"))
+                               instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.post.owner.id, instance.post.owner.first_name, instance.post.owner.last_name)
 
             content_to_self += "<br><br>Total Price: ${0}<br> Paid Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}<br>Total Amount Paid: <span style='color: red'>${5}</span>" \
                         .format(instance.post.price, instance.post.price * settings.APP_FEE_BUY, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent, instance.post.price * (1.0 - (instance.paid_percent / 100.0)), instance.post.price * (instance.paid_percent / 100.0 + settings.APP_FEE_BUY) )
@@ -123,18 +123,18 @@ def post_purchase_notify(sender, instance, **kwargs):
 
             subject =  '{0}% item {1} purchased via escrow'.format(instance.paid_percent, instance.post.title)
 
-            content = "{7}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased by {4} {5} on {6}" \
+            content = "{7}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased by <a href='{0}/user_show/{8}'>{4} {5}</a> on {6}" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent)
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent, instance.purchaser.id)
             
             content += "<br><br>Service Fee: ${0}<br>Total Amount Received: <span style='color: red'>${1}</span>" \
                         .format(instance.post.price * settings.APP_FEE, instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
 
             content += "<br><br>Contact Info:<br>"+instance.contact
 
-            content_to_self = "You have purchased {5}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) on {4}" \
+            content_to_self = "You have purchased {5}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) from <a href='{0}/user_show/{6}'>{7} {8}</a> on {4}" \
                       .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                               instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent)
+                               instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent, instance.post.owner.id, instance.post.owner.first_name, instance.post.owner.last_name)
 
             content_to_self += "<br><br>Service Fee: ${0}<br>Total Amount Paid: <span style='color: red'>${1}</span>" \
                         .format(instance.post.price * settings.APP_FEE_BUY, instance.post.price * (instance.paid_percent / 100.0 + settings.APP_FEE_BUY) )
@@ -143,16 +143,24 @@ def post_purchase_notify(sender, instance, **kwargs):
 
         else:
 
-            content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased {7} by {4} {5} on {6}<br><br>Contact Info:<br>" \
+            content = "<a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased {7} by <a href='{0}/user_show/{8}'>{4} {5}</a> on {6}" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow")
+                          instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow",  instance.purchaser.id)
 
-            content += instance.contact
+            content += "<br><br>Service Fee: ${0}<br>Total Amount Received: <span style='color: red'>${1}</span>" \
+                        .format(instance.post.price * settings.APP_FEE, instance.post.price * (1.0 - settings.APP_FEE) )
 
 
-            content_to_self = "You purchased a <a href='{0}/ads/{1}'>{2}</a> (${3}) {5} on {4}" \
+            content += "<br><br>Contact Info:<br>"+instance.contact
+
+
+            content_to_self = "You purchased a <a href='{0}/ads/{1}'>{2}</a> (${3}) from <a href='{0}/user_show/{6}'>{7} {8}</a> {5} on {4}" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
-                        instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow")
+                        instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow", instance.post.owner.id, instance.post.owner.first_name, instance.post.owner.last_name)
+
+            content_to_self += "<br><br>Service Fee: ${0}<br>Total Amount: <span style='color: red'>${1}</span>" \
+                        .format(instance.post.price * settings.APP_FEE_BUY, instance.post.price * (1.0 + settings.APP_FEE_BUY) )
+      
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
             
