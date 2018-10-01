@@ -147,7 +147,9 @@ def post_purchase_notify(sender, instance, **kwargs):
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow",  instance.purchaser.id)
 
-            content += "<br><br>Service Fee: ${0}<br>Total Amount Received: <span style='color: red'>${1}</span>" \
+            if instance.type == "direct":
+
+                content += "<br><br>Service Fee: ${0}<br>Total Amount Received: <span style='color: red'>${1}</span>" \
                         .format(instance.post.price * settings.APP_FEE, instance.post.price * (1.0 - settings.APP_FEE) )
 
 
@@ -158,8 +160,10 @@ def post_purchase_notify(sender, instance, **kwargs):
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                         instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), "" if instance.type == "direct" else "via escrow", instance.post.owner.id, instance.post.owner.first_name, instance.post.owner.last_name)
 
-            content_to_self += "<br><br>Service Fee: ${0}<br>Total Amount: <span style='color: red'>${1}</span>" \
-                        .format(instance.post.price * settings.APP_FEE_BUY, instance.post.price * (1.0 + settings.APP_FEE_BUY) )
+            if instance.type == "direct":
+
+                content_to_self += "<br><br>Service Fee: ${0}<br>Total Amount: <span style='color: red'>${1}</span>" \
+                            .format(instance.post.price * settings.APP_FEE_BUY, instance.post.price * (1.0 + settings.APP_FEE_BUY) )
       
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
