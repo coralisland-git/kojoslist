@@ -105,7 +105,7 @@ def post_purchase_notify(sender, instance, **kwargs):
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.purchaser.id)
 
-            content += "<br><br>Total Price: ${0}<br>Received Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}<br>Total Amount Received: <span style='color: red'>${5}</span>" \
+            content += "<br><br>Total Price: ${0}<br>Received Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}(one time payment)<br>Total Amount Received: <span style='color: red'>${5}</span>" \
                         .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)), instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
 
             content += "<br><br>Contact Info:<br>" + instance.contact
@@ -114,7 +114,7 @@ def post_purchase_notify(sender, instance, **kwargs):
                         .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                                instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.post.owner.id, instance.post.owner.first_name, instance.post.owner.last_name)
 
-            content_to_self += "<br><br>Total Price: ${0}<br> Paid Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}<br>Total Amount Paid: <span style='color: red'>${5}</span>" \
+            content_to_self += "<br><br>Total Price: ${0}<br> Paid Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}(one time payment)<br>Total Amount Paid: <span style='color: red'>${5}</span>" \
                         .format(instance.post.price, instance.post.price * settings.APP_FEE_BUY, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent, instance.post.price * (1.0 - (instance.paid_percent / 100.0)), instance.post.price * (instance.paid_percent / 100.0 + settings.APP_FEE_BUY) )
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
@@ -127,8 +127,8 @@ def post_purchase_notify(sender, instance, **kwargs):
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent, instance.purchaser.id)
             
-            content += "<br><br>Service Fee: ${0}<br>Total Amount Received: <span style='color: red'>${1}</span>" \
-                        .format(instance.post.price * settings.APP_FEE, instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
+            content += "<br><br>Total Amount: ${0}<br>Received Amount: ${2}({3}%)<br>Service Fee: ${1}(one time payment)<br>Total Amount Received: <span style='color: red'>${4}</span>" \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent, instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
 
             content += "<br><br>Contact Info:<br>"+instance.contact
 
@@ -136,8 +136,8 @@ def post_purchase_notify(sender, instance, **kwargs):
                       .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                                instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent, instance.post.owner.id, instance.post.owner.first_name, instance.post.owner.last_name)
 
-            content_to_self += "<br><br>Service Fee: ${0}<br>Total Amount Paid: <span style='color: red'>${1}</span>" \
-                        .format(instance.post.price * settings.APP_FEE_BUY, instance.post.price * (instance.paid_percent / 100.0 + settings.APP_FEE_BUY) )
+            content_to_self += "<br><br>Total Amount: ${0}<br> Released Amount: ${2}({3}%)<br>Service Fee: ${1}(one time payment)<br>Total Amount Released: <span style='color: red'>${4}</span>" \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE_BUY, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent,  instance.post.price * (instance.paid_percent / 100.0 + settings.APP_FEE_BUY) )
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
 
@@ -149,8 +149,8 @@ def post_purchase_notify(sender, instance, **kwargs):
 
             if instance.type == "direct":
 
-                content += "<br><br>Service Fee: ${0}<br>Total Amount Received: <span style='color: red'>${1}</span>" \
-                        .format(instance.post.price * settings.APP_FEE, instance.post.price * (1.0 - settings.APP_FEE) )
+                content += "<br><br>Total Amount: ${0}<br>Service Fee: ${1}(one time payment)<br>Total Amount Received: <span style='color: red'>${2}</span>" \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * (1 - settings.APP_FEE) )
 
 
             content += "<br><br>Contact Info:<br>"+instance.contact
@@ -162,9 +162,9 @@ def post_purchase_notify(sender, instance, **kwargs):
 
             if instance.type == "direct":
 
-                content_to_self += "<br><br>Service Fee: ${0}<br>Total Amount: <span style='color: red'>${1}</span>" \
-                            .format(instance.post.price * settings.APP_FEE_BUY, instance.post.price * (1.0 + settings.APP_FEE_BUY) )
-      
+                content_to_self += "<br><br>Total Amount: ${0}<br>Service Fee: ${1}(one time payment)<br>Total Amount Paid: <span style='color: red'>${2}</span>" \
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE_BUY, instance.post.price * (1 + settings.APP_FEE_BUY) )
+
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
             

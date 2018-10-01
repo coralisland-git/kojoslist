@@ -6,7 +6,7 @@ from twilio.rest import Client
 def send_email(from_email, subject, to_email, content):
     sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_KEY)
 
-    from_email = Email(from_email, "Globalboard")
+    from_email = Email(from_email, "GlobalBoardWorld")
     to_email = Email(to_email)
 
     content = Content("text/html", content)
