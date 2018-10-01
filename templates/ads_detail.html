@@ -293,7 +293,7 @@
       </div>
     </div>      
 
-    <div id="result-modal" class="modal fade perk-modal" role="dialog" style="z-index: 2000">
+    <div id="result-modal" class="modal fade perk-modal" role="dialog">
       <div class="modal-dialog">
 
         <!-- Modal content-->
@@ -329,6 +329,7 @@
 
       </div>
     </div>
+
 {% endblock %}
 
 {% block load_highcharts_js %}
@@ -426,8 +427,8 @@
                 alert('Please specify all information!');
                 return;
             } else {
-                $('#pay-modal').modal({backdrop: 'static', keyboard: false}); 
-
+                $('#pay-modal').modal(); 
+                               
             }
         });
 

@@ -21,7 +21,7 @@
             <div class="col-md-2"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
             <div class="col-md-2">{{ purchase.date|date:"M d, Y" }}</div>
             <div class="col-md-2 pull-right">
-                <button class="btn btn-primary btn-xs btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}"  data-app-fee="{{ APP_FEE }}" data-app-fee-buy="{{ APP_FEE_BUY }}">Release</button>
+                <button class="btn action_button btn-xs btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}"  data-app-fee="{{ APP_FEE }}" data-app-fee-buy="{{ APP_FEE_BUY }}">Release</button>
 
                 <button class="btn btn-danger btn-xs btn-cancelled " data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}" data-app-fee="{{ APP_FEE }}" data-app-fee-buy="{{ APP_FEE_BUY }}">Cancel</button>
             </div>  
