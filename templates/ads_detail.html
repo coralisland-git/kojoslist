@@ -274,22 +274,37 @@
                       <label title="Put money on escrow until you approve it"><input type="radio" name="optpay" value="escrow" id="escrow-checkbox">Escrow Payment</label>
                     </div>
                 </div>
-                <div class="col-md-6" style="border-left : 1px solid #ddd; padding-left: : 10px;">
+                <div id="purchases_laptop" class="col-md-6" style="border-left : 1px solid #ddd; padding-left: : 10px;">
                     <div>Other forms of payment</div><br>
                     <div class="radio" style="margin-bottom: 20px">
                       <label title="Pay via Stripe">
-                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked="" id="stripe_payment_signin"><img src="/static/img/stripe_logo.png" width="80" height="25" style="margin-left: 10px;">
+                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked="" id="stripe_payment_signin"><img src="/static/img/stripe_logo.png" width="80" height="25">
                     </label>
                     </div>
                     <div class="radio" style="margin-bottom: 20px">
-                      <label title="Pay via Paypal"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="paypal" id="paypal_payment_signin"><img src="/static/img/paypal_logo.png" width="100" height="25" style="margin-left: 10px;"></label>
+                      <label title="Pay via Paypal"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="paypal" id="paypal_payment_signin"><img src="/static/img/paypal_logo.png" width="100" height="25" ></label>
                     </div>
                     <div id="bitcoin_paymenet">
                         <div class="radio">
-                          <label title="Pay via Bitcoin"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin" id="bitcoin_payment_signin"><img src="/static/img/bitcoin_logo.png" width="100" height="25" style="margin-left: 10px;"></label>
+                          <label title="Pay via Bitcoin"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin" id="bitcoin_payment_signin"><img src="/static/img/bitcoin_logo.png" width="100" height="25"></label>
                         </div>
                     </div>
                 </div>
+                 <div id="purchases_mobile" class="col-md-6" style="margin-top: 10px; padding-top : 10px; border-top: 1px solid #ddd;">
+                    <div>Other forms of payment</div><br>
+                    <div style="display: flex; margin-top: 5px; padding: 0px;" class="row">
+                        <div class="col-xs-2" style="margin-right: 5px">
+                            <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked="" id="stripe_payment_signin"><img src="/static/img/stripe_logo.png" width="45" height="15">
+                        </div>
+                        <div class="col-xs-3"  style="margin-right: 5px">
+                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="paypal" id="paypal_payment_signin"><img src="/static/img/paypal_logo.png" width="65" height="15" >
+                        </div>
+                        <div class="col-xs-3">
+                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin" id="bitcoin_payment_signin"><img src="/static/img/bitcoin_logo.png" width="65" height="15">
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="form-group">
