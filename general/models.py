@@ -31,6 +31,7 @@ class Customer(AbstractUser):
     v_statue = models.CharField(max_length=50, choices=VSTATUS, default='unverified')
     id_photo = models.ImageField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    # wallet = models.IntegerField(default=0)
 
     def __str__(self):
         return self.username

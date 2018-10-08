@@ -518,6 +518,7 @@ def view_ads(request, ads_id):
 
             if optpay == "direct":
                 stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
+                
                 charge = stripe.Charge.create(
                     amount=int(amount * ( 1 + settings.APP_FEE_BUY)),
                     currency="usd",
@@ -526,9 +527,6 @@ def view_ads(request, ads_id):
                     application_fee = int(amount * settings.APP_FEE_BUY),                
                     description="Direct pay to the ads (#{} - {})".format(post.id, post.title)
                 )
-                status = 0  # finished
-
-                # pdb.set_trace()
             else:
                 charge = stripe.Charge.create(
                     amount=int(amount * (1 + settings.APP_FEE_BUY )),
@@ -1442,6 +1440,13 @@ def cancel_purchase(request):
     return JsonResponse({"message" :"The tranasction is Cancelled successfully."}, safe=False)
 
 
+@csrf_exempt
+def widhdraw_money(request):
+
+    amount = request.POST.get('withdraw_amount')
+
+    return HttpResponse('success')
+
 
 @csrf_exempt    
 def update_alert(request):
@@ -1452,3 +1457,4 @@ def update_alert(request):
 
 def multiply(value, arg):
     return value*arg
+
