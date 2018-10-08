@@ -172,11 +172,17 @@
                 </div>
                 <div id="purchase" class="tab-pane fade {% if tab == 'purchase' %}active in{% endif %}">
                     <div class="pages balance">
-                        <div class="rv-title">Pending Transactions</div>
+                        <div class="rv-title pull-right">
+                            Balance
+                            <div class="badge" data-toggle="tooltip" data-placement="top" title=" " style="white-space: normal; font-size: 24px; margin-right: 20px;">$420</div>
+                            <button type="button" class=" btn btn-md btn-success" id="btn-withdraw">Withdraw</button>
+                        </div>
+
+                        <div class="rv-title" style="margin-top: 36px;">Pending Transactions</div>
                         <br>
                         <div class="search-form_d row form-inline filter_tx">
                             <div class="input-group  col-md-2 col-xs-12">
-                                <input type="text" class="form-control" name="tx_key" placeholder="Title..." id="tx_key_p">
+                                <input type="text" class="form-control" name="tx_key" placeholder="Title" id="tx_key_p">
                                 <input type="hidden" name="tx_type" value="pending">
                             </div>
                             <div class="input-group col-md-2 col-xs-12">
@@ -215,7 +221,7 @@
                         <div class="rv-title" style="margin-top: 36px;">Completed Transactions</div>
                         <div class="search-form_d row form-inline filter_tx">
                             <div class="input-group  col-md-2 col-xs-12">
-                                <input type="text" class="form-control" name="tx_key" placeholder="Title..." id="tx_key_f">
+                                <input type="text" class="form-control" name="tx_key" placeholder="Title" id="tx_key_f">
                                 <input type="hidden" name="tx_type" value="pending">
                             </div>
                             <div class="input-group col-md-2 col-xs-12">
@@ -254,7 +260,7 @@
                         <div class="rv-title" style="margin-top: 36px;">Received Transactions</div>
                         <div class="search-form_d row form-inline filter_tx">
                             <div class="input-group  col-md-2 col-xs-12">
-                                <input type="text" class="form-control" name="tx_key" placeholder="Title..." id="tx_key_r">
+                                <input type="text" class="form-control" name="tx_key" placeholder="Title" id="tx_key_r">
                                 <input type="hidden" name="tx_type" value="pending">
                             </div>
                             <div class="input-group col-md-2 col-xs-12">
@@ -293,7 +299,7 @@
                         <div class="rv-title" style="margin-top: 36px;">Cancelled Transactions</div>
                         <div class="search-form_d row form-inline filter_tx">
                             <div class="input-group  col-md-2 col-xs-12">
-                                <input type="text" class="form-control" name="tx_key" placeholder="Title..." id="tx_key_c">
+                                <input type="text" class="form-control" name="tx_key" placeholder="Title" id="tx_key_c">
                                 <input type="hidden" name="tx_type" value="pending">
                             </div>
                             <div class="input-group col-md-2 col-xs-12">
@@ -482,7 +488,51 @@
         </div>
       </div>
     </div> 
-      
+    
+    <div id="pay-method-modal" class="modal fade perk-modal" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Choose Payment Method</h4>
+          </div>
+        <form id="withdraw-form">
+          <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+            <div class="row well" style="line-height: 24px; margin: 0px;">
+                <div class="col-md-6" style="padding: 12px;">
+                    <div class="form-group row" style="margin-top: 40px;">
+                        <label class="control-label col-sm-4" for="withdraw_amount" style="margin-top: 5px; padding: 0px;">Amount  $</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" name="withdraw_amount" placeholder="" id="withdraw_amount">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6" style="padding: 12px;">
+                    <div class="radio">
+                      <label title="Pay via Stripe"><input style="margin-top: 5px;" type="radio" name="paymethod" value="stripe" checked="">Stripe</label>
+                    </div>
+                    <div class="radio">
+                      <label title="Pay via Paypal"><input style="margin-top: 5px;" type="radio" name="paymethod" value="paypal">Paypal</label>
+                    </div>
+                    <div class="radio">
+                      <label title="Pay via Bitcoin"><input style="margin-top: 5px;" type="radio" name="paymethod" value="bitcoin">BitCoin</label>
+                    </div>
+                    <div class="radio">
+                      <label title="Pay via Deposit"><input style="margin-top: 5px;" type="radio" name="paymethod" value="deposit">Deposit</label>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn" style="background-color: #4DBEE2; color : white; " id="btn-pay-method-confirm">Continue</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div> 
 
 {% endblock %}
 
@@ -623,6 +673,30 @@
             }); 
         });
 
+
+        $('#withdraw-form').submit(function(e) {
+            // if ( $('#withdraw_amount').val() != '') {
+            if ( $('input[name="paymethod"]:checked')[0].value == 'stripe' ) 
+                {
+                    e.preventDefault();
+                    jQuery.ajax({
+                        type: 'post',
+                        url: '/widhdraw_money',
+                        data: $(this).serialize(),
+                        success: function(res) {
+                            $('#pay-method-modal').modal('hide');
+                        }
+                    });
+                }
+            else {
+                alert('Sorry, We have only stripe method now.')
+            }
+            location.href = '/my-account?tab=purchase';
+            // else {
+            //     alert('Please input the amount.')    
+            // }
+        });
+
         jQuery("body").on("click", ".btn-rate-later", function() {
             $('#transaction_id').html($(this).data('transaction'));
             $('.post-id').val($(this).data('post-id'));
@@ -743,6 +817,11 @@
             $('.total-service-fee').html(total_service_fee);
             $('.refunds').html(refunds);
             $('#cancel-modal').modal();
+        });
+
+
+        $("#btn-withdraw").click(function() {
+            $('#pay-method-modal').modal();
         });
 
         $(".btn-finished").click(function() {

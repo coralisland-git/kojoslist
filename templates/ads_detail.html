@@ -263,14 +263,34 @@
             </div>
             <div  style="border-bottom: 1px solid #ddd; margin-bottom : 20px;"></div>
             <div class="modal-price">Total Price: <b class="pay-price">${{ total_amount }}</b> USD</div>
-            <div class="form-group" style="padding: 12px;">
-                <div class="radio">
-                  <label title="Direct pay to owner"><input style="margin-top: -1px;" type="radio" name="optpay" value="direct" checked="">Direct Pay</label>
+
+            <div class="row" style="padding : 10px;">
+                <div class="form-group col-md-6" style="padding: 12px;">
+                    <div>Choose Payment Type</div><br>
+                    <div class="radio">
+                      <label title="Direct pay to owner"><input type="radio" name="optpay" value="direct" checked="">Direct Pay</label>
+                    </div>
+                    <div class="radio">
+                      <label title="Put money on escrow until you approve it"><input type="radio" name="optpay" value="escrow">Escrow Payment</label>
+                    </div>
                 </div>
-                <div class="radio">
-                  <label title="Put money on escrow until you approve it"><input style="margin-top: -1px;" type="radio" name="optpay" value="escrow">Escrow Payment</label>
+                <div class="form-group col-md-6" style="border-left: 1px solid #ddd; padding: 12px 20px;">
+                    <div>Choose Payment Method</div><br>
+                    <div class="radio">
+                      <label title="Pay via Stripe"><input type="radio" name="paymethod" value="stripe" checked="">Stripe</label>
+                    </div>
+                    <div class="radio">
+                      <label title="Pay via Paypal"><input type="radio" name="paymethod" value="paypal">Paypal</label>
+                    </div>
+                    <div class="radio">
+                      <label title="Pay via Bitcoin"><input type="radio" name="paymethod" value="bitcoin">BitCoin</label>
+                    </div>
+                    <div class="radio">
+                      <label title="Pay via Deposit"><input type="radio" name="paymethod" value="deposit">Deposit</label>
+                    </div>
                 </div>
             </div>
+
             <div class="form-group">
                 <label>Contact Information</label>
                 <small>Please provide email, phone number, address ...</small>
@@ -401,14 +421,20 @@
             }
         });
 
-        $('#btn-pay').on('click', function(e) {
-            handler.open({
-                name: "Globalboard",
-                description: "{{ post.title }}",
-                currency: "usd",
-                amount: price
-            });
-            e.preventDefault();
+        $('#btn-pay').on('click', function(e) { 
+            if ( $('input[name="paymethod"]:checked')[0].value == 'stripe' ) 
+                {
+                    handler.open({
+                        name: "Globalboard",
+                        description: "{{ post.title }}",
+                        currency: "usd",
+                        amount: price
+                    });
+                    e.preventDefault();
+                }
+            else {
+                alert('Sorry, We have only stripe method now.')
+            }
         });
 
         // Close Checkout on page navigation:
