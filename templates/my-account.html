@@ -502,7 +502,7 @@
           <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="row well" style="line-height: 24px; margin: 0px;">
                 <div class="col-md-6" style="padding: 12px;">
-                    <div class="form-group row" style="margin-top: 40px;">
+                    <div class="form-group row" style="margin-top: 25px;">
                         <label class="control-label col-sm-4" for="withdraw_amount" style="margin-top: 5px; padding: 0px;">Amount  $</label>
                         <div class="col-sm-6">
                             <input type="number" class="form-control" name="withdraw_amount" placeholder="" id="withdraw_amount">
@@ -510,29 +510,25 @@
                     </div>
                 </div>
                 <div class="form-group col-md-6" style="padding: 12px;">
-                    <div class="radio">
-                      <label title="Pay via Stripe"><input style="margin-top: 5px;" type="radio" name="paymethod" value="stripe" checked="">Stripe</label>
+                    <div class="radio" style="margin-bottom: 20px">
+                      <label title="Pay via Stripe">
+                        <input style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked=""><img src="/static/img/stripe_logo.png" width="100" height="30" style="margin-left: 10px;">
+                    </label>
                     </div>
-                    <div class="radio">
-                      <label title="Pay via Paypal"><input style="margin-top: 5px;" type="radio" name="paymethod" value="paypal">Paypal</label>
-                    </div>
-                    <div class="radio">
-                      <label title="Pay via Bitcoin"><input style="margin-top: 5px;" type="radio" name="paymethod" value="bitcoin">BitCoin</label>
-                    </div>
-                    <div class="radio">
-                      <label title="Pay via Deposit"><input style="margin-top: 5px;" type="radio" name="paymethod" value="deposit">Deposit</label>
+                    <div class="radio" style="margin-bottom: 20px">
+                      <label title="Pay via Paypal"><input style="margin-top: 8px;" type="radio" name="paymethod" value="paypal"><img src="/static/img/paypal_logo.png" width="140" height="30" style="margin-left: 10px;"></label>
                     </div>
                 </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn" style="background-color: #4DBEE2; color : white; " id="btn-pay-method-confirm">Continue</button>
+            <button type="button" class="btn" style="background-color: #4DBEE2; color : white; " id="btn-pay-method-confirm">Continue</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </form>
         </div>
       </div>
-    </div> 
+    </div>
 
 {% endblock %}
 
@@ -671,6 +667,10 @@
                     location.href = '/my-account?tab=purchase';
                 }
             }); 
+        });
+
+        $('#btn-pay-method-confirm').click(function(){
+            $('#pay-method-modal').modal('hide');
         });
 
 
