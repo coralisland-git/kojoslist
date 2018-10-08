@@ -264,8 +264,7 @@
             <div  style="border-bottom: 1px solid #ddd; margin-bottom : 20px;"></div>
             <div class="modal-price">Total Price: <b class="pay-price">${{ total_amount }}</b> USD</div>
 
-            <div class="row" style="padding : 10px;">
-                <div class="form-group col-md-6" style="padding: 12px;">
+            <div style="padding : 10px;">
                     <div>Choose Payment Type</div><br>
                     <div class="radio">
                       <label title="Direct pay to owner"><input type="radio" name="optpay" value="direct" checked="">Direct Pay</label>
@@ -273,22 +272,6 @@
                     <div class="radio">
                       <label title="Put money on escrow until you approve it"><input type="radio" name="optpay" value="escrow">Escrow Payment</label>
                     </div>
-                </div>
-                <div class="form-group col-md-6" style="border-left: 1px solid #ddd; padding: 12px 20px;">
-                    <div>Choose Payment Method</div><br>
-                    <div class="radio">
-                      <label title="Pay via Stripe"><input type="radio" name="paymethod" value="stripe" checked="">Stripe</label>
-                    </div>
-                    <div class="radio">
-                      <label title="Pay via Paypal"><input type="radio" name="paymethod" value="paypal">Paypal</label>
-                    </div>
-                    <div class="radio">
-                      <label title="Pay via Bitcoin"><input type="radio" name="paymethod" value="bitcoin">BitCoin</label>
-                    </div>
-                    <div class="radio">
-                      <label title="Pay via Deposit"><input type="radio" name="paymethod" value="deposit">Deposit</label>
-                    </div>
-                </div>
             </div>
 
             <div class="form-group">
@@ -304,14 +287,47 @@
             <input type="hidden" name="infants" id="pay-infants">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn" id="btn-pay">CONTINUE</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+            <button type="button" class="btn" style="background-color: #4DBEE2; color : white; " id="btn-pay-method-confirm">Continue</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </form>
         </div>
 
       </div>
-    </div>      
+    </div>   
+
+
+    <div id="pay-method-modal" class="modal fade perk-modal" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Choose Payment Method</h4>
+          </div>
+        <form id="withdraw-form">
+          <div class="modal-body" style="font-size: 16px; line-height: 22px;">
+            <div class="row well" style="line-height: 24px; padding-left: 30px;">
+                <div class="radio" style="margin-bottom: 20px">
+                  <label title="Pay via Stripe">
+                    <input style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked=""><img src="/static/img/stripe_logo.png" width="100" height="30" style="margin-left: 10px;">
+                </label>
+                </div>
+                <div class="radio" style="margin-bottom: 20px">
+                  <label title="Pay via Paypal"><input style="margin-top: 8px;" type="radio" name="paymethod" value="paypal"><img src="/static/img/paypal_logo.png" width="140" height="30" style="margin-left: 10px;"></label>
+                </div>
+                <div id="bitcoin_paymenet"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn" id="btn-pay">CONTINUE</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>    
 
     <div id="result-modal" class="modal fade perk-modal" role="dialog">
       <div class="modal-dialog">
@@ -421,6 +437,8 @@
             }
         });
 
+
+
         $('#btn-pay').on('click', function(e) { 
             if ( $('input[name="paymethod"]:checked')[0].value == 'stripe' ) 
                 {
@@ -440,6 +458,19 @@
         // Close Checkout on page navigation:
         $(window).on('popstate', function() {
             handler.close();
+        });
+
+        $('#btn-pay-method-confirm').click(function(){
+            if ( $('input[name="optpay"]:checked')[0].value == 'direct' ) 
+                {
+                    $('#bitcoin_paymenet').html('<div class="radio">\
+                  <label title="Pay via Bitcoin"><input style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin"><img src="/static/img/bitcoin_logo.png" width="140" height="30" style="margin-left: 10px;"></label>\
+                </div>');
+                }
+            else {
+                $('#bitcoin_paymenet').html('');
+            }
+            $('#pay-method-modal').modal();
         });
 
         $('.btn-payment').click(function() {
