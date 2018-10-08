@@ -264,14 +264,32 @@
             <div  style="border-bottom: 1px solid #ddd; margin-bottom : 20px;"></div>
             <div class="modal-price">Total Price: <b class="pay-price">${{ total_amount }}</b> USD</div>
 
-            <div style="padding : 10px;">
+            <div class="row well" style="padding : 10px; margin : 0px">
+                <div class="col-md-6">
                     <div>Choose Payment Type</div><br>
                     <div class="radio">
-                      <label title="Direct pay to owner"><input type="radio" name="optpay" value="direct" checked="">Direct Pay</label>
+                      <label title="Direct pay to owner"><input type="radio" name="optpay" value="direct" checked="" id="direct-pay-checkbox">Direct Pay</label>
                     </div>
                     <div class="radio">
-                      <label title="Put money on escrow until you approve it"><input type="radio" name="optpay" value="escrow">Escrow Payment</label>
+                      <label title="Put money on escrow until you approve it"><input type="radio" name="optpay" value="escrow" id="escrow-checkbox">Escrow Payment</label>
                     </div>
+                </div>
+                <div class="col-md-6" style="border-left : 1px solid #ddd; padding-left: : 10px;">
+                    <div>Other forms of payment</div><br>
+                    <div class="radio" style="margin-bottom: 20px">
+                      <label title="Pay via Stripe">
+                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked="" id="stripe_payment_signin"><img src="/static/img/stripe_logo.png" width="80" height="25" style="margin-left: 10px;">
+                    </label>
+                    </div>
+                    <div class="radio" style="margin-bottom: 20px">
+                      <label title="Pay via Paypal"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="paypal" id="paypal_payment_signin"><img src="/static/img/paypal_logo.png" width="100" height="25" style="margin-left: 10px;"></label>
+                    </div>
+                    <div id="bitcoin_paymenet">
+                        <div class="radio">
+                          <label title="Pay via Bitcoin"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin" id="bitcoin_payment_signin"><img src="/static/img/bitcoin_logo.png" width="100" height="25" style="margin-left: 10px;"></label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -287,8 +305,8 @@
             <input type="hidden" name="infants" id="pay-infants">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn" style="background-color: #4DBEE2; color : white; " id="btn-pay-method-confirm">Continue</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn" id="btn-pay">CONTINUE</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
           </div>
         </form>
         </div>
@@ -407,6 +425,7 @@
         displayOnly: true
     });
 
+
     {% if post.category.form == 'ShortTermPost' %}    
     var is_total_ready = false;
     {% else %}
@@ -437,6 +456,27 @@
             }
         });
 
+        $("#direct-pay-checkbox").on('click', function(){
+            $('#bitcoin_paymenet').html('<div class="radio">\
+                  <label title="Pay via Bitcoin"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin"><img src="/static/img/bitcoin_logo.png" width="100" height="25" style="margin-left: 10px;"></label>\
+                </div>');
+        });
+
+        $("#escrow-checkbox").on('click', function(){
+            $('#bitcoin_paymenet').html('');
+        });
+
+        $("#stripe_payment_signin").on('click', function(){
+            alert('Goto Stripe Signin Page.')
+        });
+
+        $("#paypal_payment_signin").on('click', function(){
+            alert('Goto Paypal Signin Page.')
+        });
+
+        $("#bitcoin_payment_signin").on('click', function(){
+            alert('Goto BitCoin Signin Page.')
+        });
 
 
         $('#btn-pay').on('click', function(e) { 
