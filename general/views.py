@@ -351,10 +351,12 @@ def post_ads(request, ads_id):
             head_url = request.POST.get('head_image').split('/')[-1]
             post.images.all().update(is_head=False)
             post.images.filter(name=head_url).update(is_head=True)
+            
+            price = post.price
 
-            price = int(post.price * 100 * settings.APP_FEE)
             card = request.POST.get('stripeToken')
             if price and card:
+                price = int(post.price * 100 * settings.APP_FEE)
                 try:
                     stripe.Charge.create(
                         amount=price,
