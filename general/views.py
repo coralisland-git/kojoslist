@@ -351,7 +351,7 @@ def post_ads(request, ads_id):
             head_url = request.POST.get('head_image').split('/')[-1]
             post.images.all().update(is_head=False)
             post.images.filter(name=head_url).update(is_head=True)
-            
+
             price = post.price
 
             card = request.POST.get('stripeToken')
@@ -551,8 +551,9 @@ def view_ads(request, ads_id):
 
     reviews = Review.objects.filter(post__id=ads_id)
     skey = settings.STRIPE_KEYS['PUBLIC_KEY']
-    service_fee = settings.APP_FEE_BUY * post.price
-    total_amount = service_fee + post.price
+    if post.price:
+        service_fee = settings.APP_FEE_BUY * post.price
+        total_amount = service_fee + post.price
     return render(request, 'ads_detail.html', locals())
 
 def view_campaign(request, camp_id):
