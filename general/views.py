@@ -33,11 +33,18 @@ from general.models import *
 from general.post_models import *
 from general.forms import *
 from general.utils import send_email, send_SMS
+import paypalrestsdk
+
 
 import pdb
 
 get_class = lambda x: globals()[x]
 stripe.api_key = settings.STRIPE_KEYS['API_KEY']
+
+paypalrestsdk.configure({
+  "mode": "sandbox", # sandbox or live
+  "client_id": settings.PAYPAL_CLIENT,
+  "client_secret": settings.PAYPAL_CLIENT_SECRET })
 
 # def index(request):
 #     next = request.GET.get('q', '/home')
@@ -482,72 +489,124 @@ def view_ads(request, ads_id):
         favourite = post.id in posts
 
     if request.method == 'POST':
+
+        paypal_transaction_id = request.POST.get('paypal_transaction_id')
         optpay = request.POST.get('optpay')
         contact = request.POST.get('contact')
-        card = request.POST.get('stripeToken')
-        amount = int(post.price * 100)
 
-        if post.category.form == 'ShortTermPost':
-            checkin = request.POST.get('checkin')
-            checkout = request.POST.get('checkout')
-            adults = request.POST.get('adults')
-            children = request.POST.get('children')
-            infants = request.POST.get('infants')
-            checkin = datetime.datetime.strptime(checkin, '%m/%d/%Y')
-            checkin = datetime.datetime.strftime(checkin, '%a %b %d %Y')
-            checkout = datetime.datetime.strptime(checkout, '%m/%d/%Y')
-            checkout = datetime.datetime.strftime(checkout, '%a %b %d %Y')
+        if paypal_transaction_id != '':
 
-            calendar = json.loads(post.calendar)
-            calendar.append({
-                'start': checkin,
-                'end': checkout,
-                'avail': False,
-                'color': '#ff9800',
-                'url': '{}/user_show/{}'.format(settings.MAIN_URL, request.user.id),
-                'title': '{} {} - {}/{}/{}'.format(request.user.first_name, 
-                                                 request.user.last_name,
-                                                 adults,
-                                                 children,
-                                                 infants)
-            })
-            post.calendar = json.dumps(calendar)
-            post.save()
+            status = 1
 
-        try:
+            if optpay == 'direct':
 
-            status = 0
+                status = 0
 
-            if optpay == "direct":
-                stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
-                
-                charge = stripe.Charge.create(
-                    amount=int(amount * ( 1 + settings.APP_FEE_BUY)),
-                    currency="usd",
-                    source=card, # obtained with Stripe.js
-                    destination=stripe_account_id,
-                    application_fee = int(amount * settings.APP_FEE_BUY),                
-                    description="Direct pay to the ads (#{} - {})".format(post.id, post.title)
-                )
-            else:
-                charge = stripe.Charge.create(
-                    amount=int(amount * (1 + settings.APP_FEE_BUY )),
-                    currency="usd",
-                    source=card, # obtained with Stripe.js
-                    # destination=stripe_account_id,
-                    description="Escrow for the ads (#{} - {})".format(post.id, post.title)
-                )
-                status = 1  # under escrow
+                amount = post.price * ( 1 + settings.APP_FEE_BUY)
+                receiver_email = post.owner.paypal
 
-            result = charge.id
+                payout = paypalrestsdk.Payout({
+                    "sender_batch_header": {
+                        "sender_batch_id": "batch",
+                        "email_subject": "You have a payment"
+                    },
+                    "items": [
+                        {
+                            "recipient_type": "EMAIL",
+                            "amount": {
+                                "value": amount,
+                                "currency": "USD"
+                            },
+                            "receiver": receiver_email,
+                            "note": "Thank you.",
+                            "sender_item_id": "item"
+                        }
+                    ]
+                })
+
+                if payout.create(sync_mode=False):
+                    print("payout[%s] created successfully" %
+                          (payout.batch_header.payout_batch_id))
+                else:
+                    print(payout.error)
+
             purchase = PostPurchase.objects.create(post=post,
                                                    purchaser=request.user,
                                                    type=optpay,
                                                    contact=contact,
                                                    status=status,
-                                                   transaction=charge.id)
-        except Exception as e:
-            print e, '@@@@@ Error in view_ads()'
+                                                   transaction=paypal_transaction_id)
+
+
+        else:
+            card = request.POST.get('stripeToken')
+            amount = int(post.price * 100)
+
+            if post.category.form == 'ShortTermPost':
+                checkin = request.POST.get('checkin')
+                checkout = request.POST.get('checkout')
+                adults = request.POST.get('adults')
+                children = request.POST.get('children')
+                infants = request.POST.get('infants')
+                checkin = datetime.datetime.strptime(checkin, '%m/%d/%Y')
+                checkin = datetime.datetime.strftime(checkin, '%a %b %d %Y')
+                checkout = datetime.datetime.strptime(checkout, '%m/%d/%Y')
+                checkout = datetime.datetime.strftime(checkout, '%a %b %d %Y')
+
+                calendar = json.loads(post.calendar)
+                calendar.append({
+                    'start': checkin,
+                    'end': checkout,
+                    'avail': False,
+                    'color': '#ff9800',
+                    'url': '{}/user_show/{}'.format(settings.MAIN_URL, request.user.id),
+                    'title': '{} {} - {}/{}/{}'.format(request.user.first_name, 
+                                                     request.user.last_name,
+                                                     adults,
+                                                     children,
+                                                     infants)
+                })
+                post.calendar = json.dumps(calendar)
+                post.save()
+
+            try:
+
+                status = 0
+
+                if optpay == "direct":
+                    stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
+                    
+                    try:
+
+                        charge = stripe.Charge.create(
+                            amount=int(amount * ( 1 + settings.APP_FEE_BUY)),
+                            currency="usd",
+                            source=card, # obtained with Stripe.js
+                            destination=stripe_account_id,
+                            application_fee = int(amount * settings.APP_FEE_BUY),                
+                            description="Direct pay to the ads (#{} - {})".format(post.id, post.title)
+                        )
+                    except Exception as e:
+                        print('~~~~~~~~~~', e)
+                else:
+                    charge = stripe.Charge.create(
+                        amount=int(amount * (1 + settings.APP_FEE_BUY )),
+                        currency="usd",
+                        source=card, # obtained with Stripe.js
+                        # destination=stripe_account_id,
+                        description="Escrow for the ads (#{} - {})".format(post.id, post.title)
+                    )
+                    status = 1  # under escrow
+
+                result = charge.id
+                purchase = PostPurchase.objects.create(post=post,
+                                                       purchaser=request.user,
+                                                       type=optpay,
+                                                       contact=contact,
+                                                       status=status,
+                                                       transaction=charge.id)
+            except Exception as e:
+                print e, '@@@@@ Error in view_ads()'
 
     reviews = Review.objects.filter(post__id=ads_id)
     skey = settings.STRIPE_KEYS['PUBLIC_KEY']
@@ -861,9 +920,12 @@ def my_account(request):
     res_temp = []
     total_received_amount = 0
 
+    rpurchases = PostPurchase.objects.all().order_by('-udpated_at')
+    
+    wallet = 0.0        
+
 
     #recevied purchases
-    rpurchases = PostPurchase.objects.all().order_by('-udpated_at')
 
     # finished purchases
     dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0) \
@@ -872,14 +934,13 @@ def my_account(request):
     ppurchases = PostPurchase.objects.filter(purchaser=request.user).exclude(status=0) \
                                      .order_by('-created_at')
 
-
     categories = Review.objects.filter(post__owner=request.user) \
                                .values('post__category__name', 'post__category__parent__name', 
                                        'post__category__id') \
                                .distinct()
 
    
-    rpurchases_list = []
+    rpurchases_list = [] #  received payments
 
     for rpur in rpurchases:
 
@@ -901,6 +962,8 @@ def my_account(request):
                         "service_fee" : rpur.post.price * settings.APP_FEE,
                         "category" : rpur.post.category.parent.name if rpur.post.category.parent.name !='' else rpur.post.category.name
                     })
+
+                    wallet += rpur.post.price
             else :
 
                 if rpur.paid_percent != 0:
@@ -918,7 +981,9 @@ def my_account(request):
                         "category" : rpur.post.category.parent.name  if rpur.post.category.parent.name !='' else rpur.post.category.name
                     })
 
-    ppurchases_list = []
+                wallet += (float(rpur.paid_percent)/100.0) * rpur.post.price * (1.0 - settings.APP_FEE)
+
+    ppurchases_list = [] #  pending payments
 
 
     for ppur in ppurchases:
@@ -935,13 +1000,15 @@ def my_account(request):
             "service_fee" : settings.APP_FEE * 100,
         })
 
-    dpurchases_list = []
+        wallet += (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0
 
-    cpurchases_list = []
+    dpurchases_list = []    #  finished payments
+
+    cpurchases_list = []    #  canceled payments
 
     for dpur in dpurchases:
 
-        if dpur.paid_percent == 100:
+        if dpur.type == 'direct' or dpur.paid_percent == 100:
 
             dpurchases_list.append({
                 "id": dpur.id,
@@ -1004,8 +1071,10 @@ def my_account(request):
         'total_received_amount' : total_received_amount,
         'APP_FEE' : settings.APP_FEE,
         'APP_FEE_BUY' : settings.APP_FEE_BUY,
-        'category_list' : Category.objects.filter(parent=None)
+        'category_list' : Category.objects.filter(parent=None),
+        'wallet' : wallet
     })
+
 
 
 
@@ -1028,28 +1097,26 @@ def search_txs(request):
         
         ppurchases_list = []
 
-        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
-
-            ppurchases = PostPurchase.objects.filter(purchaser=request.user, created_at__range=[start_date, end_date]).exclude(status=0) \
-                                             .order_by('-created_at')
+        ppurchases = PostPurchase.objects.filter(purchaser=request.user, created_at__range=[start_date, end_date]).exclude(status=0) \
+                                         .order_by('-created_at')
 
 
-            for ppur in ppurchases:
-                
-                if category in ppur.post.category.name or category in ppur.post.category.parent.name:
+        for ppur in ppurchases:
+            
+            if (category in ppur.post.category.name or category in ppur.post.category.parent.name) and payment_method in ppur.transaction.lower():
 
-                    if ( keyword != None and keyword.lower() in ppur.post.title.lower()) or keyword == None  :
-                        ppurchases_list.append({
-                            "id": ppur.id,
-                            "transaction" : ppur.transaction,
-                            "post_id" : ppur.post.id,
-                            "post_title" : ppur.post.title,
-                            "post_price" : ppur.post.price,
-                            "paid_percent" : ppur.paid_percent,
-                            "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
-                            "date" : ppur.created_at,
-                            "service_fee" : settings.APP_FEE * 100,
-                        })
+                if ( keyword != None and keyword.lower() in ppur.post.title.lower()) or keyword == None  :
+                    ppurchases_list.append({
+                        "id": ppur.id,
+                        "transaction" : ppur.transaction,
+                        "post_id" : ppur.post.id,
+                        "post_title" : ppur.post.title,
+                        "post_price" : ppur.post.price,
+                        "paid_percent" : ppur.paid_percent,
+                        "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
+                        "date" : ppur.created_at,
+                        "service_fee" : settings.APP_FEE * 100,
+                    })
 
         rndr_str = render_to_string("_transactions_pending.html" , {
                     'ppurchases': ppurchases_list,
@@ -1063,34 +1130,32 @@ def search_txs(request):
 
         dpurchases_list = []
 
-        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
+        dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0, created_at__range=[start_date, end_date]) \
+                                     .order_by('-created_at')
 
-            dpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0, created_at__range=[start_date, end_date]) \
-                                         .order_by('-created_at')
+        for dpur in dpurchases:
+        
 
+            if (category in dpur.post.category.name or category in dpur.post.category.parent.name) and payment_method in dpur.transaction.lower():
 
-            for dpur in dpurchases:
-            
-                if category in dpur.post.category.name or category in dpur.post.category.parent.name:
+                if dpur.type == 'direct' or dpur.paid_percent == 100:
 
-                    if dpur.paid_percent == 100:
+                    if ( keyword != None and keyword.lower() in dpur.post.title.lower()) or keyword == None  :
 
-                        if ( keyword != None and keyword.lower() in dpur.post.title.lower()) or keyword == None  :
-
-                            dpurchases_list.append({
-                                "id": dpur.id,
-                                "transaction" : dpur.transaction,
-                                "post_id" : dpur.post.id,
-                                "post_title" : dpur.post.title,
-                                "post_price" : dpur.post.price,
-                                "paid_percent" : dpur.paid_percent,
-                                "type" : dpur.type,
-                                "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
-                                "date" : dpur.created_at,
-                                "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
-                                "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
-                                "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
-                            })
+                        dpurchases_list.append({
+                            "id": dpur.id,
+                            "transaction" : dpur.transaction,
+                            "post_id" : dpur.post.id,
+                            "post_title" : dpur.post.title,
+                            "post_price" : dpur.post.price,
+                            "paid_percent" : dpur.paid_percent,
+                            "type" : dpur.type,
+                            "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
+                            "date" : dpur.created_at,
+                            "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
+                            "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
+                            "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
+                        })
 
         rndr_str = render_to_string("_transactions_finished.html" , {'dpurchases': dpurchases_list}, request=request)
 
@@ -1101,36 +1166,34 @@ def search_txs(request):
 
         cpurchases_list = []
 
-        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
+        cpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0, udpated_at__range=[start_date, end_date]) \
+                                     .order_by('-udpated_at')
 
-            cpurchases = PostPurchase.objects.filter(purchaser=request.user, status=0, udpated_at__range=[start_date, end_date]) \
-                                         .order_by('-udpated_at')
+        for cpur in cpurchases:
 
-            for cpur in cpurchases:
+            if (category in cpur.post.category.name or category in cpur.post.category.parent.name) and payment_method in cpur.transaction.lower():
 
-                if category in cpur.post.category.name or category in cpur.post.category.parent.name:
+                if cpur.paid_percent != 100:
 
-                    if cpur.paid_percent != 100:
+                    if ( keyword != None and keyword.lower() in cpur.post.title.lower()) or keyword == None  :
 
-                        if ( keyword != None and keyword.lower() in cpur.post.title.lower()) or keyword == None  :
-
-                            cpurchases_list.append({
-                               "id": cpur.id,
-                                "transaction" : cpur.transaction,
-                                "post_id" : cpur.post.id,
-                                "post_title" : cpur.post.title,
-                                "post_price" : cpur.post.price,
-                                "paid_percent" : cpur.paid_percent,
-                                "type" : cpur.type,
-                                "paid_amount" : cpur.post.price * float(cpur.paid_percent/100.0),
-                                "approved" : cpur.post.price * float(cpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
-                                "date" : cpur.udpated_at,
-                                "service_fee" : settings.APP_FEE_BUY * cpur.post.price * float(cpur.paid_percent/100.0),
-                                "total_service_fee" : settings.APP_FEE_BUY * cpur.post.price,
-                                "refund_amount" : cpur.post.price * float((100 - cpur.paid_percent)/100.0),
-                                "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price,
-                                "category" : cpur.post.category.parent.name if cpur.post.category.parent.name !='' else cpur.post.category.name
-                            })
+                        cpurchases_list.append({
+                           "id": cpur.id,
+                            "transaction" : cpur.transaction,
+                            "post_id" : cpur.post.id,
+                            "post_title" : cpur.post.title,
+                            "post_price" : cpur.post.price,
+                            "paid_percent" : cpur.paid_percent,
+                            "type" : cpur.type,
+                            "paid_amount" : cpur.post.price * float(cpur.paid_percent/100.0),
+                            "approved" : cpur.post.price * float(cpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
+                            "date" : cpur.udpated_at,
+                            "service_fee" : settings.APP_FEE_BUY * cpur.post.price * float(cpur.paid_percent/100.0),
+                            "total_service_fee" : settings.APP_FEE_BUY * cpur.post.price,
+                            "refund_amount" : cpur.post.price * float((100 - cpur.paid_percent)/100.0),
+                            "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price,
+                            "category" : cpur.post.category.parent.name if cpur.post.category.parent.name !='' else cpur.post.category.name
+                        })
 
         rndr_str = render_to_string("_transactions_cancelled.html" , {'cpurchases': cpurchases_list}, request=request)
 
@@ -1141,50 +1204,48 @@ def search_txs(request):
 
         rpurchases_list = []
 
-        if payment_method == 'Stripe' or payment_method == 'All Payment Methods':
+        rpurchases = PostPurchase.objects.filter(udpated_at__range=[start_date, end_date]).order_by('-udpated_at')
 
-            rpurchases = PostPurchase.objects.filter(udpated_at__range=[start_date, end_date]).order_by('-udpated_at')
+        for rpur in rpurchases:
 
-            for rpur in rpurchases:
+            if (category in rpur.post.category.name or category in rpur.post.category.parent.name) and payment_method in rpur.transaction.lower():
 
-                if category in rpur.post.category.name or category in rpur.post.category.parent.name:
+                if ( keyword != None and keyword.lower() in rpur.post.title.lower()) or keyword == None  :
 
-                    if ( keyword != None and keyword.lower() in rpur.post.title.lower()) or keyword == None  :
+                    if rpur.post.owner.id == request.user.id:
 
-                        if rpur.post.owner.id == request.user.id:
+                        if rpur.type == 'direct':
 
-                            if rpur.type == 'direct':
+                            if rpur.status == 0:
 
-                                if rpur.status == 0:
+                                rpurchases_list.append({
+                                    "id": rpur.id,
+                                    "transaction" : rpur.transaction,
+                                    "post_id" : rpur.post.id,
+                                    "post_title" : rpur.post.title,
+                                    "post_price" : rpur.post.price,
+                                    "received_amount" : rpur.post.price * (1.0 - settings.APP_FEE),
+                                    "date" : rpur.udpated_at,
+                                    "type" : rpur.type,
+                                    "service_fee" : rpur.post.price * settings.APP_FEE,
+                                    "category" : rpur.post.category.parent.name if rpur.post.category.parent.name !='' else rpur.post.category.name
+                                })
+                        else :
 
-                                    rpurchases_list.append({
-                                        "id": rpur.id,
-                                        "transaction" : rpur.transaction,
-                                        "post_id" : rpur.post.id,
-                                        "post_title" : rpur.post.title,
-                                        "post_price" : rpur.post.price,
-                                        "received_amount" : rpur.post.price * (1.0 - settings.APP_FEE),
-                                        "date" : rpur.udpated_at,
-                                        "type" : rpur.type,
-                                        "service_fee" : rpur.post.price * settings.APP_FEE,
-                                        "category" : rpur.post.category.parent.name if rpur.post.category.parent.name !='' else rpur.post.category.name
-                                    })
-                            else :
+                            if rpur.paid_percent != 0:
 
-                                if rpur.paid_percent != 0:
-
-                                    rpurchases_list.append({
-                                        "id": rpur.id,
-                                        "post_id" : rpur.post.id,
-                                        "transaction" : rpur.transaction,
-                                        "post_title" : rpur.post.title,
-                                        "post_price" : rpur.post.price,
-                                        "received_amount" : (float(rpur.paid_percent)/100) * rpur.post.price * (1.0 - settings.APP_FEE),
-                                        "date" : rpur.udpated_at,
-                                        "type" : rpur.type,
-                                        "service_fee" : (float(rpur.paid_percent)/100) * rpur.post.price * settings.APP_FEE,
-                                        "category" : rpur.post.category.parent.name  if rpur.post.category.parent.name !='' else rpur.post.category.name
-                                    })
+                                rpurchases_list.append({
+                                    "id": rpur.id,
+                                    "post_id" : rpur.post.id,
+                                    "transaction" : rpur.transaction,
+                                    "post_title" : rpur.post.title,
+                                    "post_price" : rpur.post.price,
+                                    "received_amount" : (float(rpur.paid_percent)/100) * rpur.post.price * (1.0 - settings.APP_FEE),
+                                    "date" : rpur.udpated_at,
+                                    "type" : rpur.type,
+                                    "service_fee" : (float(rpur.paid_percent)/100) * rpur.post.price * settings.APP_FEE,
+                                    "category" : rpur.post.category.parent.name  if rpur.post.category.parent.name !='' else rpur.post.category.name
+                                })
 
         rndr_str = render_to_string("_transactions_received.html" , {'rpurchases': rpurchases_list}, request=request)
 
@@ -1360,22 +1421,35 @@ def release_purchase(request):
     # send money to the post's owner
     amount = int(purchase.post.price * percent )
 
-    destination = ''
+    if 'pay-' in purchase.transaction.lower():
 
-    try:
+        amount = purchase.post.price * percent/100
 
-        destination=purchase.post.owner.socialaccount_set.get(provider='stripe').uid
+        receiver_email = purchase.post.owner.paypal
 
-        try:
+        payout = paypalrestsdk.Payout({
+            "sender_batch_header": {
+                "sender_batch_id": "batch",
+                "email_subject": "You have a payment"
+            },
+            "items": [
+                {
+                    "recipient_type": "EMAIL",
+                    "amount": {
+                        "value": amount,
+                        "currency": "USD"
+                    },
+                    "receiver": receiver_email,
+                    "note": "Thank you.",
+                    "sender_item_id": "item"
+                }
+            ]
+        })
 
-            transfer = stripe.Transfer.create(
-                amount=amount,
-                currency="usd",
-                source_transaction=purchase.transaction,
-                destination=destination
-            )
+        if payout.create(sync_mode=False):
+            print("payout[%s] created successfully" %
+              (payout.batch_header.payout_batch_id))
 
-            # purchase.transaction = transfer.id
             purchase.paid_percent = purchase.paid_percent + percent
             if purchase.paid_percent == 100:    # finished purchase
                 purchase.status = 0
@@ -1390,17 +1464,52 @@ def release_purchase(request):
 
             return JsonResponse(result, safe=False)
 
-        except Exception as e:
+        else:
+            print(payout.error)
 
-            print(e, "~~~~~~~~~here")
+    else:
 
-            return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
+        destination = ''
 
-    except:
+        try:
 
-        message = "The payment can't be processed because the customer doesn't connect with his stripe account."
+            destination=purchase.post.owner.socialaccount_set.get(provider='stripe').uid
 
-        return JsonResponse({"message" : message}, safe=False)
+            try:
+
+                transfer = stripe.Transfer.create(
+                    amount=amount,
+                    currency="usd",
+                    source_transaction=purchase.transaction,
+                    destination=destination
+                )
+
+                # purchase.transaction = transfer.id
+                purchase.paid_percent = purchase.paid_percent + percent
+                if purchase.paid_percent == 100:    # finished purchase
+                    purchase.status = 0
+
+                purchase.save()
+
+                result = {
+                    "transaction": transfer.id,
+                    "finished": purchase.paid_percent == 100,
+                    "message" : message
+                }
+
+                return JsonResponse(result, safe=False)
+
+            except Exception as e:
+
+                print(e, "~~~~~~~~~here")
+
+                return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
+
+        except:
+
+            message = "The payment can't be processed because the customer doesn't connect with his stripe account."
+
+            return JsonResponse({"message" : message}, safe=False)
 
 
 @csrf_exempt    

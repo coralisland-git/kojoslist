@@ -264,8 +264,14 @@
             <div  style="border-bottom: 1px solid #ddd; margin-bottom : 20px;"></div>
             <div class="modal-price">Total Price: <b class="pay-price">${{ total_amount }}</b> USD</div>
 
+            <div class="form-group">
+                <label>Contact Information</label>
+                <small>Please provide email, phone number, address ...</small>
+                <textarea class="form-control" name="contact" rows=4>{{ user.email }}&#13;&#10;{% if user.phone %}{{ user.phone }}{% endif %}&#13;&#10;{% if user.address %}{{ user.address }}{% endif %}</textarea>
+            </div>
+
             <div class="row well" style="padding : 10px; margin : 0px">
-                <div class="col-md-6">
+                <div>
                     <div>Choose Payment Type</div><br>
                     <div class="radio">
                       <label title="Direct pay to owner"><input type="radio" name="optpay" value="direct" checked="" id="direct-pay-checkbox">Direct Pay</label>
@@ -274,53 +280,29 @@
                       <label title="Put money on escrow until you approve it"><input type="radio" name="optpay" value="escrow" id="escrow-checkbox">Escrow Payment</label>
                     </div>
                 </div>
-                <div id="purchases_laptop" class="col-md-6" style="border-left : 1px solid #ddd; padding-left: : 10px;">
-                    <div>Other forms of payment</div><br>
-                    <div class="radio" style="margin-bottom: 20px">
-                      <label title="Pay via Stripe">
-                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked="" id="stripe_payment_signin"><img src="/static/img/stripe_logo.png" width="80" height="25">
-                    </label>
+                <div id="purchases" class="row" style="padding: 10px;">
+                    <div class="col-md-3">
+                        <div type="button" class="btn" id="btn-pay-stripe"><img src="/static/img/stripe_logo.png" width="80" height="25"></div>
                     </div>
-                    <div class="radio" style="margin-bottom: 20px">
-                      <label title="Pay via Paypal"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="paypal" id="paypal_payment_signin"><img src="/static/img/paypal_logo.png" width="100" height="25" ></label>
+                    <div class="col-md-5" style="top : 5px; left: 12px">
+                       <div id="paypal-button-container"></div>
                     </div>
-                    <div id="bitcoin_paymenet">
-                        <div class="radio">
-                          <label title="Pay via Bitcoin"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin" id="bitcoin_payment_signin"><img src="/static/img/bitcoin_logo.png" width="100" height="25"></label>
-                        </div>
+                    {% if post.owner.bitcoin %}
+                    <div class="col-md-4" id="bitcoin_payment">
+                        <div type="button" class="btn"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>
                     </div>
+                    {% endif %}
                 </div>
-                 <div id="purchases_mobile" class="col-md-6" style="margin-top: 10px; padding-top : 10px; border-top: 1px solid #ddd;">
-                    <div>Other forms of payment</div><br>
-                    <div style="display: flex; margin-top: 5px; padding: 0px;" class="row">
-                        <div class="col-xs-2" style="margin-right: 35px">
-                            <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked="" id="stripe_payment_signin"><img src="/static/img/stripe_logo.png" width="45" height="12">
-                        </div>
-                        <div class="col-xs-3"  style="margin-right: 35px">
-                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="paypal" id="paypal_payment_signin"><img src="/static/img/paypal_logo.png" width="65" height="15" >
-                        </div>
-                        <div class="col-xs-3">
-                        <hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin" id="bitcoin_payment_signin"><img src="/static/img/bitcoin_logo.png" width="65" height="10">
-                        </div>
-                    </div>
-                </div>
-
             </div>
-
-            <div class="form-group">
-                <label>Contact Information</label>
-                <small>Please provide email, phone number, address ...</small>
-                <textarea class="form-control" name="contact" rows=4>{{ user.email }}&#13;&#10;{% if user.phone %}{{ user.phone }}{% endif %}&#13;&#10;{% if user.address %}{{ user.address }}{% endif %}</textarea>
-            </div>            
             <input type="hidden" name="stripeToken" id="stripe_token">
             <input type="hidden" name="checkin" id="pay-checkin">
             <input type="hidden" name="checkout" id="pay-checkout">
             <input type="hidden" name="adults" id="pay-adults">
             <input type="hidden" name="children" id="pay-children">
             <input type="hidden" name="infants" id="pay-infants">
+            <input type="hidden" name="paypal_transaction_id" id="paypal_transaction_id">
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn" id="btn-pay">CONTINUE</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
           </div>
         </form>
@@ -328,39 +310,7 @@
 
       </div>
     </div>   
-
-
-    <div id="pay-method-modal" class="modal fade perk-modal" role="dialog">
-      <div class="modal-dialog">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Choose Payment Method</h4>
-          </div>
-        <form id="withdraw-form">
-          <div class="modal-body" style="font-size: 16px; line-height: 22px;">
-            <div class="row well" style="line-height: 24px; padding-left: 30px;">
-                <div class="radio" style="margin-bottom: 20px">
-                  <label title="Pay via Stripe">
-                    <input style="margin-top: 8px;" type="radio" name="paymethod" value="stripe" checked=""><img src="/static/img/stripe_logo.png" width="100" height="30" style="margin-left: 10px;">
-                </label>
-                </div>
-                <div class="radio" style="margin-bottom: 20px">
-                  <label title="Pay via Paypal"><input style="margin-top: 8px;" type="radio" name="paymethod" value="paypal"><img src="/static/img/paypal_logo.png" width="140" height="30" style="margin-left: 10px;"></label>
-                </div>
-                <div id="bitcoin_paymenet"></div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn" id="btn-pay">CONTINUE</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
-          </div>
-        </form>
-        </div>
-      </div>
-    </div>    
+  
 
     <div id="result-modal" class="modal fade perk-modal" role="dialog">
       <div class="modal-dialog">
@@ -408,9 +358,11 @@
 <script src="https://checkout.stripe.com/checkout.js"></script>
 <script src="/static/star-rating/star-rating.min.js"></script>
 <script src="/static/slick-1.8.0/slick/slick.min.js"></script>
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 
 <script type="text/javascript">
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 
     $('#rating-input').rating({
         min: 0,
@@ -470,43 +422,62 @@
                 $(".ads-pay-form").submit();
             }
         });
+        {% if post.owner.paypal %}
+            paypal.Button.render({
+            // Set your environment
+
+                env: 'sandbox', // sandbox | production
+
+                // Specify the style of the button
+
+                // PayPal Client IDs - replace with your own
+                // Create a PayPal app: https://developer.paypal.com/developer/applications/create
+
+                client: {
+                    sandbox:    'AaU-qo989YDzzlR_tFYr8klZ2k6K672x4JZjJjYf3rS6BlYETcccMKvx8OWD4AnOLWI1WMPhNEQ9O3-F',
+                    production: ''
+                },
+
+                payment: function(data, actions) {
+                    return actions.payment.create({
+                        payment: {
+                            transactions: [
+                                {
+                                    amount: { total: {{ total_amount }} , currency: 'USD' }
+                                }
+                            ]
+                        }
+                    });
+                },
+
+                onAuthorize: function(data, actions) {
+                    return actions.payment.execute().then(function() {
+                        $('#paypal_transaction_id').val(data.paymentID);
+                        $(".ads-pay-form").submit();
+                        $('#pay-modal').modal();
+                    });
+                }
+
+            }, '#paypal-button-container');
+        {% endif %}
 
         $("#direct-pay-checkbox").on('click', function(){
-            $('#bitcoin_paymenet').html('<div class="radio">\
-                  <label title="Pay via Bitcoin"><hidden style="margin-top: 8px;" type="radio" name="paymethod" value="bitcoin"><img src="/static/img/bitcoin_logo.png" width="100" height="25" style="margin-left: 10px;"></label>\
-                </div>');
+            $('#bitcoin_payment').html('<div type="button" class="btn"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>');
         });
 
         $("#escrow-checkbox").on('click', function(){
-            $('#bitcoin_paymenet').html('');
+            $('#bitcoin_payment').html('');
         });
 
-        $("#stripe_payment_signin").on('click', function(){
-            alert('Goto Stripe Signin Page.')
-        });
-
-        $("#paypal_payment_signin").on('click', function(){
-            alert('Goto Paypal Signin Page.')
-        });
-
-        $("#bitcoin_payment_signin").on('click', function(){
-            alert('Goto BitCoin Signin Page.')
-        });
-
-
-        $('#btn-pay').on('click', function(e) { 
-            if ( $('input[name="paymethod"]:checked')[0].value == 'stripe' ) 
-                {
-                    handler.open({
-                        name: "Globalboard",
-                        description: "{{ post.title }}",
-                        currency: "usd",
-                        amount: price
-                    });
-                    e.preventDefault();
-                }
-            else {
-                alert('Sorry, We have only stripe method now.')
+        $('#btn-pay-stripe').on('click', function(e) { 
+            {
+                handler.open({
+                    name: "Globalboard",
+                    description: "{{ post.title }}",
+                    currency: "usd",
+                    amount: price
+                });
+                e.preventDefault();
             }
         });
 
