@@ -81,5 +81,5 @@ urlpatterns += [
     url(r"^remove-subscription", remove_subscription, name="remove-subscription"), 
     url(r"^release_purchase", release_purchase, name="release_purchase"),
     url(r"^cancel_purchase", cancel_purchase, name="cancel_purchase"),
-    url(r"^widhdraw_money", widhdraw_money, name="widhdraw_money"),
+    url(r"^withdraw_money", withdraw_money, name="withdraw_money"),
 ]

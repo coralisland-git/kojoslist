@@ -10,6 +10,7 @@ from PIL import Image as PilImage
 from random import randint
 
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -502,33 +503,33 @@ def view_ads(request, ads_id):
 
                 status = 0
 
-                amount = post.price * ( 1 + settings.APP_FEE_BUY)
-                receiver_email = post.owner.paypal
+                # amount = post.price * ( 1 + settings.APP_FEE_BUY)
+                # receiver_email = post.owner.paypal
 
-                payout = paypalrestsdk.Payout({
-                    "sender_batch_header": {
-                        "sender_batch_id": "batch",
-                        "email_subject": "You have a payment"
-                    },
-                    "items": [
-                        {
-                            "recipient_type": "EMAIL",
-                            "amount": {
-                                "value": amount,
-                                "currency": "USD"
-                            },
-                            "receiver": receiver_email,
-                            "note": "Thank you.",
-                            "sender_item_id": "item"
-                        }
-                    ]
-                })
+                # payout = paypalrestsdk.Payout({
+                #     "sender_batch_header": {
+                #         "sender_batch_id": "batch",
+                #         "email_subject": "You have a payment"
+                #     },
+                #     "items": [
+                #         {
+                #             "recipient_type": "EMAIL",
+                #             "amount": {
+                #                 "value": amount,
+                #                 "currency": "USD"
+                #             },
+                #             "receiver": receiver_email,
+                #             "note": "Thank you.",
+                #             "sender_item_id": "item"
+                #         }
+                #     ]
+                # })
 
-                if payout.create(sync_mode=False):
-                    print("payout[%s] created successfully" %
-                          (payout.batch_header.payout_batch_id))
-                else:
-                    print(payout.error)
+                # if payout.create(sync_mode=False):
+                #     print("payout[%s] created successfully" %
+                #           (payout.batch_header.payout_batch_id))
+                # else:
+                #     print(payout.error)
 
             purchase = PostPurchase.objects.create(post=post,
                                                    purchaser=request.user,
@@ -582,8 +583,8 @@ def view_ads(request, ads_id):
                             amount=int(amount * ( 1 + settings.APP_FEE_BUY)),
                             currency="usd",
                             source=card, # obtained with Stripe.js
-                            destination=stripe_account_id,
-                            application_fee = int(amount * settings.APP_FEE_BUY),                
+                            # destination=stripe_account_id,
+                            # application_fee = int(amount * settings.APP_FEE_BUY),                
                             description="Direct pay to the ads (#{} - {})".format(post.id, post.title)
                         )
                     except Exception as e:
@@ -610,6 +611,7 @@ def view_ads(request, ads_id):
 
     reviews = Review.objects.filter(post__id=ads_id)
     skey = settings.STRIPE_KEYS['PUBLIC_KEY']
+    pkey = settings.PAYPAL_CLIENT
     if post.price:
         service_fee = settings.APP_FEE_BUY * post.price
         total_amount = service_fee + post.price
@@ -922,8 +924,9 @@ def my_account(request):
 
     rpurchases = PostPurchase.objects.all().order_by('-udpated_at')
     
-    wallet = 0.0        
+    get_paid = request.user.get_paid
 
+    wallet = 0.0
 
     #recevied purchases
 
@@ -1057,6 +1060,8 @@ def my_account(request):
         if form.is_valid():
             form.save()
 
+    wallet = wallet - get_paid
+
     return render(request, 'my-account.html', {
         'host': request.user,
         'form': form,
@@ -1072,7 +1077,9 @@ def my_account(request):
         'APP_FEE' : settings.APP_FEE,
         'APP_FEE_BUY' : settings.APP_FEE_BUY,
         'category_list' : Category.objects.filter(parent=None),
-        'wallet' : wallet
+        'wallet' : wallet,
+        'paypal_client': settings.PAYPAL_CLIENT,
+        'skey': settings.STRIPE_KEYS['PUBLIC_KEY']
     })
 
 
@@ -1421,95 +1428,111 @@ def release_purchase(request):
     # send money to the post's owner
     amount = int(purchase.post.price * percent )
 
-    if 'pay-' in purchase.transaction.lower():
+    purchase.paid_percent = purchase.paid_percent + percent
 
-        amount = purchase.post.price * percent/100
+    if purchase.paid_percent == 100:    # finished purchase
+        purchase.status = 0
 
-        receiver_email = purchase.post.owner.paypal
+    purchase.save()
 
-        payout = paypalrestsdk.Payout({
-            "sender_batch_header": {
-                "sender_batch_id": "batch",
-                "email_subject": "You have a payment"
-            },
-            "items": [
-                {
-                    "recipient_type": "EMAIL",
-                    "amount": {
-                        "value": amount,
-                        "currency": "USD"
-                    },
-                    "receiver": receiver_email,
-                    "note": "Thank you.",
-                    "sender_item_id": "item"
-                }
-            ]
-        })
+    result = {
+        # "transaction": transfer.id,
+        "finished": purchase.paid_percent == 100,
+        "message" : message
+    }
 
-        if payout.create(sync_mode=False):
-            print("payout[%s] created successfully" %
-              (payout.batch_header.payout_batch_id))
+    return JsonResponse(result, safe=False)
 
-            purchase.paid_percent = purchase.paid_percent + percent
-            if purchase.paid_percent == 100:    # finished purchase
-                purchase.status = 0
+    # if 'pay-' in purchase.transaction.lower():
 
-            purchase.save()
+    #     amount = purchase.post.price * percent/100
 
-            result = {
-                "transaction": transfer.id,
-                "finished": purchase.paid_percent == 100,
-                "message" : message
-            }
+    #     receiver_email = purchase.post.owner.paypal
 
-            return JsonResponse(result, safe=False)
+    #     payout = paypalrestsdk.Payout({
+    #         "sender_batch_header": {
+    #             "sender_batch_id": "batch",
+    #             "email_subject": "You have a payment"
+    #         },
+    #         "items": [
+    #             {
+    #                 "recipient_type": "EMAIL",
+    #                 "amount": {
+    #                     "value": amount,
+    #                     "currency": "USD"
+    #                 },
+    #                 "receiver": receiver_email,
+    #                 "note": "Thank you.",
+    #                 "sender_item_id": "item"
+    #             }
+    #         ]
+    #     })
 
-        else:
-            print(payout.error)
+    #     if payout.create(sync_mode=False):
+    #         print("payout[%s] created successfully" %
+    #           (payout.batch_header.payout_batch_id))
 
-    else:
+    #         purchase.paid_percent = purchase.paid_percent + percent
+    #         if purchase.paid_percent == 100:    # finished purchase
+    #             purchase.status = 0
 
-        destination = ''
+    #         purchase.save()
 
-        try:
+    #         result = {
+    #             "transaction": transfer.id,
+    #             "finished": purchase.paid_percent == 100,
+    #             "message" : message
+    #         }
 
-            destination=purchase.post.owner.socialaccount_set.get(provider='stripe').uid
+    #         return JsonResponse(result, safe=False)
 
-            try:
+    #     else:
+    #         print(payout.error)
 
-                transfer = stripe.Transfer.create(
-                    amount=amount,
-                    currency="usd",
-                    source_transaction=purchase.transaction,
-                    destination=destination
-                )
+    # else:
 
-                # purchase.transaction = transfer.id
-                purchase.paid_percent = purchase.paid_percent + percent
-                if purchase.paid_percent == 100:    # finished purchase
-                    purchase.status = 0
+    #     destination = ''
 
-                purchase.save()
+    #     try:
 
-                result = {
-                    "transaction": transfer.id,
-                    "finished": purchase.paid_percent == 100,
-                    "message" : message
-                }
+    #         destination=purchase.post.owner.socialaccount_set.get(provider='stripe').uid
 
-                return JsonResponse(result, safe=False)
+    #         try:
 
-            except Exception as e:
+    #             transfer = stripe.Transfer.create(
+    #                 amount=amount,
+    #                 currency="usd",
+    #                 source_transaction=purchase.transaction,
+    #                 destination=destination
+    #             )
 
-                print(e, "~~~~~~~~~here")
+    #             purchase.transaction = transfer.id
 
-                return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
+    #             purchase.paid_percent = purchase.paid_percent + percent
+    #             if purchase.paid_percent == 100:    # finished purchase
+    #                 purchase.status = 0
 
-        except:
+    #             purchase.save()
 
-            message = "The payment can't be processed because the customer doesn't connect with his stripe account."
+    #             result = {
+    #                 "transaction": transfer.id,
+    #                 "finished": purchase.paid_percent == 100,
+    #                 "message" : message
+    #             }
 
-            return JsonResponse({"message" : message}, safe=False)
+    #             return JsonResponse(result, safe=False)
+
+    #         except Exception as e:
+
+    #             print(e, "~~~~~~~~~here")
+
+    #             return JsonResponse({"message" : "Something went wrong. Please contact with the Administrator."}, safe=False)
+
+    #     except:
+
+    #         message = "The payment can't be processed because the customer doesn't connect with his stripe account."
+
+    #         return JsonResponse({"message" : message}, safe=False)
 
 
 @csrf_exempt    
@@ -1553,11 +1576,73 @@ def cancel_purchase(request):
 
 
 @csrf_exempt
-def widhdraw_money(request):
+def withdraw_money(request):
 
-    amount = request.POST.get('withdraw_amount')
+    stripe_token = stripe.Token.create(
+        card={
+            "number": '4242424242424242',
+            "exp_month": 12,
+            "exp_year": 2018,
+            "cvc": '123'
+        },
+    )
 
-    return HttpResponse('success')
+    amount = int(request.POST.get('amount'))
+
+    payment_method = request.POST.get('payment_method')
+
+    if payment_method == "stripe":
+
+        stripe_account_id = SocialAccount.objects.get(user=request.user, provider='stripe').uid
+
+        charge = stripe.Charge.create(
+                amount=amount * 100,
+                currency="usd",
+                source=stripe_token,
+                destination=stripe_account_id,
+                # application_fee = int(amount * settings.APP_FEE_BUY),                
+                description="Direct pay to the ads"
+            )
+    else:
+        status = 0
+
+        receiver_email = request.POST.get('email')
+
+        payout = paypalrestsdk.Payout({
+            "sender_batch_header": {
+                "sender_batch_id": "batch",
+                "email_subject": "You have a payment"
+            },
+            "items": [
+                {
+                    "recipient_type": "EMAIL",
+                    "amount": {
+                        "value": amount,
+                        "currency": "USD"
+                    },
+                    "receiver": receiver_email,
+                    "note": "Thank you.",
+                    "sender_item_id": "item"
+                }
+            ]
+        })
+
+        if payout.create(sync_mode=False):
+            print("payout[%s] created successfully" %
+                  (payout.batch_header.payout_batch_id))
+        else:
+            print(payout.error)
+
+
+    get_paid = request.user.get_paid
+
+    get_paid += amount
+
+    request.user.get_paid = get_paid
+
+    request.user.save()
+    
+    return redirect('my-account')
 
 
 @csrf_exempt    

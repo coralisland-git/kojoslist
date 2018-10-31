@@ -287,11 +287,9 @@
                     <div class="col-md-5" style="top : 5px; left: 12px">
                        <div id="paypal-button-container"></div>
                     </div>
-                    {% if post.owner.bitcoin %}
                     <div class="col-md-4" id="bitcoin_payment">
                         <div type="button" class="btn"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>
                     </div>
-                    {% endif %}
                 </div>
             </div>
             <input type="hidden" name="stripeToken" id="stripe_token">
@@ -363,7 +361,6 @@
 <script type="text/javascript">
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-
     $('#rating-input').rating({
         min: 0,
         max: 5,
@@ -422,44 +419,43 @@
                 $(".ads-pay-form").submit();
             }
         });
-        {% if post.owner.paypal %}
-            paypal.Button.render({
-            // Set your environment
 
-                env: 'sandbox', // sandbox | production
+        paypal.Button.render({
+        // Set your environment
 
-                // Specify the style of the button
+            env: 'sandbox', // sandbox | production
 
-                // PayPal Client IDs - replace with your own
-                // Create a PayPal app: https://developer.paypal.com/developer/applications/create
+            // Specify the style of the button
 
-                client: {
-                    sandbox:    'AaU-qo989YDzzlR_tFYr8klZ2k6K672x4JZjJjYf3rS6BlYETcccMKvx8OWD4AnOLWI1WMPhNEQ9O3-F',
-                    production: ''
-                },
+            // PayPal Client IDs - replace with your own
+            // Create a PayPal app: https://developer.paypal.com/developer/applications/create
 
-                payment: function(data, actions) {
-                    return actions.payment.create({
-                        payment: {
-                            transactions: [
-                                {
-                                    amount: { total: {{ total_amount }} , currency: 'USD' }
-                                }
-                            ]
-                        }
-                    });
-                },
+            client: {
+                sandbox:'{{ pkey }}',
+                production: ''
+            },
 
-                onAuthorize: function(data, actions) {
-                    return actions.payment.execute().then(function() {
-                        $('#paypal_transaction_id').val(data.paymentID);
-                        $(".ads-pay-form").submit();
-                        $('#pay-modal').modal();
-                    });
-                }
+            payment: function(data, actions) {
+                return actions.payment.create({
+                    payment: {
+                        transactions: [
+                            {
+                                amount: { total: {{ total_amount }} , currency: 'USD' }
+                            }
+                        ]
+                    }
+                });
+            },
 
-            }, '#paypal-button-container');
-        {% endif %}
+            onAuthorize: function(data, actions) {
+                return actions.payment.execute().then(function() {
+                    $('#paypal_transaction_id').val(data.paymentID);
+                    $(".ads-pay-form").submit();
+                    $('#pay-modal').modal();
+                });
+            }
+
+        }, '#paypal-button-container');
 
         $("#direct-pay-checkbox").on('click', function(){
             $('#bitcoin_payment').html('<div type="button" class="btn"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>');
