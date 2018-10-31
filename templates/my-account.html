@@ -597,6 +597,9 @@
         if (amount == '') {
             alert('Input the amount');
         }
+        else if ( parseInt(amount) > {{ wallet }}) {
+            alert('No balance enough');
+        }
         else{
             var r = confirm("Do you confirm to withdraw money via stripe?");
             if (r == true){
@@ -639,6 +642,9 @@
         email = $('#paypal_email').val();
         if (amount == '') {
             alert('Input the amount, please');
+        }
+        else if ( parseInt(amount) > {{ wallet }}) {
+            alert('No balance enough');
         }
         else if ( !email || email == '') {
             alert('Input the Paypal email, please');
