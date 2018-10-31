@@ -21,7 +21,6 @@ class SignupForm(UserCreationForm):
         user.gender = data['gender']
         user.dob = data['dob']
         user.address = data['address']
-        user.paypal = data['paypal']
 
         if 'password1' in data:
             user.set_password(data['password1'])
