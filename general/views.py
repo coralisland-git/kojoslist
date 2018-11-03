@@ -553,7 +553,10 @@ def view_ads(request, ads_id):
 
             for trans in my_transactions:
 
-                if bitcoin_transaction == trans.network['hash'] and trans.status == "completed":
+                # if bitcoin_transaction == trans.network['hash'] and trans.status == "completed":
+
+                if bitcoin_transaction == trans.network['hash']:
+
 
                     # sent_amount = float(trans.native_amount['amount'])
 
