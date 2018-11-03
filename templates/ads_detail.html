@@ -291,6 +291,26 @@
                         <div type="button" class="btn"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>
                     </div>
                 </div>
+                <div id="bitcoin_section" name="bitcoin_section" style="border-top: 1px solid #ddd; display: none; padding: 10px;">
+                    <div class="form-group row" style="margin: 15px 0px;">
+                        <label class="control-label col-md-10 col-md-offset-2">Plesase send money to this address</label>
+                    </div>
+                    <div class="form-group row" style="margin: 15px 0px;">
+                        <label class="control-label col-md-2 col-xs-12" style="margin-top: 5px; padding: 5px 0px;">Address </label>
+                        <div class="col-md-9 col-xs-11" style="padding: 0px;">
+                            <input type="text" class="form-control" id="bitcoin_address" style="margin-top: 5px; padding: 5px; font-weight: normal; background-color: #b5fdac" value="3GNBaXB8tT74Fy8LGMpM6tn8mrnyHhwiKU" readonly>
+                        </div>
+                        <label class="control-label col-md-1 col-xs-1" style="margin-top: 5px; padding: 5px; cursor: pointer" title="Copy to clipboard" id="copy_clipboard"><i class="glyphicon glyphicon-duplicate"></i></label>
+                    </div>
+                    <div class="form-group row" style="margin: 15px 0px;">
+                        <label class="control-label col-md-3 col-xs-12" style="margin-top: 5px; padding: 5px;">Transaction ID</label>
+                        <div class="col-md-6 col-xs-12" style="padding: 5px;">
+                            <input type="text" class="form-control" name="bitcoin_transaction" min="0" placeholder=""
+                            id="bitcoin_transaction">
+                        </div>
+                        <button type="button" class="btn col-md-3 col-xs-12" style="background-color: #4DBEE2; color : white; margin-top: 5px;  padding: 5px;" id="bitcoin-pay-method-confirm">Continue</button>
+                    </div>
+                </div>
             </div>
             <input type="hidden" name="stripeToken" id="stripe_token">
             <input type="hidden" name="checkin" id="pay-checkin">
@@ -389,6 +409,15 @@
         displayOnly: true
     });
 
+    $('#bitcoin_payment').on('click', function(e) { 
+        $('#bitcoin_section').css("display", "block");
+    });
+
+    $('#copy_clipboard').on('click', function(e){
+        var copyText = document.getElementById("bitcoin_address");
+        copyText.select();
+        document.execCommand("copy");
+    });
 
     {% if post.category.form == 'ShortTermPost' %}    
     var is_total_ready = false;
@@ -458,12 +487,22 @@
         }, '#paypal-button-container');
 
         $("#direct-pay-checkbox").on('click', function(){
-            $('#bitcoin_payment').html('<div type="button" class="btn"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>');
+            $('#bitcoin_payment').css('display', 'block');
         });
 
         $("#escrow-checkbox").on('click', function(){
-            $('#bitcoin_payment').html('');
+            $('#bitcoin_payment').css('display', 'none');
+            $('#bitcoin_section').css("display", "none");
         });
+
+        $('#bitcoin-pay-method-confirm').click(function(){
+            transaction = $('#bitcoin_transaction').val();
+            if (transaction == '') {
+                alert('Input the Transaction ID, please');
+            }
+            $(".ads-pay-form").submit();
+        });
+
 
         $('#btn-pay-stripe').on('click', function(e) { 
             {

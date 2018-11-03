@@ -16,7 +16,7 @@
             <div class="col-md-3">{{ purchase.category}}</div>
             <div class="col-md-4 col-xs-3">
                 <a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a>
-                <div style="margin-top: 5px;">{{ purchase.transaction }}</div>
+                <div style="margin-top: 5px; word-wrap: break-word;">{{ purchase.transaction }}</div>
             </div>
             <div class="col-md-2 col-xs-2"  style="color : red">${{ purchase.received_amount|floatformat:2|intcomma }}</div>
         </div>

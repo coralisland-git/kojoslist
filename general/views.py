@@ -35,6 +35,9 @@ from general.post_models import *
 from general.forms import *
 from general.utils import send_email, send_SMS
 import paypalrestsdk
+from coinbase.wallet.client import Client
+from forex_python.converter import CurrencyRates
+from forex_python.bitcoin import BtcConverter
 
 
 import pdb
@@ -46,6 +49,8 @@ paypalrestsdk.configure({
   "mode": "sandbox", # sandbox or live
   "client_id": settings.PAYPAL_CLIENT,
   "client_secret": settings.PAYPAL_CLIENT_SECRET })
+
+client = Client(settings.BITCOIN_CLIENT, settings.BITCOIN_CLIENT_SECRET)
 
 # def index(request):
 #     next = request.GET.get('q', '/home')
@@ -484,6 +489,7 @@ def view_ads(request, ads_id):
     favourite = False
     result = ''
     optpay = ''
+    lack_amount = 0
 
     if request.user.is_authenticated():
         posts = [ii.post.id for ii in Favourite.objects.filter(owner=request.user)]
@@ -494,14 +500,13 @@ def view_ads(request, ads_id):
         paypal_transaction_id = request.POST.get('paypal_transaction_id')
         optpay = request.POST.get('optpay')
         contact = request.POST.get('contact')
+        bitcoin_transaction = request.POST.get('bitcoin_transaction')
+
+        status = 1
+        if optpay == 'direct':
+            status = 0
 
         if paypal_transaction_id != '':
-
-            status = 1
-
-            if optpay == 'direct':
-
-                status = 0
 
                 # amount = post.price * ( 1 + settings.APP_FEE_BUY)
                 # receiver_email = post.owner.paypal
@@ -531,6 +536,7 @@ def view_ads(request, ads_id):
                 # else:
                 #     print(payout.error)
 
+
             purchase = PostPurchase.objects.create(post=post,
                                                    purchaser=request.user,
                                                    type=optpay,
@@ -538,6 +544,35 @@ def view_ads(request, ads_id):
                                                    status=status,
                                                    transaction=paypal_transaction_id)
 
+            result = paypal_transaction_id
+
+
+        elif bitcoin_transaction != '':
+
+            my_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
+
+            for trans in my_transactions:
+
+                if bitcoin_transaction == trans.network['hash'] and trans.status == "completed":
+
+                    # sent_amount = float(trans.native_amount['amount'])
+
+                    # sent_currency = trans.native_amount['currency']
+
+                    # c = CurrencyRates()
+
+                    # res_amount = c.convert(sent_currency, 'USD', sent_amount)
+
+                    # if res_amount >= post.price:
+
+                    purchase = PostPurchase.objects.create(post=post,
+                                                           purchaser=request.user,
+                                                           type=optpay,
+                                                           contact=contact,
+                                                           status=status,
+                                                           transaction=bitcoin_transaction)
+
+                    result = bitcoin_transaction
 
         else:
             card = request.POST.get('stripeToken')
@@ -1110,20 +1145,37 @@ def search_txs(request):
 
         for ppur in ppurchases:
             
-            if (category in ppur.post.category.name or category in ppur.post.category.parent.name) and payment_method in ppur.transaction.lower():
+            if (category in ppur.post.category.name or category in ppur.post.category.parent.name):
 
                 if ( keyword != None and keyword.lower() in ppur.post.title.lower()) or keyword == None  :
-                    ppurchases_list.append({
-                        "id": ppur.id,
-                        "transaction" : ppur.transaction,
-                        "post_id" : ppur.post.id,
-                        "post_title" : ppur.post.title,
-                        "post_price" : ppur.post.price,
-                        "paid_percent" : ppur.paid_percent,
-                        "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
-                        "date" : ppur.created_at,
-                        "service_fee" : settings.APP_FEE * 100,
-                    })
+
+                    check = False
+
+                    if payment_method == 'bc_':
+
+                        if 'pay' not in ppur.transaction.lower() and 'ch' not in ppur.transaction.lower():
+
+                            check = True
+
+                    else:
+
+                        if payment_method in ppur.transaction.lower():
+
+                            check = True
+
+                    if check : 
+
+                        ppurchases_list.append({
+                                "id": ppur.id,
+                                "transaction" : ppur.transaction,
+                                "post_id" : ppur.post.id,
+                                "post_title" : ppur.post.title,
+                                "post_price" : ppur.post.price,
+                                "paid_percent" : ppur.paid_percent,
+                                "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
+                                "date" : ppur.created_at,
+                                "service_fee" : settings.APP_FEE * 100,
+                            })
 
         rndr_str = render_to_string("_transactions_pending.html" , {
                     'ppurchases': ppurchases_list,
@@ -1143,26 +1195,43 @@ def search_txs(request):
         for dpur in dpurchases:
         
 
-            if (category in dpur.post.category.name or category in dpur.post.category.parent.name) and payment_method in dpur.transaction.lower():
+            if (category in dpur.post.category.name or category in dpur.post.category.parent.name):
 
                 if dpur.type == 'direct' or dpur.paid_percent == 100:
 
                     if ( keyword != None and keyword.lower() in dpur.post.title.lower()) or keyword == None  :
 
-                        dpurchases_list.append({
-                            "id": dpur.id,
-                            "transaction" : dpur.transaction,
-                            "post_id" : dpur.post.id,
-                            "post_title" : dpur.post.title,
-                            "post_price" : dpur.post.price,
-                            "paid_percent" : dpur.paid_percent,
-                            "type" : dpur.type,
-                            "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
-                            "date" : dpur.created_at,
-                            "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
-                            "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
-                            "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
-                        })
+                        check = False
+
+                        if payment_method == 'bc_':
+
+                            if 'pay' not in dpur.transaction.lower() and 'ch' not in dpur.transaction.lower():
+
+                                check = True
+
+                        else:
+
+                            if payment_method in dpur.transaction.lower():
+
+                                check = True
+
+                        if check:
+
+                            dpurchases_list.append({
+                                    "id": dpur.id,
+                                    "transaction" : dpur.transaction,
+                                    "post_id" : dpur.post.id,
+                                    "post_title" : dpur.post.title,
+                                    "post_price" : dpur.post.price,
+                                    "paid_percent" : dpur.paid_percent,
+                                    "type" : dpur.type,
+                                    "approved" : (float(dpur.paid_percent)/100) * dpur.post.price * (1.0 - settings.APP_FEE) if dpur.paid_percent > 0 else 0,
+                                    "date" : dpur.created_at,
+                                    "service_fee" : settings.APP_FEE_BUY * dpur.post.price,
+                                    "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
+                                    "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
+                                })
+
 
         rndr_str = render_to_string("_transactions_finished.html" , {'dpurchases': dpurchases_list}, request=request)
 
@@ -1178,29 +1247,45 @@ def search_txs(request):
 
         for cpur in cpurchases:
 
-            if (category in cpur.post.category.name or category in cpur.post.category.parent.name) and payment_method in cpur.transaction.lower():
+            if (category in cpur.post.category.name or category in cpur.post.category.parent.name):
 
                 if cpur.paid_percent != 100:
 
                     if ( keyword != None and keyword.lower() in cpur.post.title.lower()) or keyword == None  :
 
-                        cpurchases_list.append({
-                           "id": cpur.id,
-                            "transaction" : cpur.transaction,
-                            "post_id" : cpur.post.id,
-                            "post_title" : cpur.post.title,
-                            "post_price" : cpur.post.price,
-                            "paid_percent" : cpur.paid_percent,
-                            "type" : cpur.type,
-                            "paid_amount" : cpur.post.price * float(cpur.paid_percent/100.0),
-                            "approved" : cpur.post.price * float(cpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
-                            "date" : cpur.udpated_at,
-                            "service_fee" : settings.APP_FEE_BUY * cpur.post.price * float(cpur.paid_percent/100.0),
-                            "total_service_fee" : settings.APP_FEE_BUY * cpur.post.price,
-                            "refund_amount" : cpur.post.price * float((100 - cpur.paid_percent)/100.0),
-                            "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price,
-                            "category" : cpur.post.category.parent.name if cpur.post.category.parent.name !='' else cpur.post.category.name
-                        })
+                        check = False
+
+                        if payment_method == 'bc_':
+
+                            if 'pay' not in cpur.transaction.lower() and 'ch' not in cpur.transaction.lower():
+
+                                check =True
+
+                        else:
+
+                            if payment_method in cpur.transaction.lower():
+
+                                check =True
+
+                        if check:
+
+                            cpurchases_list.append({
+                                   "id": cpur.id,
+                                    "transaction" : cpur.transaction,
+                                    "post_id" : cpur.post.id,
+                                    "post_title" : cpur.post.title,
+                                    "post_price" : cpur.post.price,
+                                    "paid_percent" : cpur.paid_percent,
+                                    "type" : cpur.type,
+                                    "paid_amount" : cpur.post.price * float(cpur.paid_percent/100.0),
+                                    "approved" : cpur.post.price * float(cpur.paid_percent/100.0) * (1.0 + settings.APP_FEE_BUY),
+                                    "date" : cpur.udpated_at,
+                                    "service_fee" : settings.APP_FEE_BUY * cpur.post.price * float(cpur.paid_percent/100.0),
+                                    "total_service_fee" : settings.APP_FEE_BUY * cpur.post.price,
+                                    "refund_amount" : cpur.post.price * float((100 - cpur.paid_percent)/100.0),
+                                    "total_amount" : (settings.APP_FEE_BUY +1 ) * cpur.post.price,
+                                    "category" : cpur.post.category.parent.name if cpur.post.category.parent.name !='' else cpur.post.category.name
+                                })
 
         rndr_str = render_to_string("_transactions_cancelled.html" , {'cpurchases': cpurchases_list}, request=request)
 
@@ -1215,9 +1300,24 @@ def search_txs(request):
 
         for rpur in rpurchases:
 
-            if (category in rpur.post.category.name or category in rpur.post.category.parent.name) and payment_method in rpur.transaction.lower():
+            if (category in rpur.post.category.name or category in rpur.post.category.parent.name):
 
-                if ( keyword != None and keyword.lower() in rpur.post.title.lower()) or keyword == None  :
+                check = False
+
+                if payment_method == 'bc_':
+
+                    if 'pay' not in cpur.transaction.lower() and 'ch' not in cpur.transaction.lower():
+
+                        check = True
+
+                else:
+
+                    if payment_method in rpur.transaction.lower():
+
+                        check = True
+
+
+                if check and (( keyword != None and keyword.lower() in rpur.post.title.lower()) or keyword == None):
 
                     if rpur.post.owner.id == request.user.id:
 
@@ -1587,62 +1687,115 @@ def withdraw_money(request):
         },
     )
 
-    amount = int(request.POST.get('amount'))
+    amount = int(float(request.POST.get('amount')))
 
     payment_method = request.POST.get('payment_method')
 
+    res_message = "Withdrawn Successfully"
+
     if payment_method == "stripe":
 
-        stripe_account_id = SocialAccount.objects.get(user=request.user, provider='stripe').uid
+        try:
 
-        charge = stripe.Charge.create(
-                amount=amount * 100,
-                currency="usd",
-                source=stripe_token,
-                destination=stripe_account_id,
-                # application_fee = int(amount * settings.APP_FEE_BUY),                
-                description="Direct pay to the ads"
-            )
+            stripe_account_id = SocialAccount.objects.get(user=request.user, provider='stripe').uid
+
+            charge = stripe.Charge.create(
+                    amount=amount * 100,
+                    currency="usd",
+                    source=stripe_token,
+                    destination=stripe_account_id,
+                    # application_fee = int(amount * settings.APP_FEE_BUY),                
+                    description="Direct pay to the ads"
+                )
+
+            get_paid = request.user.get_paid
+
+            get_paid += amount
+
+            request.user.get_paid = get_paid
+
+            request.user.save()
+
+        except:
+
+            res_message = "You don't have enough ballence in your Stripe. Try again, please."
+
+
+    elif payment_method == "bitcoin":
+
+        try:
+
+            address = request.POST.get('address')
+
+            b = BtcConverter()
+
+            cur = b.convert_to_btc_on(amount, 'USD', datetime.datetime.now() - datetime.timedelta(days=1))
+
+            tx = client.send_money(settings.BITCOIN_ACCOUNT,
+                           to=address,
+                           amount=cur,
+                           currency='BTC')
+
+            get_paid = request.user.get_paid
+
+            get_paid += amount
+
+            request.user.get_paid = get_paid
+
+            request.user.save()
+
+        except Exception as e:
+
+            res_message = "You don't have enough ballence in your Bitcoin wallet. Try again, please."
+
     else:
-        status = 0
 
-        receiver_email = request.POST.get('email')
+        try:
 
-        payout = paypalrestsdk.Payout({
-            "sender_batch_header": {
-                "sender_batch_id": "batch",
-                "email_subject": "You have a payment"
-            },
-            "items": [
-                {
-                    "recipient_type": "EMAIL",
-                    "amount": {
-                        "value": amount,
-                        "currency": "USD"
-                    },
-                    "receiver": receiver_email,
-                    "note": "Thank you.",
-                    "sender_item_id": "item"
-                }
-            ]
-        })
+            status = 0
 
-        if payout.create(sync_mode=False):
-            print("payout[%s] created successfully" %
-                  (payout.batch_header.payout_batch_id))
-        else:
-            print(payout.error)
+            receiver_email = request.POST.get('email')
+
+            payout = paypalrestsdk.Payout({
+                "sender_batch_header": {
+                    "sender_batch_id": "batch",
+                    "email_subject": "You have a payment"
+                },
+                "items": [
+                    {
+                        "recipient_type": "EMAIL",
+                        "amount": {
+                            "value": amount,
+                            "currency": "USD"
+                        },
+                        "receiver": receiver_email,
+                        "note": "Thank you.",
+                        "sender_item_id": "item"
+                    }
+                ]
+            })
+
+            if payout.create(sync_mode=False):
+                print("payout[%s] created successfully" %
+                      (payout.batch_header.payout_batch_id))
+            else:
+                print(payout.error)
 
 
-    get_paid = request.user.get_paid
+            get_paid = request.user.get_paid
 
-    get_paid += amount
+            get_paid += amount
 
-    request.user.get_paid = get_paid
+            request.user.get_paid = get_paid
 
-    request.user.save()
-    
-    return redirect('my-account')
+            request.user.save()
+
+        except:
+
+            res_message = "You don't have enough ballence in your Paypal. Try again, please."
+        
+    # return redirect('my-account')
+    return JsonResponse({"message" : res_message}, safe=False)
 
 
 @csrf_exempt    
