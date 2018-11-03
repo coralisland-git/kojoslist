@@ -1678,15 +1678,6 @@ def cancel_purchase(request):
 @csrf_exempt
 def withdraw_money(request):
 
-    stripe_token = stripe.Token.create(
-        card={
-            "number": '4242424242424242',
-            "exp_month": 12,
-            "exp_year": 2018,
-            "cvc": '123'
-        },
-    )
-
     amount = int(float(request.POST.get('amount')))
 
     payment_method = request.POST.get('payment_method')
@@ -1696,6 +1687,15 @@ def withdraw_money(request):
     if payment_method == "stripe":
 
         try:
+
+            stripe_token = stripe.Token.create(
+                card={
+                    "number": '4242424242424242',
+                    "exp_month": 12,
+                    "exp_year": 2018,
+                    "cvc": '123'
+                },
+            )
 
             stripe_account_id = SocialAccount.objects.get(user=request.user, provider='stripe').uid
 
