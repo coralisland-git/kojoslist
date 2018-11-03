@@ -506,28 +506,38 @@
           <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="row well" style="line-height: 24px; margin: 0px;">
                 <div class="" style="padding: 12px;">
-                    <div class="form-group row" style="margin-top: 25px;">
-                        <label class="control-label col-sm-2 col-sm-offset-2" for="withdraw_amount" style="margin-top: 5px; padding: 0px;">Amount  $</label>
-                        <div class="col-sm-6">
-                            <input type="number" class="form-control" name="withdraw_amount" min="0" placeholder="" id="withdraw_amount">
+                    <div class="form-group row">
+                        <label class="control-label col-md-2 col-md-offset-2 col-xs-4 col-xs-offset-1" for="withdraw_amount" style="margin-top: 5px; padding: 0px;">Amount  $</label>
+                        <div class="col-md-6 col-xs-6">
+                            <input type="number" class="form-control" name="withdraw_amount" min="0" placeholder="" id="withdraw_amount" value={{ wallet }}>
                         </div>
                     </div>
                 </div>
-                <div class="form-group row" style="padding: 12px;">
-                    <div type="button" class="btn col-md-4" id="btn-pay-stripe"><img src="/static/img/stripe_logo.png" width="80" height="25"></div>
+                <div class="form-group row" style="padding: 10px; margin-bottom: 0px;">
+                    <div type="button" class="btn col-md-4 col-xs-12" id="btn-pay-stripe"><img src="/static/img/stripe_logo.png" width="80" height="25"></div>
                     <!-- <span id='lippButton' class="col-md-5"></span> -->
-                    <div type="button" class="btn col-md-4" id="btn-pay-paypal"><img src="/static/img/paypal_logo.png" width="100" height="25" ></div>
-                    <div type="button" class="btn col-md-4" id="btn-pay-bitcoin"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>
+                    <div type="button" class="btn col-md-4 col-xs-12" id="btn-pay-paypal"><img src="/static/img/paypal_logo.png" width="100" height="25" ></div>
+                    <div type="button" class="btn col-md-4 col-xs-12" id="btn-pay-bitcoin"><img src="/static/img/bitcoin_logo.png" width="100" height="20"></div>
                 </div>
 
                 <div id="paypal_email_section" name="paypal_email_section" style="border-top: 1px solid #ddd; display: none;">
-                    <div class="form-group row" style="margin-top: 25px;">
-                        <label class="control-label col-sm-3 col-sm-offset-1" for="withdraw_amount" style="margin-top: 5px; padding: 0px;">Paypal Email</label>
-                        <div class="col-sm-5">
+                    <div class="form-group row" style="margin: 20px 0px 5px 0px;">
+                        <label class="control-label col-md-3 col-xs-3" for="withdraw_amount" style="margin-top: 5px; padding: 5px;">Paypal Email</label>
+                        <div class="col-md-6 col-xs-9" style="padding: 5px">
                             <input type="email" class="form-control" name="paypal_email" min="0" placeholder=""
                             id="paypal_email">
                         </div>
-                        <button type="button" class="btn col-md-2" style="background-color: #4DBEE2; color : white; " id="btn-pay-method-confirm">Continue</button>
+                        <button type="button" class="btn col-md-3 col-xs-12" style="background-color: #4DBEE2; color : white; padding: 5px; margin-top: 5px;" id="btn-pay-method-confirm">Continue</button>
+                    </div>
+                </div>
+                <div id="bitcoin_section" name="bitcoin_section" style="border-top: 1px solid #ddd; display: none;">
+                    <div class="form-group row" style="margin: 20px 0px 5px 0px;">
+                        <label class="control-label col-md-2 col-xs-3" for="withdraw_amount" style="margin-top: 5px; padding: 5px">Address</label>
+                        <div class="col-md-7 col-xs-9" style="padding: 5px">
+                            <input type="text" class="form-control" name="bitcoin_address" min="0" placeholder=""
+                            id="bitcoin_address">
+                        </div>
+                        <button type="button" class="btn col-md-3 col-xs-12" style="background-color: #4DBEE2; color : white; padding: 5px; margin-top: 5px;" id="bitcoin-pay-method-confirm">Continue</button>
                     </div>
                 </div>
             </div>
@@ -576,7 +586,7 @@
                         stripe_token: token.id
                     },
                 success: function (data) {
-                    alert('Released Successfully');
+                    alert('withdrawn Successfully');
                 }
             }); 
         }
@@ -584,6 +594,7 @@
 
     $('#btn-pay-stripe').on('click', function(e) { 
         $('#paypal_email_section').css("display", "none");
+        $('#bitcoin_section').css("display", "none");
         // {
         //     handler.open({
         //         name: "Globalboard",
@@ -610,8 +621,8 @@
                                 amount : amount,
                                 payment_method : 'stripe'
                             },
-                        success: function (data) {
-                            alert('Released Successfully');
+                        success: function (data) { 
+                            alert(data.message);
                             location.href = '/my-account?tab=purchase';
                         }
                     }); 
@@ -621,6 +632,7 @@
 
     $('#btn-pay-bitcoin').on('click', function(e) { 
         $('#paypal_email_section').css("display", "none");
+        $('#bitcoin_section').css("display", "block");
     });
 
     $('#btn-pay-paypal').on('click', function(e) { 
@@ -633,7 +645,8 @@
         //     });
         //     e.preventDefault();
         // }
-        $('#paypal_email_section').css("display", "block");;
+        $('#paypal_email_section').css("display", "block");
+        $('#bitcoin_section').css("display", "none");
 
     });
 
@@ -656,14 +669,48 @@
                     type: 'post',
                     url: '/withdraw_money',
                     data: {
-                            amount : $('#withdraw_amount').val(),
+                            amount : amount,
                             payment_method : 'paypal',
                             email : email
                         },
                     success: function (data) {
-                        alert('Released Successfully');
+                        alert(data.message);
                         $('#pay-method-modal').modal('hide');
                         $('#paypal_email_section').css("display", "none");
+                        location.href = '/my-account?tab=purchase';
+                    }
+                }); 
+            }
+        }
+    });
+
+    $('#bitcoin-pay-method-confirm').click(function(){
+        amount = $('#withdraw_amount').val();
+        address = $('#bitcoin_address').val();
+        if (amount == '') {
+            alert('Input the Address, please');
+        }
+        else if ( parseInt(amount) > {{ wallet }}) {
+            alert('No balance enough');
+        }
+        else if ( !address || address == '') {
+            alert('Input the Address, please');
+        }
+        else{
+            var r = confirm("Do you confirm to withdraw money via bitcoin?");
+            if (r == true){
+                jQuery.ajax({
+                    type: 'post',
+                    url: '/withdraw_money',
+                    data: {
+                            amount : amount,
+                            payment_method : 'bitcoin',
+                            address : address
+                        },
+                    success: function (data) {
+                        alert(data.message);
+                        $('#pay-method-modal').modal('hide');
+                        $('#bitcoin_section').css("display", "none");
                         location.href = '/my-account?tab=purchase';
                     }
                 }); 
