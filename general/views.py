@@ -1719,13 +1719,10 @@ def withdraw_money(request):
         try:
 
             stripe_token = stripe.Token.create(
-                card={
-                    "number": '4242424242424242',
-                    "exp_month": 12,
-                    "exp_year": 2018,
-                    "cvc": '123'
-                },
+                settings.COMPANY_CARD,
             )
+
+            4465 4203 5087 9417 ex O4/19 Kojo Boama 
 
             stripe_account_id = SocialAccount.objects.get(user=request.user, provider='stripe').uid
 
