@@ -557,22 +557,22 @@
 
 {% block own_js %}
 <script src="/static/star-rating/star-rating.min.js"></script>
-<script src='https://www.paypalobjects.com/js/external/api.js'></script>
+<!-- <script src='https://www.paypalobjects.com/js/external/api.js'></script> -->
 <script src="https://checkout.stripe.com/checkout.js"></script>
 
 <script>
     var purchase_id = '{{ request.GET.pid }}', post_id;
 
-    paypal.use( ['login'], function (login) {
-      login.render ({
-        "appid": '{{ paypal_client }}',
-        "authend":"sandbox",
-        "scopes":"openid",
-        "containerid":"lippButton",
-        "locale":"en-us",
-        "returnurl":'http://localhost:8000/'
-      });
-    });
+    // paypal.use( ['login'], function (login) {
+    //   login.render ({
+    //     "appid": '{{ paypal_client }}',
+    //     "authend":"sandbox",
+    //     "scopes":"openid",
+    //     "containerid":"lippButton",
+    //     "locale":"en-us",
+    //     "returnurl":'http://localhost:8000/'
+    //   });
+    // });
 
     var handler = StripeCheckout.configure({
         key: '{{ skey }}',

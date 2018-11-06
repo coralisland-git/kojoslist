@@ -452,8 +452,8 @@
         paypal.Button.render({
         // Set your environment
 
-            env: 'sandbox', // sandbox | production
-
+            // env: 'sandbox', // sandbox | production
+            env: 'production',
             // Specify the style of the button
 
             // PayPal Client IDs - replace with your own
@@ -461,7 +461,7 @@
 
             client: {
                 sandbox:'{{ pkey }}',
-                production: ''
+                production: '{{ pkey_live }}'
             },
 
             payment: function(data, actions) {
@@ -500,7 +500,9 @@
             if (transaction == '') {
                 alert('Input the Transaction ID, please');
             }
-            $(".ads-pay-form").submit();
+            let paymentform = $(".ads-pay-form")
+            paymentform.submit();
+            paymentform.reset();
         });
 
 
