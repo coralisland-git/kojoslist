@@ -38,8 +38,7 @@ import paypalrestsdk
 from coinbase.wallet.client import Client
 from forex_python.converter import CurrencyRates
 from forex_python.bitcoin import BtcConverter
-
-
+import math
 import pdb
 
 get_class = lambda x: globals()[x]
@@ -595,8 +594,8 @@ def view_ads(request, ads_id):
 
                         flag = True
                         # return HttpResponseRedirect(reverse('view-ads', args=(ads_id,)))
-
-            message = "The transaction is not available. Try again, please."
+            else:
+                message = "The transaction is not available. Try again, please."
 
         else:
             card = request.POST.get('stripeToken')
@@ -633,13 +632,15 @@ def view_ads(request, ads_id):
 
                 status = 0
 
+                total_amount = math.ceil((settings.APP_FEE_BUY + 1)*post.price*100)
+
                 if optpay == "direct":
                     stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
                     
                     try:
 
                         charge = stripe.Charge.create(
-                            amount=int(amount * ( 1 + settings.APP_FEE_BUY)),
+                            amount=total_amount,
                             currency="usd",
                             source=card, # obtained with Stripe.js
                             # destination=stripe_account_id,
@@ -650,7 +651,7 @@ def view_ads(request, ads_id):
                         print('~~~~~~~~~~', e)
                 else:
                     charge = stripe.Charge.create(
-                        amount=int(amount * (1 + settings.APP_FEE_BUY )),
+                        amount=total_amount,
                         currency="usd",
                         source=card, # obtained with Stripe.js
                         # destination=stripe_account_id,
@@ -678,8 +679,8 @@ def view_ads(request, ads_id):
     pkey = settings.PAYPAL_CLIENT
     pkey_live = settings.PAYPAL_CLIENT_LIVE
     if post.price:
-        service_fee = settings.APP_FEE_BUY * post.price
-        total_amount = service_fee + post.price
+        service_fee = math.ceil(settings.APP_FEE_BUY * post.price*100)/100
+        total_amount = math.ceil((settings.APP_FEE_BUY + 1)*post.price*100)/100
     return render(request, 'ads_detail.html', locals())
 
 def view_campaign(request, camp_id):
