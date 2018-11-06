@@ -442,7 +442,7 @@
     
         var loggedin = '{{ user.is_authenticated }}';
 
-        var price = {{ post.price }} * 100; 
+        var price = {{ total_amount }} * 100; 
 
         var handler = StripeCheckout.configure({
             key: '{{ skey }}',
