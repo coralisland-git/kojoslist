@@ -1722,8 +1722,6 @@ def withdraw_money(request):
                 settings.COMPANY_CARD,
             )
 
-            4465 4203 5087 9417 ex O4/19 Kojo Boama 
-
             stripe_account_id = SocialAccount.objects.get(user=request.user, provider='stripe').uid
 
             charge = stripe.Charge.create(
