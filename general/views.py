@@ -495,6 +495,7 @@ def view_ads(request, ads_id):
     result = ''
     optpay = ''
     lack_amount = 0
+    flag = False
 
     if request.user.is_authenticated():
         posts = [ii.post.id for ii in Favourite.objects.filter(owner=request.user)]
@@ -551,6 +552,8 @@ def view_ads(request, ads_id):
 
             result = paypal_transaction_id
 
+            flag = True
+
             print('~~~~~~~~~~~~~ purchased by paypal ~~~~~~~~~~~~~~~')
 
 
@@ -558,34 +561,42 @@ def view_ads(request, ads_id):
 
             my_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
 
-            for trans in my_transactions:
+            purchased_transactions = PostPurchase.objects.filter(transaction=bitcoin_transaction)
 
-                # if bitcoin_transaction == trans.network['hash'] and trans.status == "completed":
+            if len(purchased_transactions) == 0:
 
-                if bitcoin_transaction == trans.network['hash']:
+                for trans in my_transactions:
+
+                    # if bitcoin_transaction == trans.network['hash'] and trans.status == "completed":
+
+                    if bitcoin_transaction == trans.network['hash']:
 
 
-                    # sent_amount = float(trans.native_amount['amount'])
+                        # sent_amount = float(trans.native_amount['amount'])
 
-                    # sent_currency = trans.native_amount['currency']
+                        # sent_currency = trans.native_amount['currency']
 
-                    # c = CurrencyRates()
+                        # c = CurrencyRates()
 
-                    # res_amount = c.convert(sent_currency, 'USD', sent_amount)
+                        # res_amount = c.convert(sent_currency, 'USD', sent_amount)
 
-                    # if res_amount >= post.price:
+                        # if res_amount >= post.price:
 
-                    purchase = PostPurchase.objects.create(post=post,
-                                                           purchaser=request.user,
-                                                           type=optpay,
-                                                           contact=contact,
-                                                           status=status,
-                                                           transaction=bitcoin_transaction)
+                        purchase = PostPurchase.objects.create(post=post,
+                                                               purchaser=request.user,
+                                                               type=optpay,
+                                                               contact=contact,
+                                                               status=status,
+                                                               transaction=bitcoin_transaction)
 
-                    result = bitcoin_transaction
+                        result = bitcoin_transaction
 
-                    print('~~~~~~~~~~~~~ purchased by bitcoin ~~~~~~~~~~~~~~~')
-                    # return HttpResponseRedirect(reverse('view-ads', args=(ads_id,)))
+                        print('~~~~~~~~~~~~~ purchased by bitcoin ~~~~~~~~~~~~~~~')
+
+                        flag = True
+                        # return HttpResponseRedirect(reverse('view-ads', args=(ads_id,)))
+
+            message = "The transaction is not available. Try again, please."
 
         else:
             card = request.POST.get('stripeToken')
@@ -657,10 +668,12 @@ def view_ads(request, ads_id):
 
                 print('~~~~~~~~~~~~~ purchased by stripe ~~~~~~~~~~~~~~~')
 
+                flag = True
+
             except Exception as e:
                 print e, '@@@@@ Error in view_ads()'
-
-    reviews = Review.objects.filter(post__id=ads_id)
+    if flag:
+        reviews = Review.objects.filter(post__id=ads_id)
     skey = settings.STRIPE_KEYS['PUBLIC_KEY']
     pkey = settings.PAYPAL_CLIENT
     pkey_live = settings.PAYPAL_CLIENT_LIVE

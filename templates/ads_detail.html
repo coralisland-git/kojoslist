@@ -424,6 +424,10 @@
     {% else %}
     var is_total_ready = true;
     {% endif %}
+    {% if message %}
+        alert('{{message}}');
+        console.log('~~~~~~~~~~~~~~~~~~~~~{{message}}');
+    {% endif %}
     {% if post.price %}
         var transaction = '{{ result }}',
             optpay = '{{ optpay }}';
@@ -502,7 +506,6 @@
             }
             let paymentform = $(".ads-pay-form")
             paymentform.submit();
-            paymentform.reset();
         });
 
 
