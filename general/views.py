@@ -45,10 +45,15 @@ import pdb
 get_class = lambda x: globals()[x]
 stripe.api_key = settings.STRIPE_KEYS['API_KEY']
 
+# paypalrestsdk.configure({
+#   "mode": "sandbox", # sandbox or live
+#   "client_id": settings.PAYPAL_CLIENT,
+#   "client_secret": settings.PAYPAL_CLIENT_SECRET })
+
 paypalrestsdk.configure({
-  "mode": "sandbox", # sandbox or live
-  "client_id": settings.PAYPAL_CLIENT,
-  "client_secret": settings.PAYPAL_CLIENT_SECRET })
+  "mode": "live", # sandbox or live
+  "client_id": settings.PAYPAL_CLIENT_LIVE,
+  "client_secret": settings.PAYPAL_CLIENT_SECRET_LIVE })
 
 client = Client(settings.BITCOIN_CLIENT, settings.BITCOIN_CLIENT_SECRET)
 
@@ -546,6 +551,8 @@ def view_ads(request, ads_id):
 
             result = paypal_transaction_id
 
+            print('~~~~~~~~~~~~~ purchased by paypal ~~~~~~~~~~~~~~~')
+
 
         elif bitcoin_transaction != '':
 
@@ -576,6 +583,9 @@ def view_ads(request, ads_id):
                                                            transaction=bitcoin_transaction)
 
                     result = bitcoin_transaction
+
+                    print('~~~~~~~~~~~~~ purchased by bitcoin ~~~~~~~~~~~~~~~')
+                    # return HttpResponseRedirect(reverse('view-ads', args=(ads_id,)))
 
         else:
             card = request.POST.get('stripeToken')
@@ -644,12 +654,16 @@ def view_ads(request, ads_id):
                                                        contact=contact,
                                                        status=status,
                                                        transaction=charge.id)
+
+                print('~~~~~~~~~~~~~ purchased by stripe ~~~~~~~~~~~~~~~')
+
             except Exception as e:
                 print e, '@@@@@ Error in view_ads()'
 
     reviews = Review.objects.filter(post__id=ads_id)
     skey = settings.STRIPE_KEYS['PUBLIC_KEY']
     pkey = settings.PAYPAL_CLIENT
+    pkey_live = settings.PAYPAL_CLIENT_LIVE
     if post.price:
         service_fee = settings.APP_FEE_BUY * post.price
         total_amount = service_fee + post.price
