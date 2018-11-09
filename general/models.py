@@ -127,7 +127,8 @@ PURCHASE_TYPE = (
 PURCHASE_STATUS = (
     (0, 'FINISHED SUCCESSFULLY'),
     (1, 'WAIT RELEASE'),
-    (2, 'UNDER DISPUTE')
+    (2, 'UNDER DISPUTE'),
+    (3, 'UNDER REVIEW')
 )
 
 class PostPurchase(models.Model):
