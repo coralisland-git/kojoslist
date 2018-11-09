@@ -581,6 +581,14 @@ def view_ads(request, ads_id):
 
                         # if res_amount >= post.price:
 
+                        if trans.status == 'completed':
+
+                            status = 0
+
+                        else :
+
+                            status = 3
+
                         purchase = PostPurchase.objects.create(post=post,
                                                                purchaser=request.user,
                                                                type=optpay,
@@ -982,6 +990,21 @@ def remove_subscription(request):
 @login_required(login_url='/accounts/login/')
 def my_account(request):
 
+    #  just for updating status of pending transactions, shuuld be updated with cronjob later
+    
+    bitcoin_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
+
+    for trans in bitcoin_transactions:
+
+        if trans.status == "completed":
+
+            pur = PostPurchase.objects.filter(transaction=trans.network['hash'])
+
+            if len(pur) > 0:
+
+                pur[0].status = 0
+
+                pur[0].save()
 
     tab = request.GET.get('tab', 'profile')
     purchase = request.GET.get('purchase')
@@ -1067,6 +1090,7 @@ def my_account(request):
             "approved" : (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0,
             "date" : ppur.created_at,
             "service_fee" : settings.APP_FEE * 100,
+            "status" : "Review" if ppur.status == 3 else "Available"
         })
 
         wallet += (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0
@@ -1206,6 +1230,7 @@ def search_txs(request):
                                 "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
                                 "date" : ppur.created_at,
                                 "service_fee" : settings.APP_FEE * 100,
+                                "status" : "Review" if ppur.status == 3 else "Available"
                             })
 
         rndr_str = render_to_string("_transactions_pending.html" , {
@@ -1668,40 +1693,46 @@ def release_purchase(request):
 
 @csrf_exempt    
 def cancel_purchase(request):
-
+    
     post_id = request.POST.get('p_id')
 
     purchase_id = request.POST.get('purchase_id')
 
     purchase = PostPurchase.objects.get(id=purchase_id)
 
-    destination=purchase.purchaser.socialaccount_set.get(provider='stripe').uid
+    if 'ch_' in purchase.transaction :
 
-    amount = int((100 - purchase.paid_percent ) * purchase.post.price)
+        destination=purchase.purchaser.socialaccount_set.get(provider='stripe').uid
 
-    try:
+        amount = int((100 - purchase.paid_percent ) * purchase.post.price)
 
-        destination=purchase.post.owner.socialaccount_set.get(provider='stripe').uid
+        try:
 
-        transfer = stripe.Transfer.create(
-            amount=amount,
-            currency="usd",
-            source_transaction=purchase.transaction,
-            destination=destination
-        )
+            destination=purchase.post.owner.socialaccount_set.get(provider='stripe').uid
 
-        purchase.status = 0
+            transfer = stripe.Transfer.create(
+                amount=amount,
+                currency="usd",
+                source_transaction=purchase.transaction,
+                destination=destination
+            )
 
-        purchase.save()
+            purchase.status = 0
+
+            purchase.save()
 
 
-    except Exception as e:
+        except Exception as e:
 
-        purchase.status = 0
+            purchase.status = 0
 
-        purchase.save()
+            purchase.save()
 
-        print(e, "~~~~~~~~~")
+            print(e, "~~~~~~~~~")
+
+    if 'PAY-' in purchase.transaction:
+
+        print('~~~~~~~~~~ paypal cancellation ~~~~~~~~~~~')
 
     return JsonResponse({"message" :"The tranasction is Cancelled successfully."}, safe=False)
 
