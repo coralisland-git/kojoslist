@@ -44,15 +44,15 @@ import pdb
 get_class = lambda x: globals()[x]
 stripe.api_key = settings.STRIPE_KEYS['API_KEY']
 
-paypalrestsdk.configure({
-  "mode": "sandbox", # sandbox or live
-  "client_id": settings.PAYPAL_CLIENT,
-  "client_secret": settings.PAYPAL_CLIENT_SECRET })
-
 # paypalrestsdk.configure({
-#   "mode": "live", # sandbox or live
-#   "client_id": settings.PAYPAL_CLIENT_LIVE,
-#   "client_secret": settings.PAYPAL_CLIENT_SECRET_LIVE })
+#   "mode": "sandbox", # sandbox or live
+#   "client_id": settings.PAYPAL_CLIENT,
+#   "client_secret": settings.PAYPAL_CLIENT_SECRET })
+
+paypalrestsdk.configure({
+  "mode": "live", # sandbox or live
+  "client_id": settings.PAYPAL_CLIENT_LIVE,
+  "client_secret": settings.PAYPAL_CLIENT_SECRET_LIVE })
 
 client = Client(settings.BITCOIN_CLIENT, settings.BITCOIN_CLIENT_SECRET)
 
