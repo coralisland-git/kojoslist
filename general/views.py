@@ -1740,6 +1740,45 @@ def cancel_purchase(request):
 
     if 'PAY-' in purchase.transaction:
 
+        receiver_email = paypalrestsdk.Payment.find(purchase.transaction).payer.payer_info.email
+
+        amount = math.ceil((1 - purchase.paid_percent/100)*purchase.post.price*100)/100
+
+        payout = paypalrestsdk.Payout({
+            "sender_batch_header": {
+                "sender_batch_id": "refund-"+purchase.transaction,
+                "email_subject": "You have a payment"
+            },
+            "items": [
+                {
+                    "recipient_type": "EMAIL",
+                    "amount": {
+                        "value": amount,
+                        "currency": "USD"
+                    },
+                    "receiver": receiver_email,
+                    "note": "Fefunded",
+                    "sender_item_id": "item"
+                }
+            ]
+        })
+
+        if payout.create(sync_mode=False):
+
+            print('~~~~~~~~~~~~~~~~~~~~')
+            print("refunded[%s] created successfully" %
+                  (payout.batch_header.payout_batch_id))
+
+            purchase.status = 0
+
+            purchase.save()
+
+        else:
+            print('###############')
+            print(payout.error)
+
+
+
         print('~~~~~~~~~~ paypal cancellation ~~~~~~~~~~~')
 
     return JsonResponse({"message" :"The tranasction is Cancelled successfully."}, safe=False)
@@ -1823,7 +1862,7 @@ def withdraw_money(request):
 
             payout = paypalrestsdk.Payout({
                 "sender_batch_header": {
-                    "sender_batch_id": "batch",
+                    "sender_batch_id": "withdraw-"+str(request.user.id)+"-"+str(datetime.datetime.now()),
                     "email_subject": "You have a payment"
                 },
                 "items": [
@@ -1843,17 +1882,18 @@ def withdraw_money(request):
             if payout.create(sync_mode=False):
                 print("payout[%s] created successfully" %
                       (payout.batch_header.payout_batch_id))
+
+                get_paid = request.user.get_paid
+
+                get_paid += amount
+
+                request.user.get_paid = get_paid
+
+                request.user.save()
             else:
                 print(payout.error)
 
-
-            get_paid = request.user.get_paid
-
-            get_paid += amount
-
-            request.user.get_paid = get_paid
-
-            request.user.save()
+                res_message = "You don't have enough ballence in your Paypal. Try again, please."
 
         except:
 
