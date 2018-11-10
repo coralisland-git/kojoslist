@@ -513,6 +513,10 @@ def view_ads(request, ads_id):
 
         if paypal_transaction_id != '':
 
+            check_purchase = PostPurchase.objects.filter(transaction=paypal_transaction_id)
+
+            if len(check_purchase) == 0:
+
                 # amount = post.price * ( 1 + settings.APP_FEE_BUY)
                 # receiver_email = post.owner.paypal
 
@@ -542,68 +546,72 @@ def view_ads(request, ads_id):
                 #     print(payout.error)
 
 
-            purchase = PostPurchase.objects.create(post=post,
-                                                   purchaser=request.user,
-                                                   type=optpay,
-                                                   contact=contact,
-                                                   status=status,
-                                                   transaction=paypal_transaction_id)
+                purchase = PostPurchase.objects.create(post=post,
+                                                       purchaser=request.user,
+                                                       type=optpay,
+                                                       contact=contact,
+                                                       status=status,
+                                                       transaction=paypal_transaction_id)
 
-            result = paypal_transaction_id
+                result = paypal_transaction_id
 
-            flag = True
+                flag = True
 
-            print('~~~~~~~~~~~~~ purchased by paypal ~~~~~~~~~~~~~~~')
+                print('~~~~~~~~~~~~~ purchased by paypal ~~~~~~~~~~~~~~~')
 
 
         elif bitcoin_transaction != '':
 
-            my_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
+            check_purchase = PostPurchase.objects.filter(transaction=bitcoin_transaction)
 
-            purchased_transactions = PostPurchase.objects.filter(transaction=bitcoin_transaction)
+            if len(check_purchase) == 0:
 
-            if len(purchased_transactions) == 0:
+                my_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
 
-                for trans in my_transactions:
+                purchased_transactions = PostPurchase.objects.filter(transaction=bitcoin_transaction)
 
-                    # if bitcoin_transaction == trans.network['hash'] and trans.status == "completed":
+                if len(purchased_transactions) == 0:
 
-                    if bitcoin_transaction == trans.network['hash']:
+                    for trans in my_transactions:
+
+                        # if bitcoin_transaction == trans.network['hash'] and trans.status == "completed":
+
+                        if bitcoin_transaction == trans.network['hash']:
 
 
-                        # sent_amount = float(trans.native_amount['amount'])
+                            # sent_amount = float(trans.native_amount['amount'])
 
-                        # sent_currency = trans.native_amount['currency']
+                            # sent_currency = trans.native_amount['currency']
 
-                        # c = CurrencyRates()
+                            # c = CurrencyRates()
 
-                        # res_amount = c.convert(sent_currency, 'USD', sent_amount)
+                            # res_amount = c.convert(sent_currency, 'USD', sent_amount)
 
-                        # if res_amount >= post.price:
+                            # if res_amount >= post.price:
 
-                        if trans.status == 'completed':
+                            if trans.status == 'completed':
 
-                            status = 0
+                                status = 0
 
-                        else :
+                            else :
 
-                            status = 3
+                                status = 3
 
-                        purchase = PostPurchase.objects.create(post=post,
-                                                               purchaser=request.user,
-                                                               type=optpay,
-                                                               contact=contact,
-                                                               status=status,
-                                                               transaction=bitcoin_transaction)
+                            purchase = PostPurchase.objects.create(post=post,
+                                                                   purchaser=request.user,
+                                                                   type=optpay,
+                                                                   contact=contact,
+                                                                   status=status,
+                                                                   transaction=bitcoin_transaction)
 
-                        result = bitcoin_transaction
+                            result = bitcoin_transaction
 
-                        print('~~~~~~~~~~~~~ purchased by bitcoin ~~~~~~~~~~~~~~~')
+                            print('~~~~~~~~~~~~~ purchased by bitcoin ~~~~~~~~~~~~~~~')
 
-                        flag = True
-                        # return HttpResponseRedirect(reverse('view-ads', args=(ads_id,)))
-            else:
-                message = "The transaction is not available. Try again, please."
+                            flag = True
+                            # return HttpResponseRedirect(reverse('view-ads', args=(ads_id,)))
+                else:
+                    message = "The transaction is not available. Try again, please."
 
         else:
             card = request.POST.get('stripeToken')
