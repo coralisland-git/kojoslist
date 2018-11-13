@@ -44,10 +44,10 @@ import pdb
 get_class = lambda x: globals()[x]
 stripe.api_key = settings.STRIPE_KEYS['API_KEY']
 
-# paypalrestsdk.configure({
-#   "mode": "sandbox", # sandbox or live
-#   "client_id": settings.PAYPAL_CLIENT,
-#   "client_secret": settings.PAYPAL_CLIENT_SECRET })
+paypalrestsdk.configure({
+  "mode": "sandbox", # sandbox or live
+  "client_id": settings.PAYPAL_CLIENT,
+  "client_secret": settings.PAYPAL_CLIENT_SECRET })
 
 paypalrestsdk.configure({
   "mode": "live", # sandbox or live
@@ -599,7 +599,7 @@ def view_ads(request, ads_id):
 
                             purchase = PostPurchase.objects.create(post=post,
                                                                    purchaser=request.user,
-                                                                   type=optpay,
+                                                                   type='direct',
                                                                    contact=contact,
                                                                    status=status,
                                                                    transaction=bitcoin_transaction)
@@ -648,7 +648,9 @@ def view_ads(request, ads_id):
 
                 status = 0
 
-                total_amount = math.ceil((settings.APP_FEE_BUY + 1)*post.price*100)
+                total_amount = int(math.ceil((settings.APP_FEE_BUY + 1)*post.price*100))
+
+                charge = ''
 
                 if optpay == "direct":
                     stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
@@ -1010,9 +1012,12 @@ def my_account(request):
 
             if len(pur) > 0:
 
-                pur[0].status = 0
+                if pur[0].status != 0:
 
-                pur[0].save()
+                    pur[0].status = 0
+
+                    pur[0].save()
+
 
     tab = request.GET.get('tab', 'profile')
     purchase = request.GET.get('purchase')
@@ -1101,7 +1106,7 @@ def my_account(request):
             "status" : "Review" if ppur.status == 3 else "Available"
         })
 
-        wallet += (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0
+        # wallet += (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0
 
     dpurchases_list = []    #  finished payments
 
