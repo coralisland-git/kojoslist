@@ -330,6 +330,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+            <button type="button" class="btn action_button" id="btn-pay-continue">NEXT</button>
           </div>
         </form>
         </div>
@@ -525,6 +526,18 @@
 
 
         $('#btn-pay-stripe').on('click', function(e) { 
+            {
+                handler.open({
+                    name: "Globalboard",
+                    description: "{{ post.title }}",
+                    currency: "usd",
+                    amount: price
+                });
+                e.preventDefault();
+            }
+        });
+
+        $('#btn-pay-continue').on('click', function(e) { 
             {
                 handler.open({
                     name: "Globalboard",
