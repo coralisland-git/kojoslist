@@ -19,7 +19,7 @@
                 <li {% if tab == 'profile' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#profile">Profile</a></li>
                 <li {% if tab == 'balance' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#balance">ID Verification</a></li>
                 <li {% if tab == 'resume' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#resume">Reviews</a></li>
-                <li {% if tab == 'purchase' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#purchase">Purchases</a></li>
+                <li {% if tab == 'purchase' %}class="active"{% endif %}><a class="tab" data-toggle="pill" href="#purchase">Transactions</a></li>
             </ul>
             <div class="tab-content">
                 <div id="profile" class="tab-pane fade {% if tab == 'profile' %}active in{% endif %}">
@@ -192,7 +192,7 @@
                             <div class="input-group col-md-2 col-xs-12">
                                 <select class="input-xlarge form-control" id="tx_pm_p">
                                     <option value="">All Payment Methods</option>
-                                    <option value="pay-">Paypal</option>
+                                    <option value='payid-'>Paypal</option>
                                     <option value="ch_">Stripe</option>
                                     <option value="bc_">BitCoin</option>
                                 </select>
@@ -231,7 +231,7 @@
                             <div class="input-group col-md-2 col-xs-12">
                                 <select class="input-xlarge form-control" id="tx_pm_f">
                                     <option value="">All Payment Methods</option>
-                                    <option value="pay-">Paypal</option>
+                                    <option value='payid-'>Paypal</option>
                                     <option value="ch_">Stripe</option>
                                     <option value="bc_">BitCoin</option>
                                 </select>
@@ -270,7 +270,7 @@
                             <div class="input-group col-md-2 col-xs-12">
                                 <select class="input-xlarge form-control" id="tx_pm_r">
                                     <option value="">All Payment Methods</option>
-                                    <option value="pay-">Paypal</option>
+                                    <option value='payid-'>Paypal</option>
                                     <option value="ch_">Stripe</option>
                                     <option value="bc_">BitCoin</option>
                                 </select>
@@ -309,7 +309,7 @@
                             <div class="input-group col-md-2 col-xs-12">
                                 <select class="input-xlarge form-control" id="tx_pm_c">
                                     <option value="">All Payment Methods</option>
-                                    <option value="pay-">Paypal</option>
+                                    <option value='payid-'>Paypal</option>
                                     <option value="ch_">Stripe</option>
                                     <option value="bc_">BitCoin</option>
                                 </select>
