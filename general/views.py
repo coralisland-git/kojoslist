@@ -1092,6 +1092,20 @@ def my_account(request):
 
     for ppur in ppurchases:
 
+        p_m = ''
+
+        if 'ch_' in ppur.transaction.lower():
+
+            p_m = 'Stripe'
+
+        elif 'payid-' in ppur.transaction.lower():
+
+            p_m = 'Paypal'
+
+        else:
+
+            p_m = 'Bitcoin'
+
         ppurchases_list.append({
             "id": ppur.id,
             "transaction" : ppur.transaction,
@@ -1102,7 +1116,8 @@ def my_account(request):
             "approved" : (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0,
             "date" : ppur.created_at,
             "service_fee" : settings.APP_FEE * 100,
-            "status" : "Review" if ppur.status == 3 else "Available"
+            "status" : "Review" if ppur.status == 3 else "Available",
+            "payment_method" : p_m
         })
 
         # wallet += (float(ppur.paid_percent)/100.0) * ppur.post.price if ppur.paid_percent > 0 else 0
@@ -1220,7 +1235,7 @@ def search_txs(request):
 
                     if payment_method == 'bc_':
 
-                        if 'pay' not in ppur.transaction.lower() and 'ch' not in ppur.transaction.lower():
+                        if 'payid-' not in ppur.transaction.lower() and 'ch_' not in ppur.transaction.lower():
 
                             check = True
 
@@ -1232,6 +1247,20 @@ def search_txs(request):
 
                     if check : 
 
+                        p_m = ''
+
+                        if 'ch_' in ppur.transaction.lower():
+
+                            p_m = 'Stripe'
+
+                        elif 'payid-' in ppur.transaction.lower():
+
+                            p_m = 'Paypal'
+
+                        else:
+
+                            p_m = 'Bitcoin'
+
                         ppurchases_list.append({
                                 "id": ppur.id,
                                 "transaction" : ppur.transaction,
@@ -1242,7 +1271,8 @@ def search_txs(request):
                                 "approved" : (float(ppur.paid_percent)/100) * ppur.post.price if ppur.paid_percent > 0 else 0,
                                 "date" : ppur.created_at,
                                 "service_fee" : settings.APP_FEE * 100,
-                                "status" : "Review" if ppur.status == 3 else "Available"
+                                "status" : "Review" if ppur.status == 3 else "Available",
+                                "payment_method" : p_m
                             })
 
         rndr_str = render_to_string("_transactions_pending.html" , {
@@ -1273,7 +1303,7 @@ def search_txs(request):
 
                         if payment_method == 'bc_':
 
-                            if 'pay' not in dpur.transaction.lower() and 'ch' not in dpur.transaction.lower():
+                            if 'payid-' not in dpur.transaction.lower() and 'ch_' not in dpur.transaction.lower():
 
                                 check = True
 
@@ -1325,7 +1355,7 @@ def search_txs(request):
 
                         if payment_method == 'bc_':
 
-                            if 'pay' not in cpur.transaction.lower() and 'ch' not in cpur.transaction.lower():
+                            if 'payid-' not in cpur.transaction.lower() and 'ch_' not in cpur.transaction.lower():
 
                                 check =True
 
@@ -1374,7 +1404,7 @@ def search_txs(request):
 
                 if payment_method == 'bc_':
 
-                    if 'pay' not in cpur.transaction.lower() and 'ch' not in cpur.transaction.lower():
+                    if 'payid-' not in cpur.transaction.lower() and 'ch_' not in cpur.transaction.lower():
 
                         check = True
 
@@ -1611,7 +1641,7 @@ def release_purchase(request):
 
     return JsonResponse(result, safe=False)
 
-    # if 'pay-' in purchase.transaction.lower():
+    # if 'payid-' in purchase.transaction.lower():
 
     #     amount = purchase.post.price * percent/100
 
@@ -1738,7 +1768,7 @@ def cancel_purchase(request):
 
             print(e, "~~~~~~~~~")
 
-    if 'PAY-' in purchase.transaction:
+    if 'payid-' in purchase.transaction.lower():
 
         receiver_email = paypalrestsdk.Payment.find(purchase.transaction).payer.payer_info.email
 

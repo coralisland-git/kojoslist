@@ -6,9 +6,10 @@
         <div class="col-md-2">Title</div>
         <div class="col-md-1">Price</div>
         <div class="col-md-1">Status</div>
-        <div class="col-md-2">Released Percent</div>
+        <div class="col-md-1">Released Percent</div>
         <div class="col-md-2">Released Amount</div>
         <div class="col-md-2">Purchased Date</div>
+        <div class="col-md-1">Payment Method</div>
         <div class="col-md-2"></div>
     </div>
     <hr>
@@ -19,9 +20,10 @@
             <div class="col-md-2"><a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a></div>
             <div class="col-md-1">${{ purchase.post_price|floatformat:2|intcomma }}</div>
             <div class="col-md-1">{{ purchase.status }}</div>
-            <div class="col-md-2">{{ purchase.paid_percent }}%</div>
+            <div class="col-md-1">{{ purchase.paid_percent }}%</div>
             <div class="col-md-2"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
             <div class="col-md-2">{{ purchase.date|date:"M d, Y" }}</div>
+            <div class="col-md-1">{{ purchase.payment_method }}</div>
             <div class="col-md-2 pull-right">
                 {% if purchase.status == 'Available' %}
                     <button class="btn action_button btn-xs btn-release brp-{{ purchase.id }}" data-amount="{{ purchase.post_price }}" data-percent="{{ purchase.paid_percent }}" data-id="{{ purchase.id }}" data-transaction="{{ purchase.transaction }}" data-post-id="{{ purchase.post_id }}" data-post-title="{{purchase.post_title}}"  data-app-fee="{{ APP_FEE }}" data-app-fee-buy="{{ APP_FEE_BUY }}">Release</button>
@@ -52,6 +54,10 @@
             <div class="col-xs-6">${{ purchase.post_price|floatformat:2|intcomma }}</div>
         </div>
         <div class="row">
+            <div class="col-xs-6 purchase_title">Status</div>
+            <div class="col-xs-6">{{ purchase.status }}</div>
+        </div>
+        <div class="row">
             <div class="col-xs-6 purchase_title">Released Percent</div>
             <div class="col-xs-6">{{ purchase.paid_percent }}%</div>
         </div>
@@ -62,6 +68,10 @@
         <div class="row">
             <div class="col-xs-6 purchase_title">Purchased Date</div>
             <div class="col-xs-6">{{ purchase.date|date:"M d, Y" }}</div>
+        </div>
+         <div class="row">
+            <div class="col-xs-6 purchase_title">Payment Method</div>
+            <div class="col-xs-6">{{ purchase.payment_method }}</div>
         </div>
         <div class="row">
             <div class="col-xs-6 pull-right" style="margin-top : 15px;">
