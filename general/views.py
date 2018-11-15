@@ -1404,7 +1404,7 @@ def search_txs(request):
 
                 if payment_method == 'bc_':
 
-                    if 'payid-' not in cpur.transaction.lower() and 'ch_' not in cpur.transaction.lower():
+                    if 'payid-' not in rpur.transaction.lower() and 'ch_' not in rpur.transaction.lower():
 
                         check = True
 
