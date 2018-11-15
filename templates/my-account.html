@@ -757,6 +757,24 @@
             });                     
         });
 
+        jQuery('#tx_pm_p, #tx_category_p').change(function(e) {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'pending' ,
+                        tx_key: $('#tx_key_p').val(),
+                        tx_payment_method: $('#tx_pm_p').val(),
+                        tx_category: $('#tx_category_p').val(),
+                        tx_start_date: $('#tx_start_date_p').val(),
+                        tx_end_date: $('#tx_end_date_p').val()
+                    },
+                success: function (data) {
+                    jQuery('#ppurchases_list').html(data);
+                }
+            });                     
+        });
+
         // jQuery('#tx_key_p').keypress(function(e) {
         //     var key = e.which;
         //     if (key == 13) {
@@ -792,7 +810,43 @@
             });                     
         });
 
+        jQuery('#tx_pm_f, #tx_category_f').change(function(e) {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'finished' ,
+                        tx_key: $('#tx_key_f').val(),
+                        tx_payment_method: $('#tx_pm_f').val(),
+                        tx_category: $('#tx_category_f').val(),
+                        tx_start_date: $('#tx_start_date_f').val(),
+                        tx_end_date: $('#tx_end_date_f').val()
+                    },
+                success: function (data) {
+                    jQuery('#dpurchases_list').html(data);
+                }
+            });                     
+        });
+
         jQuery('#search_txs_c').click(function() {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'cancelled' ,
+                        tx_key: $('#tx_key_c').val(),
+                        tx_payment_method: $('#tx_pm_c').val(),
+                        tx_category: $('#tx_category_c').val(),
+                        tx_start_date: $('#tx_start_date_c').val(),
+                        tx_end_date: $('#tx_end_date_c').val()
+                    },
+                success: function (data) {
+                    jQuery('#cpurchases_list').html(data);
+                }
+            });                     
+        });
+
+        jQuery('#tx_pm_c, #tx_category_c').change(function(e) {
             jQuery.ajax({
                 type: 'get',
                 url: '/search-txs',
@@ -827,6 +881,25 @@
                 }
             });                     
         });
+
+        jQuery('#tx_pm_r, #tx_category_r').change(function(e) {
+            jQuery.ajax({
+                type: 'get',
+                url: '/search-txs',
+                data: {
+                        tx_type: 'received' ,
+                        tx_key: $('#tx_key_r').val(),
+                        tx_payment_method: $('#tx_pm_r').val(),
+                        tx_category: $('#tx_category_r').val(),
+                        tx_start_date: $('#tx_start_date_r').val(),
+                        tx_end_date: $('#tx_end_date_r').val()
+                    },
+                success: function (data) {
+                    jQuery('#rpurchases_list').html(data);
+                }
+            });                     
+        });
+
 
 
         $('#result-modal').on('hidden.bs.modal', function () {
