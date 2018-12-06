@@ -62,8 +62,9 @@ client = Client(settings.BITCOIN_CLIENT, settings.BITCOIN_CLIENT_SECRET)
 #     return render(request, 'wraper.html', { 'next': next })
 
 def index(request):
-    rndr_str = globoard_display_world_countries(request.user)
-    return render(request, 'index.html', {'rndr_str': rndr_str})
+    # rndr_str = globoard_display_world_countries()
+    # return render(request, 'index.html', {'rndr_str': rndr_str})
+    return render(request, 'index.html')
 
 def about(request):
     return render(request, 'about.html')
@@ -867,32 +868,47 @@ def region_ads(request, region_id, region):
         'breadcrumb': breadcrumb_
     })
 
-def globoard_display_world_countries(user):
+def place_country_list(request):
+    country = request.GET.get('country')
+    country_code = request.GET.get('countryCode')
     country_list = Country.objects.all()
     default_country = {
-        'sortname': '',
-        'name': ''
+        'sortname': country_code,
+        'name': country
     }
-    current_location = geocoder.ip('me')
     ret_arr = []
-    temp = []
-    default_country['sortname'] = current_location.country
-    default_country['name'] = ''
+    ret_arr.append(default_country)
     for country in country_list:
-        if country.sortname == default_country['sortname']:
-            default_country['name'] = country.name
-        else:
-            temp.append({
+        if country.sortname != default_country['sortname']:
+            ret_arr.append({
                 'name' : country.name,
                 'sortname' : country.sortname
             })
-    ret_arr.append(default_country)
-    [ret_arr.append(item) for item in temp]
     rndr_str = render_to_string('_country_list.html', {
         'css_class': '',
         'countries': ret_arr
     })
-    return rndr_str
+    return HttpResponse(rndr_str)
+
+# def globoard_display_world_countries():
+#     country_list = Country.objects.all()
+#     # default_country = {
+#     #     'sortname': country_code,
+#     #     'name': country
+#     # }
+#     # ret_arr = []
+#     # ret_arr.append(default_country)
+#     # for country in country_list:
+#     #     if country.sortname != default_country['sortname']:
+#     #         ret_arr.append({
+#     #             'name' : country.name,
+#     #             'sortname' : country.sortname
+#     #         })
+#     rndr_str = render_to_string('_country_list.html', {
+#         'css_class': '',
+#         'countries': country_list
+#     })
+#     return rndr_str
 
 @csrf_exempt
 def toggle_favourite(request):

@@ -74,23 +74,23 @@
 
                             <div class="row">
 
-                                <div class="col-md-12">
+                                <div class="col-md-12" style="text-align: center; padding: 0px 45px;">
 
-                                    <h1 style="margin-bottom: 20px;">view <span style="color: #4dbee2;">ads</span> from all over the world</h1>
-                                    <div class="btn-view-all-center"><a href="/region-ads/wd/" id="main_page_button" class="btn btn-default btn-view-all">View Ads from All Countries</a></div>
+                                    <h2 style="margin-bottom: 20px; color: white">view <span style="color: #4dbee2;">ads</span> from all over the world</h2>
+                                    <a href="/region-ads/wd/" id="main_page_button" class="btn btn-default col-md-4 col-md-offset-4  col-xs-12 btn-view-all">View Ads from All Countries</a>
 
                                 </div>
 
                             </div>
 
-                            <div class="container" style="margin-top: 30px;">
+                            <div class="container" style="margin-top: 20px; text-align: center">
 
                                 <div class="row">
 
                                     <div class="col-md-12">
 
-                                        <div class="content-select-country clearfix">
-                                            {% autoescape off %}{{ rndr_str }}{% endautoescape %}
+                                        <div class="content-select-country clearfix" style="text-align: center;">
+                                            <!-- {% autoescape off %}{{ rndr_str }}{% endautoescape %} -->
 
                                         </div>
 
@@ -200,8 +200,21 @@
     if (mode != '')
         parent.location.href = '/?q='+mode;
 
-    jQuery('#country_list').change(function(e) {
-            location.href = $('#country_list').val();
-        });
+    jQuery.get("http://ip-api.com/json", function(response) {
+        jQuery.ajax({
+            type: 'get',
+            url: '/place_country_list',
+            data: { 
+                    country: response.country,
+                    countryCode: response.countryCode
+            },
+            success: function (data) {
+                jQuery('.content-select-country').html(data)
+                jQuery('#country_list').change(function(e) {
+                        location.href = $('#country_list').val();
+                    });
+            }
+        }); 
+    }, "jsonp");
 </script>
 {% endblock %}
