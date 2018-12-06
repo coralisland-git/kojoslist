@@ -61,7 +61,7 @@ client = Client(settings.BITCOIN_CLIENT, settings.BITCOIN_CLIENT_SECRET)
 #     return render(request, 'wraper.html', { 'next': next })
 
 def index(request):
-    rndr_str = globoard_display_world_countries()
+    rndr_str = globoard_display_world_countries(request.user)
     return render(request, 'index.html', {'rndr_str': rndr_str})
 
 def about(request):
@@ -698,6 +698,8 @@ def view_ads(request, ads_id):
     if post.price:
         service_fee = math.ceil(settings.APP_FEE_BUY * post.price*100)/100
         total_amount = math.ceil((settings.APP_FEE_BUY + 1)*post.price*100)/100
+        bc = BtcConverter()
+        bitcoin_amount = bc.convert_to_btc_on(total_amount, 'USD', datetime.datetime.now() - datetime.timedelta(days=1))
     return render(request, 'ads_detail.html', locals())
 
 def view_campaign(request, camp_id):
@@ -864,12 +866,34 @@ def region_ads(request, region_id, region):
         'breadcrumb': breadcrumb_
     })
 
-def globoard_display_world_countries(css_class=''):
-    rndr_str = render_to_string('_country_list.html', {
-        'css_class': css_class,
-        'countries': Country.objects.all()
-    })
+def globoard_display_world_countries(user):
+    country_list = Country.objects.all()
+    default_country = {
+        'sortname': '',
+        'name': ''
+    }
+    ret_arr = []
+    try:
+        temp = []
+        default_country['sortname'] = user.default_site.split('/')[1].upper()
+        default_country['name'] = ''
+        for country in country_list:
+            if country.sortname == default_country['sortname']:
+                default_country['name'] = country.name
+            else:
+                temp.append({
+                    'name' : country.name,
+                    'sortname' : country.sortname
+                })
+        ret_arr.append(default_country)
+        [ret_arr.append(item) for item in temp]
+    except Exception as e:
+        ret_arr = Country.objects.all()
 
+    rndr_str = render_to_string('_country_list.html', {
+        'css_class': '',
+        'countries': ret_arr
+    })
     return rndr_str
 
 @csrf_exempt

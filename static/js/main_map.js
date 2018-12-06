@@ -93,7 +93,7 @@ AmCharts.ready(function() {
 			console.log(country);
 			map.clickMapObject(map.getObjectById(country));
 			if(jQuery('body').scrollTop()>78 || jQuery('html').scrollTop()>78){
-				jQuery('body,html').animate({scrollTop:78});
+				jQuery('body,html').animate({scrollTop:20});
 			}
     });
 	jQuery('.hedle_zoom').on('mousewheel',function(e){
