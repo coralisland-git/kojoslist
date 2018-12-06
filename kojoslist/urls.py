@@ -29,6 +29,7 @@ urlpatterns = [
 urlpatterns += [
     url(r"^$", index, name="index"),
     # url(r"^home$", home, name="home"),
+    url(r"^place_country_list$", place_country_list, name="place_country_list"),
     url(r"^delete_ads$", delete_ads, name="delete_ads"),
     url(r"^delete_camp$", delete_camp, name="delete_camp"),
     url(r"^breadcrumb$", breadcrumb, name="breadcrumb"),

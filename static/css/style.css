@@ -2928,7 +2928,7 @@ img.custom-logo {
 
     background-color: #2C2D2F;
     
-    padding-top: 30px;
+    padding-top: 10px;
 
     padding-bottom: 30px;
 
@@ -5528,8 +5528,14 @@ div.userpro-head{
         padding : 3px 15px;
     }   
 
+    .btn-default.btn-view-all{
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+        padding: 0;
+    }
 
-    .upload-btn, .my-ads .pages .page .change_pass, .update-btn, .post-add-btn-cancel, .strong-btn, .filter-btn, .btn-default.btn-view-all, .add-credit-btn #cancel_card_form{
+    .upload-btn, .my-ads .pages .page .change_pass, .update-btn, .post-add-btn-cancel, .strong-btn, .filter-btn, .add-credit-btn #cancel_card_form{
         width: 110px;
         height: 40px;
         line-height: 40px;
