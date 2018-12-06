@@ -40,6 +40,7 @@ from forex_python.converter import CurrencyRates
 from forex_python.bitcoin import BtcConverter
 import math
 import pdb
+import geocoder
 
 get_class = lambda x: globals()[x]
 stripe.api_key = settings.STRIPE_KEYS['API_KEY']
@@ -872,24 +873,21 @@ def globoard_display_world_countries(user):
         'sortname': '',
         'name': ''
     }
+    current_location = geocoder.ip('me')
     ret_arr = []
-    try:
-        temp = []
-        default_country['sortname'] = user.default_site.split('/')[1].upper()
-        default_country['name'] = ''
-        for country in country_list:
-            if country.sortname == default_country['sortname']:
-                default_country['name'] = country.name
-            else:
-                temp.append({
-                    'name' : country.name,
-                    'sortname' : country.sortname
-                })
-        ret_arr.append(default_country)
-        [ret_arr.append(item) for item in temp]
-    except Exception as e:
-        ret_arr = Country.objects.all()
-
+    temp = []
+    default_country['sortname'] = current_location.country
+    default_country['name'] = ''
+    for country in country_list:
+        if country.sortname == default_country['sortname']:
+            default_country['name'] = country.name
+        else:
+            temp.append({
+                'name' : country.name,
+                'sortname' : country.sortname
+            })
+    ret_arr.append(default_country)
+    [ret_arr.append(item) for item in temp]
     rndr_str = render_to_string('_country_list.html', {
         'css_class': '',
         'countries': ret_arr
