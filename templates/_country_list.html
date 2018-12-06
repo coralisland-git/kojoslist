@@ -8,7 +8,7 @@
 <!-- ddev+co\n -->
 <div class="col-md-4 col-xs-12">
 	<select class='country-list form-control' id="country_list">
-		<option>-- Please Select --</option>
+		<option>-- Please Select Country --</option>
 	    {% for country in countries %}
 		    <option value="/profile#countries/{{ country.sortname|lower }}/{{ country.sortname|lower }}-all" style="word-break: break-word;">
 		    	{{ country.name }}
