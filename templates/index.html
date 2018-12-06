@@ -70,7 +70,7 @@
                                     <div class="col-md-12">
 
                                         <h1>view <span style="color: #4dbee2;">ads</span> from all over the world</h1>
-                                        <div class="btn-view-all-center"><a href="/region-ads/wd/" id="main_page_button" class="btn btn-default btn-view-all">View Ads from All Countries</a></div>
+                                        <!-- <div class="btn-view-all-center"><a href="/region-ads/wd/" id="main_page_button" class="btn btn-default btn-view-all">View Ads from All Countries</a></div> -->
 
                                     </div>
 
@@ -198,5 +198,9 @@
     console.log(mode);
     if (mode != '')
         parent.location.href = '/?q='+mode;
+
+    jQuery('#country_list').change(function(e) {
+            location.href = $('#country_list').val();
+        });
 </script>
 {% endblock %}
