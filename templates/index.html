@@ -210,7 +210,9 @@
             url: '/place_country_list',
             data: { 
                     country: response.country_name,
-                    countryCode: response.country_code
+                    countryCode: response.country_code,
+                    state: response.region,
+                    city: response.city
             },
             success: function (data) {
                 jQuery('.content-select-country').html(data)

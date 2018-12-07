@@ -874,12 +874,22 @@ def region_ads(request, region_id, region):
 def place_country_list(request):
     country = request.GET.get('country')
     country_code = request.GET.get('countryCode')
+    state = request.GET.get('state')
+    city = request.GET.get('city')
     country_list = Country.objects.all()
+    state_list = State.objects.filter(name__icontains=state)
+    state_code = 0
+    if len(state_list) > 0:
+        state_code = state_list[0].id
+    city_list = City.objects.filter(state=state_code, name__icontains=city)
+    city_code = ''
+    if len(city_list) > 0:
+        city_code += '@' + str(city_list[0].id)
     default_country = {
         'sortname': country_code,
         'name': 'Current Location'
     }
-    default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
+    default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state+city_code
     request.session['default_site'] = default_site
     if request.user.is_authenticated():
         request.user.default_site = default_site
