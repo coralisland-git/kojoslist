@@ -147,6 +147,9 @@ def get_posts_with_image(posts, mine=False):
     return posts_with_image
 
 def profile(request):
+    if request.user.is_authenticated():
+        request.user.default_site = request.session['default_site']
+        request.user.save()
     return render(request, 'profile.html')
 
 @csrf_exempt
@@ -224,15 +227,15 @@ def get_regions(request):
     city = request.GET.get('city')
     kind = mapName.count('-')
 
-    if request.user.is_authenticated():
-        # store last location
-        loc = mapName
-        if kind == 2 or is_state == 'true':
-            loc += '@' + state 
-        if city:
-            loc += '@' + city
-        request.user.default_site = loc
-        request.user.save()
+    # if request.user.is_authenticated():
+    #     # store last location
+    #     loc = mapName
+    #     if kind == 2 or is_state == 'true':
+    #         loc += '@' + state 
+    #     if city:
+    #         loc += '@' + city
+    #     request.user.default_site = loc
+    #     request.user.save()
 
     request.session['category'] = ''
 
@@ -874,8 +877,13 @@ def place_country_list(request):
     country_list = Country.objects.all()
     default_country = {
         'sortname': country_code,
-        'name': country
+        'name': 'Current Location'
     }
+    default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
+    request.session['default_site'] = default_site
+    if request.user.is_authenticated():
+        request.user.default_site = default_site
+        request.user.save()
     ret_arr = []
     ret_arr.append(default_country)
     for country in country_list:

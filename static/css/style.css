@@ -2928,7 +2928,7 @@ img.custom-logo {
 
     background-color: #2C2D2F;
     
-    padding-top: 10px;
+    padding-top: 5px;
 
     padding-bottom: 30px;
 
@@ -6006,7 +6006,7 @@ div.userpro-head{
     	width: 100%;
     }
     .full-map-section{
-        padding: 40px 0 200px;
+        padding: 100px 0 50px;
     }
 
 }
