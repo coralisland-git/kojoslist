@@ -161,7 +161,7 @@ def breadcrumb(request):
     is_state = request.POST.get('is_state')
     city = request.POST.get('city')
     kind = mapName.count('-')
-
+    
     if city:
         city = City.objects.get(id=city)
         mapname = 'countries/{0}/{0}-all'.format(city.state.country.sortname.lower())
