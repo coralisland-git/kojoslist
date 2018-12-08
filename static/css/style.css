@@ -1391,6 +1391,10 @@ div.userpro .my-form-group,
 
 }
 
+.country-select{
+    height: 47px;
+}
+
 
 
 div.userpro-input label.userpro-checkbox span.checked,
@@ -5246,7 +5250,6 @@ div.userpro-head{
     .home-map-ads-left img, .home-map-ads-right img{
         width: 100%;
     }
-
 }
 
 @media screen and (max-width: 991px){
@@ -5533,6 +5536,10 @@ div.userpro-head{
         line-height: 40px;
         font-size: 14px;
         padding: 0;
+    }
+
+    .country-select{
+        height: 40px;
     }
 
     .upload-btn, .my-ads .pages .page .change_pass, .update-btn, .post-add-btn-cancel, .strong-btn, .filter-btn, .add-credit-btn #cancel_card_form{
