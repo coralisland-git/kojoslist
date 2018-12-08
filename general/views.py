@@ -885,26 +885,23 @@ def place_country_list(request):
     city_code = ''
     if len(city_list) > 0:
         city_code += '@' + str(city_list[0].id)
-    default_country = {
-        'sortname': country_code,
-        'name': 'Current Location'
-    }
     default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state+city_code
+
     request.session['default_site'] = default_site
     if request.user.is_authenticated():
         request.user.default_site = default_site
         request.user.save()
     ret_arr = []
-    ret_arr.append(default_country)
     for country in country_list:
-        if country.sortname != default_country['sortname']:
+        if country.sortname != country_code:
             ret_arr.append({
                 'name' : country.name,
                 'sortname' : country.sortname
             })
     rndr_str = render_to_string('_country_list.html', {
         'css_class': '',
-        'countries': ret_arr
+        'countries': ret_arr,
+        'current_location':default_site
     })
     return HttpResponse(rndr_str)
 
