@@ -39,6 +39,7 @@ from coinbase.wallet.client import Client
 from forex_python.converter import CurrencyRates
 from forex_python.bitcoin import BtcConverter
 import math
+from difflib import SequenceMatcher
 import pdb
 import geocoder
 
@@ -839,12 +840,10 @@ def send_reply_email(request):
     content = request.POST.get('content')
     ads_id = request.POST.get('ads_id')
     post = Post.objects.get(id=ads_id)
-
     subject = 'Reply to ' + post.title
     content = """
         {1} <br><br>Original post: {0}/ads/{2}
         """.format(settings.MAIN_URL, content, post.id)
-
     # print (from_email, subject, post.owner.email, content)
     send_email(from_email, subject, post.owner.email, content)
     return HttpResponse('')
@@ -858,11 +857,9 @@ def region_ads(request, region_id, region):
     elif region == 'world':
         is_world = True
         posts = Post.objects.all()
-
     posts = get_posts_with_image(posts.exclude(status='deactive').order_by('-created_at'))
     breadcrumb_ = '<a class="breadcrumb-item" href="javascript:void();" data-mapname="custom/world">worldwide</a>'
     breadcrumb_ = retrieve_session(request, 'breadcrumb', breadcrumb_)
-
     return render(request, 'ads-list.html', {
         'posts': posts,
         'region': region_id,
@@ -876,23 +873,33 @@ def place_country_list(request):
     country_code = request.GET.get('countryCode')
     state = request.GET.get('state')
     city = request.GET.get('city')
-    country_list = Country.objects.all()
-    state_list = State.objects.filter(name__icontains=state)
+    country_list = Country.objects.filter(sortname__icontains=country_code)
+    country_id = 0
+    if len(country_list) > 0:
+        country_id = country_list[0].id
+    state_list = State.objects.filter(country=country_id)
     state_code = 0
-    if len(state_list) > 0:
-        state_code = state_list[0].id
+    state_name = state
+    for st in state_list:
+        if SequenceMatcher(None, st.name, state).ratio() > 0.8:
+            state_code = st.id
+            state_name = st.name
     city_list = City.objects.filter(state=state_code, name__icontains=city)
     city_code = ''
     if len(city_list) > 0:
         city_code += '@' + str(city_list[0].id)
-    default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state+city_code
-
+    else:
+        city_list = City.objects.filter(state=state_code)
+        if len(city_list) > 0:
+            city_code += '@' + str(city_list[0].id)   
+    default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
     request.session['default_site'] = default_site
     if request.user.is_authenticated():
         request.user.default_site = default_site
         request.user.save()
     ret_arr = []
-    for country in country_list:
+    country_all_list = Country.objects.all()
+    for country in country_all_list:
         if country.sortname != country_code:
             ret_arr.append({
                 'name' : country.name,
