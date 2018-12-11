@@ -204,6 +204,7 @@
         parent.location.href = '/?q='+mode;
 
     jQuery.get("https://api.ipdata.co?api-key=test", function(response) {
+        console.log('~~~~~~~~~~~~~~~~', response);
         jQuery.ajax({
             type: 'get',
             url: '/place_country_list',
