@@ -873,30 +873,34 @@ def place_country_list(request):
     country_code = request.GET.get('countryCode')
     state = request.GET.get('state')
     city = request.GET.get('city')
-    country_list = Country.objects.filter(sortname__icontains=country_code)
-    country_id = 0
-    if len(country_list) > 0:
-        country_id = country_list[0].id
-    state_list = State.objects.filter(country=country_id)
-    state_code = 0
-    state_name = state
-    for st in state_list:
-        if SequenceMatcher(None, st.name, state).ratio() > 0.8:
-            state_code = st.id
-            state_name = st.name
-    city_list = City.objects.filter(state=state_code, name__icontains=city)
-    city_code = ''
-    if len(city_list) > 0:
-        city_code += '@' + str(city_list[0].id)
-    else:
-        city_list = City.objects.filter(state=state_code)
+    default_site = ''
+    try:
+        country_list = Country.objects.filter(sortname__icontains=country_code)
+        country_id = 0
+        if len(country_list) > 0:
+            country_id = country_list[0].id
+        state_list = State.objects.filter(country=country_id)
+        state_code = 0
+        state_name = state
+        for st in state_list:
+            if SequenceMatcher(None, st.name, state).ratio() > 0.8:
+                state_code = st.id
+                state_name = st.name
+        city_list = City.objects.filter(state=state_code, name__icontains=city)
+        city_code = ''
         if len(city_list) > 0:
-            city_code += '@' + str(city_list[0].id)   
-    default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
-    request.session['default_site'] = default_site
-    if request.user.is_authenticated():
-        request.user.default_site = default_site
-        request.user.save()
+            city_code += '@' + str(city_list[0].id)
+        else:
+            city_list = City.objects.filter(state=state_code)
+            if len(city_list) > 0:
+                city_code += '@' + str(city_list[0].id)   
+        default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
+        request.session['default_site'] = default_site
+        if request.user.is_authenticated():
+            request.user.default_site = default_site
+            request.user.save()
+    except:
+        default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
     ret_arr = []
     country_all_list = Country.objects.all()
     for country in country_all_list:
