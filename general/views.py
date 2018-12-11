@@ -903,15 +903,15 @@ def place_country_list(request):
         default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
     ret_arr = []
     country_all_list = Country.objects.all()
-    for country in country_all_list:
-        if country.sortname != country_code:
-            ret_arr.append({
-                'name' : country.name,
-                'sortname' : country.sortname
-            })
+    # for country in country_all_list:
+    #     if country.sortname != country_code:
+    #         ret_arr.append({
+    #             'name' : country.name,
+    #             'sortname' : country.sortname
+    #         })
     rndr_str = render_to_string('_country_list.html', {
         'css_class': '',
-        'countries': ret_arr,
+        'countries': country_all_list,
         'current_location':default_site
     })
     return HttpResponse(rndr_str)
