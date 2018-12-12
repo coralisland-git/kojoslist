@@ -869,10 +869,12 @@ def region_ads(request, region_id, region):
     })
 
 def place_country_list(request):
-    country = request.GET.get('country')
     country_code = request.GET.get('countryCode')
     state = request.GET.get('state')
     city = request.GET.get('city')
+    if country_code == "GB" and city == '' and state == '':
+        city = 'London'
+        state = 'England'
     default_site = ''
     try:
         country_list = Country.objects.filter(sortname__icontains=country_code)
@@ -882,24 +884,30 @@ def place_country_list(request):
         state_list = State.objects.filter(country=country_id)
         state_code = 0
         state_name = state
+        state_instance = None
         for st in state_list:
-            if SequenceMatcher(None, st.name, state).ratio() > 0.8:
+            if SequenceMatcher(None, st.name, state).ratio() > 0.7:
                 state_code = st.id
                 state_name = st.name
+                state_instance = st
         city_list = City.objects.filter(state=state_code, name__icontains=city)
         city_code = ''
         if len(city_list) > 0:
             city_code += '@' + str(city_list[0].id)
         else:
-            city_list = City.objects.filter(state=state_code)
-            if len(city_list) > 0:
-                city_code += '@' + str(city_list[0].id)   
+            # city_list = City.objects.filter(state=state_code)
+            # if len(city_list) > 0:
+            #     city_code += '@' + str(city_list[0].id)
+            add_city = City.objects.create(name=city, state=state_instance)
+            city_code = add_city.id
+            print('~~~~~~~~~~~ new city added : ', city, ' in ', state_name)
         default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
         request.session['default_site'] = default_site
         if request.user.is_authenticated():
             request.user.default_site = default_site
             request.user.save()
-    except:
+    except Exception as e:
+        print('############', e)
         default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
     ret_arr = []
     country_all_list = Country.objects.all()
