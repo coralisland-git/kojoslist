@@ -239,7 +239,7 @@ def get_regions(request):
     #     request.user.save()
 
     request.session['category'] = ''
-
+    
     if city:
         city = City.objects.get(id=city)
         link = '/region-ads/ct/{}'.format(city.id)
@@ -872,6 +872,7 @@ def place_country_list(request):
     country_code = request.GET.get('countryCode')
     state = request.GET.get('state')
     city = request.GET.get('city')
+    state_abbr = request.GET.get('stateCode').lower()
     if country_code == "GB" and city == '' and state == '':
         city = 'London'
         state = 'England'
@@ -901,7 +902,10 @@ def place_country_list(request):
             add_city = City.objects.create(name=city, state=state_instance)
             city_code = add_city.id
             print('~~~~~~~~~~~ new city added : ', city, ' in ', state_name)
-        default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
+        if country_code.lower() in 'us ca':
+            default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-'+state_abbr+'-all@'+state_name+city_code
+        else:
+            default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
         request.session['default_site'] = default_site
         if request.user.is_authenticated():
             request.user.default_site = default_site

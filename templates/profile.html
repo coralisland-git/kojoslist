@@ -145,6 +145,9 @@
 
 {% block own_js %}
 <script type="text/javascript">
+
+
+  
   var baseMapPath = "https://code.highcharts.com/mapdata/";
 
   var mapName = 'custom/world';
@@ -155,8 +158,10 @@
     location.hash = '{% if user.default_site %}{{ user.default_site }}{% endif %}';
   }
 
-  analyseHash();
-  loadMap();
+  // jQuery(document).ready(function() {
+    analyseHash();
+    loadMap();
+  // });
 
   function analyseHash() {
     state = '';
@@ -187,7 +192,6 @@
     // console.log(state);
     // console.log(isState);
     // console.log(city);
-
     breadcrumb();
     showRegions();
 
@@ -195,7 +199,9 @@
       Highcharts.charts[0].showLoading('<i class="fa fa-spinner fa-spin fa-2x"></i>');
     }
 
+    console.log('@@@@@@@@@@@@@@@@@', mapName);
     if (Highcharts.maps[mapName]) {
+      console.log('^^^^^^^^^^^^^^ highchart you')
       mapReady();
     } else {
       $.getScript(baseMapPath+mapName+'.js', mapReady);
@@ -219,6 +225,7 @@
   }
 
   function showRegions() {
+    console.log('~~~~~~~~~~~~~~', mapName, state, isState, city);
     $.ajax({
       type: 'get',
       url: '/get_regions',
@@ -400,6 +407,7 @@
   $("body").on('click', '.region_id', function() {
     state = $(this).data('id');
     var mapname = findMapname(state);
+    console.log(state, '########### mapname', mapname);
     if (mapname) 
       mapName = mapname;
     
