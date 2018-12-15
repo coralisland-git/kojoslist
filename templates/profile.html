@@ -146,7 +146,13 @@
 {% block own_js %}
 <script type="text/javascript">
 
-
+  window.onhashchange = function() {
+      if (window.innerDocClick) {
+          window.innerDocClick = false;
+      } else {
+          location.reload();
+      }
+  }
   
   var baseMapPath = "https://code.highcharts.com/mapdata/";
 

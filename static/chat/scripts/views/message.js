@@ -508,7 +508,8 @@ define([
                 }
 
                 msg.id = QB.chat.send(jid, msg);
-
+                
+                debugger;
                 message = Message.create({
                     'chat_dialog_id': dialog_id,
                     'body': val,

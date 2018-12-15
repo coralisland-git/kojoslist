@@ -6,7 +6,9 @@ define(function() {
         qbAccount: {
             appId: 66786,
             authKey: 'hBuZGFrjBPUzxXH',
+                      // mO-Yn5j-PSEHjKW
             authSecret: 'bAZEbqAZYLPXYpC'
+                         // qmCX-PPnpwGvGtB
         },
 
         fbAccount: {
