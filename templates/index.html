@@ -206,102 +206,123 @@
     console.log(mode);
     if (mode != '')
         parent.location.href = '/?q='+mode;
-    navigator.geolocation.getCurrentPosition(
-        function( position ){
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
-            var google_maps_geocoder = new google.maps.Geocoder();
-            // jQuery.get("https://api.ipdata.co?api-key=test", function(response) {
-            // jQuery.get("https://ipinfo.io/", function(response) {
-                // var geo_lat = response.loc.split(',')[0];
-                // var geo_lng = response.loc.split(',')[1];
-                // var geo_lat = response.latitude;
-                // var geo_lng = response.longitude;
-                // var google_map_pos = new google.maps.LatLng( geo_lat, geo_lng );
-            var google_map_pos = new google.maps.LatLng( lat,lng );
-            var geo_loc = '';
-            new Promise(function(resolve){
-                google_maps_geocoder.geocode(
-                    { 'latLng': google_map_pos },
-                    function( results, status ) {
-                        if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
-                            // debugger;
-                            // console.log('########## google api : ',  results[0].formatted_address );
-                            resolve(results)
-                        }
-                    }
-                );
+        jQuery.get("https://api.ipdata.co?api-key=test", function(response) {
+            var geo_lat = response.latitude;
+            var geo_lng = response.longitude;
+            jQuery.ajax({
+                type: 'get',
+                url: '/place_country_list',
+                data: { 
+                    countryCode: response.country_code,
+                    stateCode : response.region_code,
+                    state: response.region,
+                    city: response.city
+                },
+                success: function (data) {
+                    jQuery('.content-select-country').html(data)
+                    jQuery('#country_list').change(function(e) {
+                        location.href = $('#country_list').val();
+                    });
+                }
+            }); 
+        });
+
+    // navigator.geolocation.getCurrentPosition(
+    //     function( position ){
+    //         var lat = position.coords.latitude;
+    //         var lng = position.coords.longitude;
+    //         var google_maps_geocoder = new google.maps.Geocoder();
+    //         // jQuery.get("https://api.ipdata.co?api-key=test", function(response) {
+    //         // jQuery.get("https://ipinfo.io/", function(response) {
+    //             // var geo_lat = response.loc.split(',')[0];
+    //             // var geo_lng = response.loc.split(',')[1];
+    //             // var geo_lat = response.latitude;
+    //             // var geo_lng = response.longitude;
+    //             // var google_map_pos = new google.maps.LatLng( geo_lat, geo_lng );
+    //         var google_map_pos = new google.maps.LatLng( lat,lng );
+    //         var geo_loc = '';
+    //         new Promise(function(resolve){
+    //             google_maps_geocoder.geocode(
+    //                 { 'latLng': google_map_pos },
+    //                 function( results, status ) {
+    //                     if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
+    //                         // debugger;
+    //                         // console.log('########## google api : ',  results[0].formatted_address );
+    //                         resolve(results)
+    //                     }
+    //                 }
+    //             );
                 
-            })
-            .then(function(results) {
-                console.log('~~~~~~~~~~~~~', results[0].address_components);
-                var arrAddress = results[0].address_components;
-                var itemRoute='';
-                var itemLocality='';
-                var itemCountry='';
-                var itemCountryCode='';
-                var itemProvince='';
-                var itemProvinceCode='';
-                var itemPc='';
-                var itemSnumber='';
-                // iterate through address_component array
-                $.each(arrAddress, function (i, address_component) {
-                    console.log('address_component:'+i);
+    //         })
+    //         .then(function(results) {
+    //             console.log('~~~~~~~~~~~~~', results[0].address_components);
+    //             var arrAddress = results[0].address_components;
+    //             var itemRoute='';
+    //             var itemLocality='';
+    //             var itemCountry='';
+    //             var itemCountryCode='';
+    //             var itemProvince='';
+    //             var itemProvinceCode='';
+    //             var itemPc='';
+    //             var itemSnumber='';
+    //             // iterate through address_component array
+    //             $.each(arrAddress, function (i, address_component) {
+    //                 console.log('address_component:'+i);
 
-                    if (address_component.types[0] == "route"){
-                        console.log(i+": route:"+address_component.long_name);
-                        itemRoute = address_component.long_name;
-                    }
+    //                 if (address_component.types[0] == "route"){
+    //                     console.log(i+": route:"+address_component.long_name);
+    //                     itemRoute = address_component.long_name;
+    //                 }
 
-                    if (address_component.types[0] == "administrative_area_level_1"){ 
-                        console.log("pc:"+address_component.long_name);  
-                        itemProvince = address_component.long_name;
-                        itemProvinceCode = address_component.short_name;
-                    }
+    //                 if (address_component.types[0] == "administrative_area_level_1"){ 
+    //                     console.log("pc:"+address_component.long_name);  
+    //                     itemProvince = address_component.long_name;
+    //                     itemProvinceCode = address_component.short_name;
+    //                 }
 
-                    if (address_component.types[0] == "locality"){
-                        console.log("town:"+address_component.long_name);
-                        itemLocality = address_component.long_name;
-                    }
+    //                 if (address_component.types[0] == "locality"){
+    //                     console.log("town:"+address_component.long_name);
+    //                     itemLocality = address_component.long_name;
+    //                 }
 
-                    if (address_component.types[0] == "country"){ 
-                        console.log("country:"+address_component.long_name); 
-                        itemCountry = address_component.long_name;
-                        itemCountryCode = address_component.short_name;
-                    }
+    //                 if (address_component.types[0] == "country"){ 
+    //                     console.log("country:"+address_component.long_name); 
+    //                     itemCountry = address_component.long_name;
+    //                     itemCountryCode = address_component.short_name;
+    //                 }
 
-                    if (address_component.types[0] == "postal_code_prefix"){ 
-                        console.log("pc:"+address_component.long_name);  
-                        itemPc = address_component.long_name;
-                    }
+    //                 if (address_component.types[0] == "postal_code_prefix"){ 
+    //                     console.log("pc:"+address_component.long_name);  
+    //                     itemPc = address_component.long_name;
+    //                 }
 
-                    if (address_component.types[0] == "street_number"){ 
-                        console.log("street_number:"+address_component.long_name);  
-                        itemSnumber = address_component.long_name;
-                    }
-                });
-                jQuery.ajax({
-                    type: 'get',
-                    url: '/place_country_list',
-                    data: { 
-                            countryCode: itemCountryCode,
-                            stateCode : itemProvinceCode,
-                            state: itemProvince,
-                            city: itemLocality
-                    },
-                    success: function (data) {
-                        jQuery('.content-select-country').html(data)
-                        jQuery('#country_list').change(function(e) {
-                            location.href = $('#country_list').val();
-                        });
-                    }
-                }); 
-            })
-            // }, "jsonp");
-        },
-        function(){
-            console.log('############# error ############');
-        }
-    );
+    //                 if (address_component.types[0] == "street_number"){ 
+    //                     console.log("street_number:"+address_component.long_name);  
+    //                     itemSnumber = address_component.long_name;
+    //                 }
+    //             });
+    //             jQuery.ajax({
+    //                 type: 'get',
+    //                 url: '/place_country_list',
+    //                 data: { 
+    //                     countryCode: itemCountryCode,
+    //                     stateCode : itemProvinceCode,
+    //                     state: itemProvince,
+    //                     city: itemLocality
+    //                 },
+    //                 success: function (data) {
+    //                     jQuery('.content-select-country').html(data)
+    //                     jQuery('#country_list').change(function(e) {
+    //                         location.href = $('#country_list').val();
+    //                     });
+    //                 }
+    //             }); 
+    //         })
+    //         // }, "jsonp");
+    //     },
+    //     function(){
+    //         console.log('############# error ############');
+    //     }
+    // );
 </script>
 {% endblock %}
