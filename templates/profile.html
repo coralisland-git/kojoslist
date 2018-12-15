@@ -400,14 +400,14 @@
     mapName = 'countries/'+key+'/'+key+'-all';
     isState = false;
     location.hash = mapName;
-    loadMap();
+    // loadMap();
   });
 
   $("body").on('click', '.city_id', function() {
     var city_name = $(this).text();
     city = $(this).data('id');
     location.hash = location.hash.substring(1) + '@' + city;
-    loadMap();
+    // loadMap();
   });  
 
   $("body").on('click', '.region_id', function() {
@@ -419,13 +419,13 @@
     
     location.hash = mapName + '@' + state;
     isState = true;
-    loadMap();
+    // loadMap();
   });  
 
   $("body").on('click', 'a.breadcrumb-item', function() {
     location.hash = $(this).data('mapname');
-    analyseHash();
-    loadMap();
+    // analyseHash();
+    // loadMap();
   });
 </script>
 {% endblock %}
