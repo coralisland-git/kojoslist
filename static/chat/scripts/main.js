@@ -139,4 +139,5 @@ requirejs([
 
         window.app = APP;
     });
+
 });

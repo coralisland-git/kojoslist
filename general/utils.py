@@ -25,3 +25,16 @@ def send_SMS(to_phone, body):
         return False
 
     return True
+
+def send_SMS_Chat(from_phone, to_phone, body):
+    client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
+
+    try:
+        res = client.api.account.messages.create(
+            to=to_phone,
+            from_=from_phone,
+            body=body)  
+    except Exception, e:
+        return False
+
+    return True

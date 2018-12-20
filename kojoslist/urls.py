@@ -83,4 +83,5 @@ urlpatterns += [
     url(r"^release_purchase", release_purchase, name="release_purchase"),
     url(r"^cancel_purchase", cancel_purchase, name="cancel_purchase"),
     url(r"^withdraw_money", withdraw_money, name="withdraw_money"),
+    url(r"^chat_send_email", chat_send_email, name="chat_send_email"),
 ]
