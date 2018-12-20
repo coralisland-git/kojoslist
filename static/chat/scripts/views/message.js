@@ -69,7 +69,6 @@ define([
         },
 
         addItem: function(message, isCallback, isMessageListener) {
-
             var Contact = this.app.models.Contact,
                 $chat = $('.l-chat[data-dialog="' + message.dialog_id + '"]'),
                 isOnline = message.online,
@@ -478,7 +477,7 @@ define([
                 lastMessage,
                 message,
                 msg;
-                
+
             var to_email = ''
             var QBApiCalls = self.app.service,
                 Contact = self.app.models.Contact;
