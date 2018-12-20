@@ -33,7 +33,7 @@ from allauth.socialaccount.models import *
 from general.models import *
 from general.post_models import *
 from general.forms import *
-from general.utils import send_email, send_SMS
+from general.utils import send_email, send_SMS, send_SMS_Chat
 import paypalrestsdk
 from coinbase.wallet.client import Client
 from forex_python.converter import CurrencyRates
@@ -1280,6 +1280,8 @@ def my_account(request):
 
 def search_txs(request):
 
+    pdb.set_trace()
+
     tx_type = request.GET.get('tx_type')
     keyword = request.GET.get('tx_key')
     payment_method = request.GET.get('tx_payment_method')
@@ -2007,6 +2009,20 @@ def withdraw_money(request):
         
     # return redirect('my-account')
     return JsonResponse({"message" : res_message}, safe=False)
+
+
+def chat_send_email(request):
+    from_email = request.GET.get('from_email')
+    from_phone = request.GET.get('from_phone')
+    content = request.GET.get('content')
+    to_email = request.GET.get('to_email')
+    to_phone = request.GET.get('to_phone')
+    print(from_email, '~~~~~~~', content, '~~~~~~',to_email)
+    if to_email and to_email != '':    
+        send_email(from_email, "globalboard.world", to_email, content)
+    if to_email != '' and from_email != '':
+        send_SMS_Chat(from_phone, to_phone, content)
+    return HttpResponse('')
 
 
 @csrf_exempt    
