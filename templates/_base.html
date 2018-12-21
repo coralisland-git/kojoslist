@@ -47,7 +47,7 @@
     {% block page_content %} 
     {% endblock %}
 
-    <!-- {% if user.is_authenticated and not logout %}
+    {% if user.is_authenticated and not logout %}
     <div class="chat-wrapper" style="z-index: 100">
         <div class="chat-header">
             <div class="chat-title"><i class="fa fa-comments"></i> Chat</div>
@@ -66,7 +66,7 @@
             $('.chat-wrapper').toggleClass('show-chat');
         });
     </script>
-    {% endif %} -->
+    {% endif %}
 
     <script type='text/javascript' src='/static/plugins/contact-form-7/includes/js/jquery.form.min.js'></script>
     <script type='text/javascript' src='/static/plugins/contact-form-7/includes/js/scripts.js'></script>
