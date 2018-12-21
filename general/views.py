@@ -65,6 +65,9 @@ client = Client(settings.BITCOIN_CLIENT, settings.BITCOIN_CLIENT_SECRET)
 def index(request):
     # rndr_str = globoard_display_world_countries()
     # return render(request, 'index.html', {'rndr_str': rndr_str})
+    # next = request.GET.get('q', '/home')
+    # pdb.set_trace()
+    # return render(request, 'wraper.html', { 'next': next })
     return render(request, 'index.html')
 
 def about(request):
@@ -2018,10 +2021,10 @@ def chat_send_email(request):
     to_email = request.GET.get('to_email')
     to_phone = request.GET.get('to_phone')
     print(from_email, '~~~~~~~', content, '~~~~~~',to_email)
-    if to_email and to_email != '':    
-        send_email(from_email, "globalboard.world", to_email, content)
-    if to_email != '' and from_email != '':
-        send_SMS_Chat(from_phone, to_phone, content)
+    # if to_email and to_email != '':    
+    #     send_email(from_email, "globalboard.world", to_email, content)
+    # if to_email != '' and from_email != '':
+    #     send_SMS_Chat(from_phone, to_phone, content)
     return HttpResponse('')
 
 

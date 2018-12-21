@@ -314,7 +314,7 @@ define([
                 form = $('section:visible form'),
                 self = this,
                 params;
-
+                
             if (defaultUser || validate(form, this)) {
                 UserView.createSpinner();
 
@@ -322,7 +322,6 @@ define([
                     email: defaultUser && defaultUser.email || tempParams.email,
                     password: defaultUser && defaultUser.password || tempParams.password
                 };
-
                 QBApiCalls.createSession(params, function(session) {
                     QBApiCalls.getUser(session.user_id, function(user) {
                         self.contact = Contact.create(user);

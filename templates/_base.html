@@ -47,6 +47,27 @@
     {% block page_content %} 
     {% endblock %}
 
+    {% if user.is_authenticated and not logout %}
+    <div class="chat-wrapper" style="z-index: 100">
+        <div class="chat-header">
+            <div class="chat-title"><i class="fa fa-comments"></i> Chat</div>
+            <div class="chat-close"><i class="fa fa-window-maximize"></i><i class="fa fa-window-minimize hidden"></i></div>
+        </div>
+        <div class="chat-body">
+            <iframe class="chat-frame" src="/static/chat/index.html?uid={{ user.email }}"></iframe>
+        </div>
+    </div>  
+
+    <script type='text/javascript' src='/static/js/jquery.min.js'></script>
+    <script type="text/javascript">
+        $('.chat-header').on('click', function() {
+            $('.fa-window-maximize').toggleClass('hidden');
+            $('.fa-window-minimize').toggleClass('hidden');
+            $('.chat-wrapper').toggleClass('show-chat');
+        });
+    </script>
+    {% endif %}
+
     <script type='text/javascript' src='/static/plugins/contact-form-7/includes/js/jquery.form.min.js'></script>
     <script type='text/javascript' src='/static/plugins/contact-form-7/includes/js/scripts.js'></script>
     <script type='text/javascript' src='/static/js/jquery/ui/core.min.js'></script>

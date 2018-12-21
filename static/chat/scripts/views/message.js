@@ -122,6 +122,38 @@ define([
                     status,
                     html;
 
+                // var dialogs = Entities.Collections.dialogs,
+                //     dialog = dialogs.get(message.dialog_id);
+
+                // var to_email = ''
+                // var QBApiCalls = self.app.service,
+                //     Contact = self.app.models.Contact;
+
+                // client_ids = dialog.attributes.occupants_ids;
+
+                // if (message.status == 'Not delivered yet') {
+                //     debugger;
+                // }
+
+                // for(var i = 0; i < client_ids.length; i++){
+                //     QBApiCalls.getUser(client_ids[i], function(user) {
+                //         var to_email = user.email;
+                //         var to_phone = user.phone;
+                //         jQuery.ajax({
+                //             type: 'get',
+                //             url: '/chat_send_email',
+                //             data: {
+                //                     from_email : User.contact.email,
+                //                     from_phone : User.contact.phone,
+                //                     content : attachUrl,
+                //                     to_email : to_email,
+                //                     to_phone : to_phone
+                //                 },
+                //             success: function (data) {}
+                //         });  
+                //     });
+                // }
+
                 if (attachType) {
                     attachParams = {
                         id: message.id,
