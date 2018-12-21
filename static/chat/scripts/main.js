@@ -137,6 +137,7 @@ requirejs([
         APP = new QM();
         APP.init();
 
+
         window.app = APP;
     });
 

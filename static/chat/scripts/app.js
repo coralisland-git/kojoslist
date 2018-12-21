@@ -76,7 +76,6 @@ define([
     QM.prototype = {
         init: function() {
             var token;
-
             this.setHtml5Patterns();
 
             // QB SDK initialization

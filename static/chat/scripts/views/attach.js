@@ -42,6 +42,7 @@ define([
     AttachView.prototype = {
 
         changeInput: function(objDom, recordedAudioFile) {
+            debugger;
             var file = recordedAudioFile ? recordedAudioFile : objDom[0].files[0],
                 chat = $('.l-chat:visible .l-chat-content .mCSB_container'),
                 id = _.uniqueId(),
