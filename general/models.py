@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.query import QuerySet
-from django_group_by import GroupByMixin
 
 class CSession(models.Model):
     key = models.CharField(max_length=100, primary_key=True)
@@ -289,11 +287,8 @@ class Campaign(models.Model):
     def __str__(self):
         return self.title 
 
-class MessageQuerySet(QuerySet, GroupByMixin):
-    pass
 
 class Message(models.Model):
-    objects = MessageQuerySet.as_manager()
     customer_from = models.ForeignKey(Customer, related_name='customer_from', null=True)
     customer_to = models.ForeignKey(Customer, related_name='customer_to', null=True)
     content = models.CharField(max_length=500, blank=True, null=True)

@@ -760,7 +760,12 @@ def change_status(request):
     flag = True
     messages = []
     if status == '':
-        messages = Message.objects.filter(customer_to=request.user).group_by('customer_from').distinct()
+        messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
+        for message in messages_all:
+            if message.customer_from == request.user and message.customer_to not in messages:
+                messages.append(message.customer_to)
+            if message.customer_to == request.user and message.customer_from not in messages:
+                messages.append(message.customer_from)
     # elif status == 'starred':
     #     messages = Message.objects.filter(customer_to=request.user, status=status).group_by('customer_from').distinct()
     # elif status == 'unread':
