@@ -6116,3 +6116,8 @@ div.userpro-head{
 .profile_image {
     border-radius: 20px;
 }
+
+
+.status_controls a {
+    /*display: none;*/
+}

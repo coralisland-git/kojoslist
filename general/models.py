@@ -19,6 +19,7 @@ VSTATUS = (
 )
 
 SSTATUS = (
+    ('read', 'Read'),
     ('starred', 'Starred'),
     ('unread', 'Unread'),
     ('reservations', 'Reservations'),
@@ -294,3 +295,5 @@ class Message(models.Model):
     content = models.CharField(max_length=500, blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=100, choices=SSTATUS, default="unread")
+    starred = models.BooleanField(default=False)
+    archieve = models.BooleanField(default=False)
