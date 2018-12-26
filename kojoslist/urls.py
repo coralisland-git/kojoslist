@@ -50,6 +50,7 @@ urlpatterns += [
     url(r"^post-ads/(?P<ads_id>\d*)", post_ads, name="post-ads"),
     url(r"^post-camp/(?P<camp_id>\d*)", post_camp, name="post-camp"),
     url(r"^ads/(?P<ads_id>\d*)", view_ads, name="view-ads"),
+    url(r"^ads-message/(?P<user_id>\d*)", view_ads_message, name="view-ads-message"),
     url(r"^user_show/(?P<user_id>\d*)", user_show, name="user review"),
     url(r"^campaigns/(?P<camp_id>\d*)", view_campaign, name="view-campaign"),
     url(r"^category-ads/(?P<category_id>\d*)", category_ads, name="category-ads"),
@@ -84,4 +85,5 @@ urlpatterns += [
     url(r"^cancel_purchase", cancel_purchase, name="cancel_purchase"),
     url(r"^withdraw_money", withdraw_money, name="withdraw_money"),
     url(r"^chat_send_email", chat_send_email, name="chat_send_email"),
+    url(r"^change_status", change_status, name="change_status"),
 ]

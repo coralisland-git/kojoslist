@@ -151,10 +151,15 @@
                             {% else %}
                                 <button class="btn btn-default btn-reply">Reply</button>
                             {% endif %}
+                            <div class="btn" style="margin-top: -38px;">
+                                <a href="/ads-message/">
+                                  <i style="font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="reply-post hidden">
+                    <!-- <div class="reply-post hidden">
                         <div>
                             <label>Your email: </label>
                             <input type="email" id="from_remail">                                
@@ -162,7 +167,7 @@
 
                         <textarea id="reply-body"></textarea>
                         <button class="btn btn-default" id="send_remail">Send</button>
-                    </div>
+                    </div> -->
                     <div class="main-product-info">
                         <div class="product-location-info">
                             <div class="product-location-info-left">
@@ -605,7 +610,8 @@
     })
 
     $('button.btn-reply').click(function() {
-        $('.reply-post').toggleClass('hidden');
+        location.href = '/ads-message/{{ post.owner.id }}';
+        // location.href = '/ads-message/';
     })
 
     $('#send_femail').click(function() {
@@ -640,37 +646,37 @@
 
     });
 
-    $('#send_remail').click(function() {
-        var from_email = $('#from_remail').val();
-        var content = $('#reply-body').val().trim();
+    // $('#send_remail').click(function() {
+    //     var from_email = $('#from_remail').val();
+    //     var content = $('#reply-body').val().trim();
 
-        if (!re.test(from_email)) {
-            alert('Please provide a valid email!');
-            $('#from_remail').focus();
-            return;
-        }
+    //     if (!re.test(from_email)) {
+    //         alert('Please provide a valid email!');
+    //         $('#from_remail').focus();
+    //         return;
+    //     }
         
-        if (content == '') {
-            alert('Please provide some content!');
-            $('#reply-body').focus();
-            return;
-        }
+    //     if (content == '') {
+    //         alert('Please provide some content!');
+    //         $('#reply-body').focus();
+    //         return;
+    //     }
 
-        jQuery.ajax({
-            type: 'post',
-            url: '/send_reply_email',
-            data: {
-                ads_id: {{ post.id }},
-                from_email: from_email,
-                content: content
-            },
-            success: function(data) {
-                alert('Reply email sent successfully!');
-                $('.reply-post').toggleClass('hidden');
-            }
-        });
+    //     jQuery.ajax({
+    //         type: 'post',
+    //         url: '/send_reply_email',
+    //         data: {
+    //             ads_id: {{ post.id }},
+    //             from_email: from_email,
+    //             content: content
+    //         },
+    //         success: function(data) {
+    //             alert('Reply email sent successfully!');
+    //             $('.reply-post').toggleClass('hidden');
+    //         }
+    //     });
 
-    });
+    // });
 
     $('.favourite').click(function() {
         var tthis = this;

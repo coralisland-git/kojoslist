@@ -96,6 +96,10 @@ class CustomerAdmin(admin.ModelAdmin):
         else:
             return '-'
 
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ['customer_from', 'customer_to', 'content', 'date', 'status']
+    search_fields = ['content']
+
 
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Review, ReviewAdmin)
@@ -134,3 +138,4 @@ admin.site.register(Campaign)
 admin.site.register(Perk, PerkAdmin)
 admin.site.register(PerkClaim, PerkClaimAdmin)
 admin.site.register(CSession, CSessionAdmin)
+admin.site.register(Message, MessageAdmin)

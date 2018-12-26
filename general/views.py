@@ -43,6 +43,17 @@ from difflib import SequenceMatcher
 import pdb
 import geocoder
 
+import pusher
+
+pusher_client = pusher.Pusher(
+  app_id='679333',
+  key='febd0a7de92446f7f536',
+  secret='0bbb6f04246f20dd62f9',
+  cluster='mt1',
+  ssl=True
+)
+
+
 get_class = lambda x: globals()[x]
 stripe.api_key = settings.STRIPE_KEYS['API_KEY']
 
@@ -711,6 +722,64 @@ def view_ads(request, ads_id):
         bitcoin_amount = bc.convert_to_btc_on(total_amount, 'USD', datetime.datetime.now() - datetime.timedelta(days=1))
     return render(request, 'ads_detail.html', locals())
 
+def view_ads_message(request, user_id):
+    if user_id:
+        # post = get_object_or_404(Post, pk=ads_id)    
+        # model = eval(post.category.form)
+        # post = model.objects.get(id=ads_id)
+        # count = 10
+        client = Customer.objects.get(id=user_id)
+        me = request.user
+        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client) | Q(customer_to=request.user, customer_from=client)).order_by('-date')
+        for message in messages:
+            if message.status == 'unread' and message.customer_from != request.user:
+                message.status = 'starred'
+                message.save()
+        return render(request, 'ads_detail_message.html', locals())
+    else:
+        # messages = Message.objects.filter(Q(customer_from=request.user) | Q(customer_to=request.user))
+        me = request.user
+        messages = []
+        messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
+        for message in messages_all:
+            if message.customer_from == request.user and message.customer_to not in messages:
+                messages.append(message.customer_to)
+            if message.customer_to == request.user and message.customer_from not in messages:
+                messages.append(message.customer_from)
+
+        messages_len = len(messages)
+        messages_starred = 0 #len(Message.objects.filter(customer_to=request.user, status="starred"))
+        messages_unread = 0 #len(Message.objects.filter(customer_to=request.user, status="unread"))
+        messages_reservations = 0 #len(Message.objects.filter(customer_from=request.user, status="starred"))
+        messages_pending_requests = 0 #len(Message.objects.filter(customer_from=request.user, status="unread"))
+        return render(request, 'ads_detail_message_all.html', locals())
+
+
+def change_status(request):
+    status = request.GET.get('status')
+    flag = True
+    messages = []
+    if status == '':
+        messages = Message.objects.filter(customer_to=request.user).group_by('customer_from').distinct()
+    # elif status == 'starred':
+    #     messages = Message.objects.filter(customer_to=request.user, status=status).group_by('customer_from').distinct()
+    # elif status == 'unread':
+    #     messages = Message.objects.filter(customer_to=request.user, status=status).group_by('customer_from').distinct()
+    # elif status == 'reservations':
+    #     flag = False
+    #     messages = Message.objects.filter(customer_from=request.user, status="starred").group_by('customer_to').distinct()
+    # elif status == 'pending_requests':
+    #     flag = False
+    #     messages = Message.objects.filter(customer_from=request.user, status="unread").group_by('customer_to').distinct()
+
+
+    rndr_str = render_to_string("_sub_message_list.html" , {
+                    'messages': messages,
+                    'flag' : flag
+                    }, request=request)
+    return HttpResponse(rndr_str)
+
+
 def view_campaign(request, camp_id):
     campaign = Campaign.objects.get(id=camp_id)
     perks = Perk.objects.filter(campaign=campaign)
@@ -839,16 +908,39 @@ def send_friend_email(request):
 
 @csrf_exempt
 def send_reply_email(request):
-    from_email = request.POST.get('from_email')
+    from_email = request.user.email
     content = request.POST.get('content')
-    ads_id = request.POST.get('ads_id')
-    post = Post.objects.get(id=ads_id)
-    subject = 'Reply to ' + post.title
+    client_id = request.POST.get('client_id')
+    # post = Post.objects.get(id=ads_id)
+    client = Customer.objects.get(id=client_id)
+    message = Message.objects.create(customer_from=request.user,
+                           customer_to=client,
+                           content=content,
+                           status="unread"
+                        )
+
+    pusher_client.trigger('message-channel-'+str(request.user.id)+'-'+str(client.id), 
+                            'message-event-'+str(request.user.id)+'-'+str(client.id), 
+                            {
+                                'message': content,
+                                'date' : message.date.strftime("%b. %d, %Y, %H:%M %P")
+                            }
+                        )
+
+    pusher_client.trigger('message-channel-'+str(client.id), 
+                            'message-event-'+str(client.id), 
+                            {}
+                        )
+    subject = request.user.first_name + ' ' + request.user.last_name + ' via Globalboard.world'
     content = """
-        {1} <br><br>Original post: {0}/ads/{2}
-        """.format(settings.MAIN_URL, content, post.id)
-    # print (from_email, subject, post.owner.email, content)
-    send_email(from_email, subject, post.owner.email, content)
+        {1} <br><br>Reply to: {0}/ads-message/{2}
+        """.format(settings.MAIN_URL, content, request.user.id)
+
+    send_email(from_email, subject, client.email, content)
+    try:
+        send_SMS_Chat(request.user.phone, client.phone, content)
+    except:
+        pass
     return HttpResponse('')
 
 def region_ads(request, region_id, region):

@@ -1,0 +1,29 @@
+{% if messages %}
+    {% for message in messages %}
+        <div class="row" style="margin-top : 20px;">
+            {% if flag %}
+                <div class="col-md-2 col-xs-4" style="text-align: center;">
+                    <a href="/user_show/{{ message.customer_from.id }}">
+                        <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
+                    </a>
+                </div>
+                <div class="reply-post message-box col-md-9 col-xs-7 no-padding" style="padding: 12px;">
+                    <a href="/ads-message/{{ message.customer_from.id }}">
+                        <div>{{ message.customer_from.first_name }} {{ message.customer_from.last_name }}</div>
+                    </a>
+                </div>
+            {% else %}
+                <div class="col-md-2 col-xs-4" style="text-align: center;">
+                    <a href="/user_show/{{ message.customer_to.id }}">
+                        <img src="/static/media/avatar/{{ message.customer_to.avatar }}" width="40" height="40" class="profile_image">
+                    </a>
+                </div>
+                <div class="reply-post message-box col-md-9 col-xs-7 no-padding" style="padding: 12px;">
+                    <a href="/ads-message/{{ message.customer_to.id }}">
+                        <div>{{ message.customer_to.first_name }} {{ message.customer_to.last_name }}</div>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}
