@@ -139,19 +139,23 @@
                 <div class="col-md-6">
                     <div class="col-md-12 no-padding" style="margin-top: 18px;">
                         <div class="star-profile">
-                            <a href="/user_show/{{ post.owner.id }}">
-                                <img src="/static/media/avatar/{{ post.owner.avatar }}" width="75" height="75">
-                            </a>
-                            <div class="star-profile-name" style="display: inline-block;">
-                                <a href="/user_show/{{ post.owner.id }}" class="username_on_detail">{{ post.owner.first_name }} {{ post.owner.last_name }}</a>
-                                <input id="rating-owner" value="{{ post.owner|rating }}"/>
+                            <div class="col-md-8">
+                                <a href="/user_show/{{ post.owner.id }}">
+                                    <img src="/static/media/avatar/{{ post.owner.avatar }}" width="75" height="75">
+                                </a>
+                                <div class="star-profile-name" style="display: inline-block;">
+                                    <a href="/user_show/{{ post.owner.id }}" class="username_on_detail">{{ post.owner.first_name }} {{ post.owner.last_name }}</a>
+                                    <input id="rating-owner" value="{{ post.owner|rating }}"/>
+                                </div>
                             </div>
+                            <div class="col-md-2 col-xs-3">
                             {% if post.owner == user %}
                                 <a class="btn btn-default btn-reply" href="/post-ads/{{ post.id }}">Edit</a>
                             {% else %}
                                 <button class="btn btn-default btn-reply">Reply</button>
                             {% endif %}
-                            <div class="btn" style="margin-top: -38px;">
+                            </div>
+                            <div class="btn col-md-2 col-xs-3" style="margin-top: 12px;">
                                 <a href="/ads-message/">
                                   <i style="font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
                                 </a>
