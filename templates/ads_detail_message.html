@@ -55,12 +55,12 @@
                                     </div>
                                     <div class="reply-post message-box col-md-8  col-xs-8 no-padding">
                                         <div>{{ message.content }}</div>
-                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }} - {{ message.status }}</div>
+                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
                                     </div>
                                 {% elif message.customer_from == request.user and message.customer_to == client %}
                                     <div class="reply-post message-box col-md-8 col-md-offset-2 col-xs-8 no-padding" style="background-color: #eee;">
                                         <div>{{ message.content }}</div>
-                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }} - {{ message.status }}</div>
+                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
                                     </div>
                                     <div class="col-md-2 col-xs-4" style="text-align: center;">
                                         <a href="/user_show/{{ message.customer_from.id }}">

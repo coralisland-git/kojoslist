@@ -19,29 +19,45 @@
                     <div class="input-group col-md-4 col-xs-12">
                         <select class="input-xlarge form-control" id="select_status">
                             <option value="">All Messages({{ messages_len }})</option>
-                            <option value="starred">Starred({{ messages_starred }})</option>
-                            <option value='unread'>Unread({{ messages_unread }})</option>
+                            <option value="starred">Starred({{ messages_starred_len }})</option>
+                            <option value='unread'>Unread({{ messages_unread_len }})</option>
                             <option value="reservations">Reservations({{ messages_reservations }})</option>
                             <option value="pending_requests">Pending Requests({{ messages_pending_requests }})</option>
-                            <option value="archieve">Archieve(0)</option>
+                            <option value="archieve">Archieve({{messages_archieve_len}})</option>
                         </select>
                     </div>
                     <div style="border-bottom: 1px solid #ddd; margin-top: 20px" class="col-md-12"></div>
-                    <div id="message_list" style="margin-top: 30px; overflow-y: scroll; overflow-x: hidden; height : 400px; width: 100%">
+                    <div id="message_list" style="margin-top: 10px; overflow-y: scroll; overflow-x: hidden; height : 400px; width: 100%">
                         {% if messages %}
                             {% for message in messages %}
-                                <div class="row" style="margin-top : 20px;">
-                                    <div class="col-md-2 col-xs-4" style="text-align: center;">
-                                        <a href="/user_show/{{ message.id }}">
-                                            <img src="/static/media/avatar/{{ message.avatar }}" width="40" height="40" class="profile_image">
-                                        </a>
+                                    <div class="reply-post message-box no-padding col-md-12 col-xs-12" style="padding: 10px; margin-top: 20px; line-height: 2.5">
+                                        <div class="col-md-2 col-xs-4" style="text-align: center;">
+                                            <a href="/user_show/{{ message.client.id }}">
+                                                <img src="/static/media/avatar/{{ message.client.avatar }}" width="40" height="40" class="profile_image">
+                                            </a>
+                                        </div>
+                                        <div  class="col-md-6 col-xs-8">
+                                            <a href="/ads-message/{{ message.client.id }}">
+                                                {{ message.client.first_name }} {{ message.client.last_name }}
+                                            </a>
+                                        </div>
+                                        <div class="status_controls col-md-4 col-xs-12">
+                                            <a href="javascript:void(0);" style="padding: 5px;" data-id="{{message.client.id}}" class="turn_archieve pull-right">
+                                                {% if message.archieve %}
+                                                    Unarchieve
+                                                {% else %}
+                                                    Archieve
+                                                {% endif %}
+                                            </a>
+                                            <a href="javascript:void(0);" style="padding: 5px;" class="turn_star pull-right" data-id="{{message.client.id}}">
+                                                {% if message.starred %}
+                                                    Unstar
+                                                {% else %}
+                                                    Star
+                                                {% endif %}
+                                            </a>
+                                        </div>
                                     </div>
-                                    <div class="reply-post message-box col-md-9 col-xs-7 no-padding" style="padding: 12px;">
-                                        <a href="/ads-message/{{ message.id }}">
-                                            <div>{{ message.first_name }} {{ message.last_name }}</div>
-                                        </a>
-                                    </div>
-                                </div>
                             {% endfor %}
                         {% endif %}
                     </div>
@@ -79,17 +95,14 @@
 <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 <script type="text/javascript">
 
-    window.onhashchange = function() {
-    if (window.innerDocClick) {
-          window.innerDocClick = false;
-        } else {
-          location.reload();
-        }
+    if(performance.navigation.type == 2){
+       location.reload(true);
     }
     jQuery('#select_status').change(function(e) {
             jQuery.ajax({
                 type: 'get',
-                url: '/change_status',
+                // url: '/change_status',
+                url: '/ads-message/',
                 data: {
                         status: $('#select_status').val() ,
                     },
@@ -98,6 +111,34 @@
                 }
             });                     
         });
+
+    jQuery('.turn_star').click(function(e) {
+        jQuery.ajax({
+            type: 'get',
+            url: '/turn_status',
+            data: {
+                    client_id: $(this).data('id'),
+                    status : 'starred'
+                },
+            success: function (data) {
+                location.reload(true);
+            }
+        });                     
+    });
+
+    jQuery('.turn_archieve').click(function(e) {
+        jQuery.ajax({
+            type: 'get',
+            url: '/turn_status',
+            data: {
+                    client_id: $(this).data('id'),
+                    status : 'archieve'
+                },
+            success: function (data) {
+                location.reload(true);
+            }
+        });                     
+    });
 
     Pusher.logToConsole = true;
 

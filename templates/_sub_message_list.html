@@ -1,29 +1,67 @@
 {% if messages %}
-    {% for message in messages %}
-        <div class="row" style="margin-top : 20px;">
-            {% if flag %}
+     {% for message in messages %}
+            <div class="reply-post message-box no-padding col-md-12 col-xs-12" style="padding: 10px; margin-top: 20px; line-height: 2.5">
                 <div class="col-md-2 col-xs-4" style="text-align: center;">
-                    <a href="/user_show/{{ message.customer_from.id }}">
-                        <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
+                    <a href="/user_show/{{ message.client.id }}">
+                        <img src="/static/media/avatar/{{ message.client.avatar }}" width="40" height="40" class="profile_image">
                     </a>
                 </div>
-                <div class="reply-post message-box col-md-9 col-xs-7 no-padding" style="padding: 12px;">
-                    <a href="/ads-message/{{ message.customer_from.id }}">
-                        <div>{{ message.customer_from.first_name }} {{ message.customer_from.last_name }}</div>
+                <div  class="col-md-6 col-xs-8">
+                    <a href="/ads-message/{{ message.client.id }}">
+                        {{ message.client.first_name }} {{ message.client.last_name }}
                     </a>
                 </div>
-            {% else %}
-                <div class="col-md-2 col-xs-4" style="text-align: center;">
-                    <a href="/user_show/{{ message.customer_to.id }}">
-                        <img src="/static/media/avatar/{{ message.customer_to.avatar }}" width="40" height="40" class="profile_image">
+                <div class="status_controls col-md-4 col-xs-12">
+                    <a href="javascript:void(0);" style="padding: 5px;" data-id="{{message.client.id}}" class="turn_archieve pull-right">
+                        {% if message.archieve %}
+                            Unarchieve
+                        {% else %}
+                            Archieve
+                        {% endif %}
+                    </a>
+                    <a href="javascript:void(0);" style="padding: 5px;" class="turn_star pull-right" data-id="{{message.client.id}}">
+                        {% if message.starred %}
+                            Unstar
+                        {% else %}
+                            Star
+                        {% endif %}
                     </a>
                 </div>
-                <div class="reply-post message-box col-md-9 col-xs-7 no-padding" style="padding: 12px;">
-                    <a href="/ads-message/{{ message.customer_to.id }}">
-                        <div>{{ message.customer_to.first_name }} {{ message.customer_to.last_name }}</div>
-                    </a>
-                </div>
-            {% endif %}
-        </div>
+            </div>
     {% endfor %}
 {% endif %}
+
+
+{% block own_js %}
+<script type="text/javascript">
+
+    jQuery('.turn_star').click(function(e) {
+        jQuery.ajax({
+            type: 'get',
+            url: '/turn_status',
+            data: {
+                    client_id: $(this).data('id'),
+                    status : 'starred'
+                },
+            success: function (data) {
+                location.reload(true);
+            }
+        });                     
+    });
+
+    jQuery('.turn_archieve').click(function(e) {
+        jQuery.ajax({
+            type: 'get',
+            url: '/turn_status',
+            data: {
+                    client_id: $(this).data('id'),
+                    status : 'archieve'
+                },
+            success: function (data) {
+                location.reload(true);
+            }
+        });                     
+    });
+
+</script>
+{% endblock %}

@@ -733,56 +733,151 @@ def view_ads_message(request, user_id):
         messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client) | Q(customer_to=request.user, customer_from=client)).order_by('-date')
         for message in messages:
             if message.status == 'unread' and message.customer_from != request.user:
-                message.status = 'starred'
+                message.status = 'read'
                 message.save()
         return render(request, 'ads_detail_message.html', locals())
     else:
         # messages = Message.objects.filter(Q(customer_from=request.user) | Q(customer_to=request.user))
         me = request.user
+        messages_starred = [] #len(Message.objects.filter(customer_to=request.user, status="starred"))
+        messages_unread = [] #len(Message.objects.filter(customer_to=request.user, status="unread"))
+        messages_reservations = 0 #len(Message.objects.filter(customer_from=request.user, status="starred"))
+        messages_pending_requests = 0 #len(Message.objects.filter(customer_from=request.user, status="unread"))
+        messages_archieve = []
         messages = []
         messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
         for message in messages_all:
-            if message.customer_from == request.user and message.customer_to not in messages:
-                messages.append(message.customer_to)
-            if message.customer_to == request.user and message.customer_from not in messages:
-                messages.append(message.customer_from)
+            item_to = {'client' : message.customer_to, 'starred' : message.starred, 'archieve': message.archieve}
+            item_from = {'client' : message.customer_from, 'starred' : message.starred, 'archieve': message.archieve}
+            if message.archieve:
+                if message.customer_from == request.user and item_to not in messages_archieve:
+                    messages_archieve.append(item_to)
+                if message.customer_to == request.user and item_from not in messages_archieve:
+                    messages_archieve.append(item_from)
+            else:
+                if message.customer_from == request.user and item_to not in messages:
+                    messages.append(item_to)
+                if message.customer_to == request.user and item_from not in messages:
+                    messages.append(item_from)
+                if message.starred:
+                    if message.customer_from == request.user and item_to not in messages_starred:
+                        messages_starred.append(item_to)
+                    if message.customer_to == request.user and item_from not in messages_starred:
+                        messages_starred.append(item_from)
+                if message.status == 'unread':
+                    if message.customer_to == request.user and item_from not in messages_unread:
+                        messages_unread.append(item_from)
 
         messages_len = len(messages)
-        messages_starred = 0 #len(Message.objects.filter(customer_to=request.user, status="starred"))
-        messages_unread = 0 #len(Message.objects.filter(customer_to=request.user, status="unread"))
-        messages_reservations = 0 #len(Message.objects.filter(customer_from=request.user, status="starred"))
-        messages_pending_requests = 0 #len(Message.objects.filter(customer_from=request.user, status="unread"))
-        return render(request, 'ads_detail_message_all.html', locals())
+        messages_archieve_len = len(messages_archieve)
+        messages_starred_len = len(messages_starred)
+        messages_unread_len = len(messages_unread)
 
+        status = request.GET.get('status')
+        if 'status' in request.GET:
+            if status == 'starred':
+                messages = messages_starred
+            if status == 'archieve':
+                messages = messages_archieve
+            if status == 'unread':
+                messages = messages_unread
+            rndr_str = render_to_string("_sub_message_list.html" , {
+                    'messages': messages
+                    }, request=request)
+            return HttpResponse(rndr_str)
+        else:
+            return render(request, 'ads_detail_message_all.html', locals())
+
+@csrf_exempt
+def send_reply_email(request):
+    from_email = request.user.email
+    content = request.POST.get('content')
+    client_id = request.POST.get('client_id')
+    # post = Post.objects.get(id=ads_id)
+    client = Customer.objects.get(id=client_id)
+    room_infos = Message.objects.filter(Q(customer_from=request.user) | Q(customer_to=request.user) )
+    room_starred= False
+    room_archieve = False
+    if len(room_infos) > 0:
+        room_starred = room_infos[0].starred
+        room_archieve = room_infos[0].archieve
+    message = Message.objects.create(customer_from=request.user,
+                           customer_to=client,
+                           content=content,
+                           status="unread",
+                           starred=room_starred,
+                           archieve=room_archieve
+                        )
+
+    pusher_client.trigger('message-channel-'+str(request.user.id)+'-'+str(client.id), 
+                            'message-event-'+str(request.user.id)+'-'+str(client.id), 
+                            {
+                                'message': content,
+                                'date' : message.date.strftime("%b. %d, %Y, %H:%M %P")
+                            }
+                        )
+
+    pusher_client.trigger('message-channel-'+str(client.id), 
+                            'message-event-'+str(client.id), 
+                            {}
+                        )
+    subject = request.user.first_name + ' ' + request.user.last_name + ' via Globalboard.world'
+    content = """
+        {1} <br><br>Reply to: {0}/ads-message/{2}
+        """.format(settings.MAIN_URL, content, request.user.id)
+
+    send_email(from_email, subject, client.email, content)
+    try:
+        send_SMS_Chat(request.user.phone, client.phone, content)
+    except:
+        pass
+    return HttpResponse('')
 
 def change_status(request):
-    status = request.GET.get('status')
-    flag = True
-    messages = []
-    if status == '':
-        messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
-        for message in messages_all:
-            if message.customer_from == request.user and message.customer_to not in messages:
-                messages.append(message.customer_to)
-            if message.customer_to == request.user and message.customer_from not in messages:
-                messages.append(message.customer_from)
-    # elif status == 'starred':
-    #     messages = Message.objects.filter(customer_to=request.user, status=status).group_by('customer_from').distinct()
-    # elif status == 'unread':
-    #     messages = Message.objects.filter(customer_to=request.user, status=status).group_by('customer_from').distinct()
-    # elif status == 'reservations':
-    #     flag = False
-    #     messages = Message.objects.filter(customer_from=request.user, status="starred").group_by('customer_to').distinct()
-    # elif status == 'pending_requests':
-    #     flag = False
-    #     messages = Message.objects.filter(customer_from=request.user, status="unread").group_by('customer_to').distinct()
+    # status = request.GET.get('status')
+    # flag = True
+    # messages = []
+    # if status == '':
+    #     messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user), ~Q(status='archieve'))
+    # # elif status == 'starred':
+    # #     messages = Message.objects.filter(customer_to=request.user, status=status).group_by('customer_from').distinct()
+    # # elif status == 'unread':
+    # #     messages = Message.objects.filter(customer_to=request.user, status=status).group_by('customer_from').distinct()
+    # # elif status == 'reservations':
+    # #     flag = False
+    # #     messages = Message.objects.filter(customer_from=request.user, status="starred").group_by('customer_to').distinct()
+    # # elif status == 'pending_requests':
+    # #     flag = False
+    # #     messages = Message.objects.filter(customer_from=request.user, status="unread").group_by('customer_to').distinct()
+    # elif status == 'archieve':
+    #     messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user), Q(status='archieve'))
 
+    # for message in messages_all:
+    #     if message.customer_from == request.user and message.customer_to not in messages:
+    #         messages.append(message.customer_to)
+    #     if message.customer_to == request.user and message.customer_from not in messages:
+    #         messages.append(message.customer_from)
 
-    rndr_str = render_to_string("_sub_message_list.html" , {
-                    'messages': messages,
-                    'flag' : flag
-                    }, request=request)
+    # rndr_str = render_to_string("_sub_message_list.html" , {
+    #                 'messages': messages,
+    #                 'flag' : flag
+    #                 }, request=request)
     return HttpResponse(rndr_str)
+
+def turn_status(request):
+    client_id = request.GET.get('client_id')
+    status = request.GET.get('status')
+    client = Customer.objects.get(id=client_id)
+    messages = Message.objects.filter(Q(customer_to=client, customer_from=request.user) | Q(customer_from=client, customer_to=request.user))
+    for message in messages:
+        if status == 'starred':
+            message.starred = not message.starred
+        if status == 'archieve':
+            message.archieve = not message.archieve
+        else:
+            message.status = status
+        message.save()
+    return HttpResponse('')
 
 
 def view_campaign(request, camp_id):
@@ -909,43 +1004,6 @@ def send_friend_email(request):
         """.format(settings.MAIN_URL, from_email, post.title, post.id)
 
     send_email(settings.FROM_EMAIL, post.title, to_email, content)
-    return HttpResponse('')
-
-@csrf_exempt
-def send_reply_email(request):
-    from_email = request.user.email
-    content = request.POST.get('content')
-    client_id = request.POST.get('client_id')
-    # post = Post.objects.get(id=ads_id)
-    client = Customer.objects.get(id=client_id)
-    message = Message.objects.create(customer_from=request.user,
-                           customer_to=client,
-                           content=content,
-                           status="unread"
-                        )
-
-    pusher_client.trigger('message-channel-'+str(request.user.id)+'-'+str(client.id), 
-                            'message-event-'+str(request.user.id)+'-'+str(client.id), 
-                            {
-                                'message': content,
-                                'date' : message.date.strftime("%b. %d, %Y, %H:%M %P")
-                            }
-                        )
-
-    pusher_client.trigger('message-channel-'+str(client.id), 
-                            'message-event-'+str(client.id), 
-                            {}
-                        )
-    subject = request.user.first_name + ' ' + request.user.last_name + ' via Globalboard.world'
-    content = """
-        {1} <br><br>Reply to: {0}/ads-message/{2}
-        """.format(settings.MAIN_URL, content, request.user.id)
-
-    send_email(from_email, subject, client.email, content)
-    try:
-        send_SMS_Chat(request.user.phone, client.phone, content)
-    except:
-        pass
     return HttpResponse('')
 
 def region_ads(request, region_id, region):
