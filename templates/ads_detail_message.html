@@ -1,0 +1,167 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+{% load humanize %}
+{% load extra %}
+
+{% block own_css %}
+<link href="/static/star-rating/star-rating.css" rel="stylesheet">
+<link href="/static/slick-1.8.0/slick/slick.css" rel="stylesheet">
+<link href="/static/slick-1.8.0/slick/slick-theme.css" rel="stylesheet">
+{% endblock %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+        <div class="content-right-content ad-view">
+            <!-- <nav class="breadcrumb">
+              <a class="breadcrumb-item" href="/profile/">worldwide<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              {% if post.region %}
+              <a class="breadcrumb-item" href="#">{{ post.region.state.country.name }}<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              <a class="breadcrumb-item" href="#">{{ post.region.state.name }}<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              <a class="breadcrumb-item" href="#">{{ post.region.name }}<i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+              {% endif %}
+              <span class="breadcrumb-item active">{{ post.category.name }}</span>
+            </nav> -->
+
+            <div class="main-product">
+                <div class="col-md-2">
+                    
+                </div>
+                <div class="col-md-8">
+                    <div class="message-form">
+                        <div class="reply-post col-md-8 col-md-offset-2 col-xs-8 no-padding" style="padding-right: 0px;">
+                            <textarea id="reply-body"></textarea>
+                            <button class="btn btn-default pull-right" id="send_remail">Send</button>
+                        </div>
+                        <div class="col-md-1 col-xs-4" style="margin-top: 20px; text-align-last: center;">
+                            <a href="/user_show/{{ me.id }}">
+                                <img src="/static/media/avatar/{{ me.avatar }}" width="50" height="50" class="profile_image">
+                            </a>
+                        </div>
+                    </div>
+                    <div style="border-bottom: 1px solid #ddd; margin: 20px 10px;" class="col-md-12"></div>
+                    <div class="message-history" id="message-history" style="margin-top: 30px; overflow-y: scroll; overflow-x: hidden; height : 400px; width: 100%">
+                        <div id="new-msg"></div>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="row" style="margin : 30px;">
+                                {% if message.customer_from == client and message.customer_to == me %}
+                                    <div class="col-md-2 col-xs-4" style="text-align: center;">
+                                        <a href="/user_show/{{ message.customer_from.id }}">
+                                            <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
+                                        </a>
+                                    </div>
+                                    <div class="reply-post message-box col-md-8  col-xs-8 no-padding">
+                                        <div>{{ message.content }}</div>
+                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }} - {{ message.status }}</div>
+                                    </div>
+                                {% elif message.customer_from == request.user and message.customer_to == client %}
+                                    <div class="reply-post message-box col-md-8 col-md-offset-2 col-xs-8 no-padding" style="background-color: #eee;">
+                                        <div>{{ message.content }}</div>
+                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }} - {{ message.status }}</div>
+                                    </div>
+                                    <div class="col-md-2 col-xs-4" style="text-align: center;">
+                                        <a href="/user_show/{{ message.customer_from.id }}">
+                                            <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                </div>
+                            {% endfor %}
+                            <!-- <div class="row" style="margin : 30px; text-align: center;">
+                                <a href="javascript: void(0)" id="show_earlier_messages">Show earlier messages</a>
+                            </div>
+                            <div id="more_messages"></div> -->
+                        {% endif %}
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script src="/static/star-rating/star-rating.min.js"></script>
+<script src="/static/slick-1.8.0/slick/slick.min.js"></script>
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+<script type="text/javascript">
+    
+    $('#send_remail').click(function() {
+
+        var content = $('#reply-body').val().trim();
+        
+        if (content == '') {
+            alert('Please provide some content!');
+            $('#reply-body').focus();
+            return;
+        }
+
+        jQuery.ajax({
+            type: 'post',
+            url: '/send_reply_email',
+            data: {
+                client_id: {{ client.id }},
+                content: content
+            },
+            success: function(data) {
+                location.reload(true);
+                // $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
+                $('#message-history').scrollTop();
+            }
+        });
+
+    });
+
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('febd0a7de92446f7f536', {
+      cluster: 'mt1',
+      forceTLS: true
+    });
+
+    var channel = pusher.subscribe('message-channel-{{client.id}}-{{me.id}}');
+    channel.bind('message-event-{{client.id}}-{{me.id}}', function(data) {
+      // alert(JSON.stringify(data));
+        var item = '<div class="row" style="margin:30px">\
+                    <div class="col-md-2 col-xs-4" style="text-align: center;">\
+                        <a href="/user_show/{{ client.id }}">\
+                            <img src="/static/media/avatar/{{ client.avatar }}" width="40" height="40" class="profile_image">\
+                        </a>\
+                    </div>\
+                    <div class="reply-post message-box col-md-8  col-xs-8 no-padding">\
+                        <div>'+data.message+'</div>\
+                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">'+data.date+'</div>\
+                    </div>\
+                    </div>'
+
+        $('#new-msg').prepend(item);
+        $('#message-history').scrollTop();
+    });
+
+    // $('#show_earlier_messages').click(function() {
+    //     jQuery.ajax({
+    //         type: 'get',
+    //         url: '/ads-message/{{client.id}}',
+    //         data: {
+    //             count : {{ count }}
+    //         },
+    //         success: function(data) {
+    //             $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
+    //             $('#more_messages').append(item);
+    //         }
+    //     });
+    // });
+
+    $('#message-history').scrollTop();
+</script>
+
+{% endblock %}

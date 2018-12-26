@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.query import QuerySet
+from django_group_by import GroupByMixin
 
 class CSession(models.Model):
     key = models.CharField(max_length=100, primary_key=True)
@@ -11,11 +13,21 @@ class CSession(models.Model):
     def __str__(self):
         return self.key
 
+
 VSTATUS = (
     ('unverified', 'Unverified'),
     ('awaiting_approve', 'Awaiting Approve'),
     ('approved', 'Approved')
 )
+
+SSTATUS = (
+    ('starred', 'Starred'),
+    ('unread', 'Unread'),
+    ('reservations', 'Reservations'),
+    ('pending_requests', 'Pending Requests'),
+    ('archieve', 'Archieve')
+)
+
 
 class Customer(AbstractUser):
     avatar = models.CharField(max_length=100, default="default_avatar.png")
@@ -275,4 +287,15 @@ class Campaign(models.Model):
     created_at = models.DateField(auto_now_add=True)
     
     def __str__(self):
-        return self.title
+        return self.title 
+
+class MessageQuerySet(QuerySet, GroupByMixin):
+    pass
+
+class Message(models.Model):
+    objects = MessageQuerySet.as_manager()
+    customer_from = models.ForeignKey(Customer, related_name='customer_from', null=True)
+    customer_to = models.ForeignKey(Customer, related_name='customer_to', null=True)
+    content = models.CharField(max_length=500, blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=100, choices=SSTATUS, default="unread")

@@ -1,0 +1,116 @@
+{% extends "profile.html" %} 
+{% load staticfiles %} 
+{% load humanize %}
+{% load extra %}
+
+{% block own_css %}
+<link href="/static/star-rating/star-rating.css" rel="stylesheet">
+<link href="/static/slick-1.8.0/slick/slick.css" rel="stylesheet">
+<link href="/static/slick-1.8.0/slick/slick-theme.css" rel="stylesheet">
+{% endblock %} 
+
+{% block right_content %}
+    <!-- Content Right Content -->
+
+    <div class="col-sm-12 full-h">
+        <div class="content-right-content ad-view">
+            <div class="main-product">
+                <div class="col-md-8 col-md-offset-2" style="padding: 50px;">
+                    <div class="input-group col-md-4 col-xs-12">
+                        <select class="input-xlarge form-control" id="select_status">
+                            <option value="">All Messages({{ messages_len }})</option>
+                            <option value="starred">Starred({{ messages_starred }})</option>
+                            <option value='unread'>Unread({{ messages_unread }})</option>
+                            <option value="reservations">Reservations({{ messages_reservations }})</option>
+                            <option value="pending_requests">Pending Requests({{ messages_pending_requests }})</option>
+                            <option value="archieve">Archieve(0)</option>
+                        </select>
+                    </div>
+                    <div style="border-bottom: 1px solid #ddd; margin-top: 20px" class="col-md-12"></div>
+                    <div id="message_list" style="margin-top: 30px; overflow-y: scroll; overflow-x: hidden; height : 400px; width: 100%">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="row" style="margin-top : 20px;">
+                                    <div class="col-md-2 col-xs-4" style="text-align: center;">
+                                        <a href="/user_show/{{ message.id }}">
+                                            <img src="/static/media/avatar/{{ message.avatar }}" width="40" height="40" class="profile_image">
+                                        </a>
+                                    </div>
+                                    <div class="reply-post message-box col-md-9 col-xs-7 no-padding" style="padding: 12px;">
+                                        <a href="/ads-message/{{ message.id }}">
+                                            <div>{{ message.first_name }} {{ message.last_name }}</div>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>            
+            <!-- {% if user.is_authenticated and not logout %}
+                <div class="chat-wrapper" style="z-index: 100">
+                    <div class="chat-body">
+                        <iframe class="chat-frame" src="/static/chat/index.html?uid={{ user.email }}"></iframe>
+                    </div>
+                </div>  
+
+                <script type='text/javascript' src='/static/js/jquery.min.js'></script>
+                <script type="text/javascript">
+                    $('.chat-header').on('click', function() {
+                        $('.fa-window-maximize').toggleClass('hidden');
+                        $('.fa-window-minimize').toggleClass('hidden');
+                        $('.chat-wrapper').toggleClass('show-chat');
+                    });
+                </script>
+            {% endif %} -->
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block load_highcharts_js %}
+{% endblock %}
+
+{% block own_js %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script src="/static/star-rating/star-rating.min.js"></script>
+<script src="/static/slick-1.8.0/slick/slick.min.js"></script>
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+<script type="text/javascript">
+
+    window.onhashchange = function() {
+    if (window.innerDocClick) {
+          window.innerDocClick = false;
+        } else {
+          location.reload();
+        }
+    }
+    jQuery('#select_status').change(function(e) {
+            jQuery.ajax({
+                type: 'get',
+                url: '/change_status',
+                data: {
+                        status: $('#select_status').val() ,
+                    },
+                success: function (data) {
+                    jQuery('#message_list').html(data);
+                }
+            });                     
+        });
+
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('febd0a7de92446f7f536', {
+      cluster: 'mt1',
+      forceTLS: true
+    });
+
+    var channel = pusher.subscribe('message-channel-{{me.id}}');
+    channel.bind('message-event-{{me.id}}', function(data) {
+      // alert(JSON.stringify(data));
+        location.reload(true);
+    });
+
+</script>
+ {% endblock %}

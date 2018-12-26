@@ -6113,3 +6113,6 @@ div.userpro-head{
     color : white;
 }
 
+.profile_image {
+    border-radius: 20px;
+}

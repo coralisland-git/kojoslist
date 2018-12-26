@@ -44,6 +44,7 @@ def delete_image_file(sender, instance, using, **kwargs):
 @receiver(post_save, sender=BuyGigPost)
 @receiver(post_save, sender=LicensePost)
 @receiver(post_save, sender=ShortTermPost)
+
 def apply_subscribe(sender, instance, **kwargs):   
     try:
         for ss in Search.objects.filter(alert=True).exclude(owner=instance.owner):
@@ -85,11 +86,9 @@ def rating_notify(sender, instance, **kwargs):
         print e, '@@@@@ Error in rating_notify()'
 
 @receiver(post_save, sender=PostPurchase)
-
 def post_purchase_notify(sender, instance, **kwargs):    
     try:
         # send email to the owner
-
         subject = ''
 
         if instance.type == 'direct':
@@ -172,7 +171,12 @@ def post_purchase_notify(sender, instance, **kwargs):
 
         send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
 
-
     except Exception, e:
 
         print e, '@@@@@ Error in post_purchase_notify()'
+
+
+@receiver(post_save, sender=Message)
+def message_notify(sender, instance, **kwargs):
+    pass
+    
