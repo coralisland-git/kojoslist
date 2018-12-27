@@ -6144,6 +6144,10 @@ div.userpro-head{
     .product-mobile-view {
         display: none;
     }
+
+    #ads-detail-saperator{
+        display: none;
+    }
 }
 
 @media screen and (max-width: 480px){
@@ -6158,5 +6162,9 @@ div.userpro-head{
 
     .product-mobile-view {
         display: block;
+    }
+
+    #ads-detail-saperator{
+        border-top: 1px solid #ddd;
     }
 }
