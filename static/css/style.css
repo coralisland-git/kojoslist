@@ -6136,3 +6136,27 @@ div.userpro-head{
 .detail-item h6 {
     font-size: 16px;
 }
+
+@media screen and (min-width:480px) {
+    .prodict-laptop-view {
+        display: block;
+    }
+    .product-mobile-view {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 480px){
+
+    .hidden-phone {
+        display: none;
+    }
+
+    .product-laptop-view {
+        display: none;
+    }
+
+    .product-mobile-view {
+        display: block;
+    }
+}
