@@ -25,7 +25,7 @@
             </nav> -->
 
             <div class="main-product">
-                <div class="col-md-4" style="border: 1px solid #ddd;padding: 40px 20px 20px 20px; margin: 20px;"> 
+                <div class="col-md-4 product-laptop-view" style="border: 1px solid #ddd;padding: 40px 20px 20px 20px; margin: 20px;"> 
                     <div class="col-md-12">
                         <div class="col-md-12 no-padding">
                             <a href="/ads/{{ post.id }}">
@@ -141,16 +141,16 @@
                         </div>
                         {% endif %}
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-12" style="border-top: 1px solid #ddd;">
                         <div class="col-md-12 no-padding" style="margin-top: 18px;">
                             <div class="star-profile">
                                 <div class="col-md-12">
                                     <a href="/user_show/{{ post.owner.id }}">
                                         <img src="/static/media/avatar/{{ post.owner.avatar }}" width="75" height="75">
                                     </a>
-                                    <div class="star-profile-name" style="display: inline-block;">
+                                    <div class="star-profile-name">
                                         <a href="/user_show/{{ post.owner.id }}" class="username_on_detail">{{ post.owner.first_name }} {{ post.owner.last_name }}</a>
-                                        <input id="rating-owner" value="{{ post.owner|rating }}"/>
+                                        <input class="rating-owner" value="{{ post.owner|rating }}"/>
                                     </div>
                                 </div>
                             </div>
@@ -180,16 +180,16 @@
                                     <h6>{{ reviews }}</h6>
                                 </div>
                                 {% endif %}
-                                <div class="detail-item">
+                                <div class="detail-item" style="display: block">
                                     <span>Description</span>
-                                    <h6>{{ post.content }}</h6>
+                                    <h6 style="margin-top : 10px;">{{ post.content }}</h6>
                                 </div>
                             </div>
                         </div>
 
                         {% if post.category.form == 'ShortTermPost' %}
                             <div class="rv-title m-t-15">Reviews ( {{ reviews.count }} )</div>
-                            <input id="rating-post" value="{{ post|rating_post }}"/>
+                            <input class="rating-post" value="{{ post|rating_post }}"/>
                             <hr>
                             {% for review in reviews %}
                             <div class="review-card row">            
@@ -216,11 +216,11 @@
                 </div>
                 <div class="col-md-7" style="padding: 20px;">
                     <div class="message-form">
-                        <div class="reply-post col-md-8 col-md-offset-2 col-xs-9 no-padding" style="padding: 0px;">
+                        <div class="reply-post col-md-8 col-md-offset-2 col-xs-12 no-padding" style="padding: 0px;">
                             <textarea id="reply-body"></textarea>
                             <button class="btn btn-default pull-right" id="send_remail" style="margin-top: 10px; background-color: #64B7E7; color: white; border-color: #64B7E7">Send</button>
                         </div>
-                        <div class="col-md-1 col-xs-3" style="text-align-last: center;">
+                        <div class="col-md-1 hidden-phone" style="text-align-last: center;">
                             <a href="/user_show/{{ me.id }}">
                                 <img src="/static/media/avatar/{{ me.avatar }}" width="50" height="50" class="profile_image">
                             </a>
@@ -232,23 +232,23 @@
 
                         {% if messages %}
                             {% for message in messages %}
-                                <div class="row" style="margin : 30px;">
+                                <div class="row" style="margin : 15px 0px;">
                                 {% if message.customer_from == client and message.customer_to == me %}
-                                    <div class="col-md-2 col-xs-4" style="text-align: center;">
+                                    <div class="col-md-2 col-xs-2 no-padding" style="text-align: left;">
                                         <a href="/user_show/{{ message.customer_from.id }}">
                                             <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
                                         </a>
                                     </div>
-                                    <div class="reply-post message-box col-md-8  col-xs-8 no-padding">
+                                    <div class="reply-post message-box col-md-8  col-xs-10 no-padding">
                                         <div>{{ message.content }}</div>
                                         <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
                                     </div>
                                 {% elif message.customer_from == request.user and message.customer_to == client %}
-                                    <div class="reply-post message-box col-md-8 col-md-offset-2 col-xs-8 no-padding" style="background-color: #eee;">
+                                    <div class="reply-post message-box col-md-8 col-md-offset-2 col-xs-10 no-padding" style="background-color: #eee;">
                                         <div>{{ message.content }}</div>
                                         <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
                                     </div>
-                                    <div class="col-md-2 col-xs-4" style="text-align: center;">
+                                    <div class="col-md-2 col-xs-2  no-padding" style="text-align: right;">
                                         <a href="/user_show/{{ message.customer_from.id }}">
                                             <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
                                         </a>
@@ -260,6 +260,195 @@
                                 <a href="javascript: void(0)" id="show_earlier_messages">Show earlier messages</a>
                             </div>
                             <div id="more_messages"></div> -->
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4 product-mobile-view" style="border-top: 1px solid #ddd;padding: 30px 10px; margin-top: 10px;"> 
+                    <div class="col-md-12">
+                        <div class="col-md-12 no-padding">
+                            <a href="/ads/{{ post.id }}">
+                                <h4 style="font-size: 22px; color: black; line-height: 24px;">{{ post.title }}</h4>
+                            </a>
+                        </div>
+                        <div class="col-md-12 no-padding" style="margin-top: 16px;">
+                            <div class="col-md-10 no-padding" style="margin-bottom: 15px;">Posted on {{ post.created_at }}</div>
+                            {% if user != post.owner %}
+                            <div class="col-md-2 no-padding favourite {% if favourite %} like {% endif %}">
+                                <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                <span>Favourite</span>
+                            </div>                    
+                            {% endif %}                   
+                        </div>                
+                    </div>
+                    <div class="col-md-12">
+                        <div class="product-img col-md-12" style="margin-bottom: 15px;">
+                            <!-- <a href="/ads/{{ post.id }}"> -->
+                            {% if post.images.all %}
+                                {% for img in post|head_sort_images %}
+                                    <img class="img-responsive" src="/static/media/{{ img.name }}" alt="">
+                                {% endfor %}
+                            {% else %}
+                                <img class="img-responsive" src="/static/media/dummy.jpg" alt="">
+                            {% endif %}
+                            <!-- </a> -->
+                        </div>
+                        {% if post.images.all %}
+                            <div class="product-img-nav col-md-12" style="margin-bottom: 42px;">
+                                {% for img in post.images.all %}
+                                    <img class="slick-thumb" src="/static/media/{{ img.name }}" alt="">
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="clearfix"></div>
+                        {% if post.category.form == 'ShortTermPost' %}
+                        <div class="col-md-7 col-md-offset-2 cart m-t-20" style="border: solid 1px #aaa; padding: 15px;">
+                            <h4 style="margin: 20px auto;"><span style="font-size: 28px;font-weight: 500;">${{ post.price|floatformat:2|intcomma }}</span> per night</h4>
+                            <hr>
+
+                            <h5>Dates</h5>
+                            <div class="col-sm-6">
+                                <input type="text" name="check_in" class="form-control date-checkin edit-post-wrap cl_datepicker" required placeholder="Check In" />
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" name="check_out" class="form-control date-checkout edit-post-wrap cl_datepicker" required placeholder="Check Out" />
+                            </div>
+                            <div class="clearfix"></div>
+
+                            <h5 class="m-t-15">Guests</h5>
+                            <div class="col-md-12">
+                                <div class="form-group edit-profile">
+                                    <span class="num-guests form-control edit-post-wrap" style="padding-top: 10px;" /><span class="cnt-guests">1</span> guest(s)</span>
+                                </div>
+                            </div>
+
+                            <div class="guests-detail hidden">
+                                {% if post.num_adults %}
+                                <div class="col-md-12">
+                                    <div class="form-group edit-profile">
+                                        <label>Adults</label>
+                                        <select id="num_adults" class="form-control edit-post-wrap" required>
+                                            {% for ii in 1|rangee:post.num_adults %}
+                                                <option value="{{ ii }}">{{ ii }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if post.num_children %}
+                                <div class="col-md-12">
+                                    <div class="form-group edit-profile">
+                                        <label>Children</label>
+                                        <select id="num_children" class="form-control edit-post-wrap" required>
+                                            {% for ii in 0|rangee:post.num_children %}
+                                                <option value="{{ ii }}">{{ ii }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if post.num_infants %}
+                                <div class="col-md-12">
+                                    <div class="form-group edit-profile">
+                                        <label>Infants</label>
+                                        <select id="num_infants" class="form-control edit-post-wrap" required>
+                                            {% for ii in 0|rangee:post.num_infants %}
+                                                <option value="{{ ii }}">{{ ii }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group edit-profile">
+                                <div class="edit-post-wrap" style="padding-top: 10px;">
+                                    ${{ post.price|floatformat:2|intcomma }} x <span class="num-days">-</span> nights
+                                    <span class="pull-right net-price">--</span>
+                                </div>
+                            </div>
+                            <div class="form-group edit-profile">
+                                <div class="edit-post-wrap" style="padding-top: 10px;">
+                                    Service fee
+                                    <span class="pull-right service-fee">${{ post.service_fee|floatformat:2|intcomma }}</span>
+                                </div>
+                            </div>
+
+                            <h4>Total<span class="pull-right total-price">--</span></h4>
+                            <input class="btn btn-info btn-payment form-control" type="button" value="Request to Book" style="font-weight: 600;font-size: 18px;height: 46px; margin-top: 20px;">
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12" style="border-top: 1px solid #ddd;">
+                        <div class="col-md-12 no-padding" style="margin-top: 18px;">
+                            <div class="star-profile">
+                                <div class="col-md-12">
+                                    <a href="/user_show/{{ post.owner.id }}">
+                                        <img src="/static/media/avatar/{{ post.owner.avatar }}" width="75" height="75">
+                                    </a>
+                                    <div class="star-profile-name">
+                                        <a href="/user_show/{{ post.owner.id }}" class="username_on_detail">{{ post.owner.first_name }} {{ post.owner.last_name }}</a>
+                                        <input class="rating-owner" value="{{ post.owner|rating }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="main-product-info">
+                            <div class="product-location-info">
+                                <div class="detail-item">
+                                    <span>Country</span>
+                                    {% if post.region %}
+                                        <h6>{{ post.region.state.country.name }}</h6>
+                                    {% else %}
+                                        <h6>Global</h6>
+                                    {% endif %}
+                                </div>
+                                <div class="detail-item">
+                                    <span>Category</span>
+                                    <h6>{{ post.category.parent.name }} / {{ post.category.name }}</h6>
+                                </div>
+                                {% if post.price and post.category.form != 'ShortTermPost' %}
+                                <div class="detail-item">
+                                    <span>Price</span>
+                                    <h6><b>${{ post.price|floatformat:2|intcomma }}</b></h6>
+                                </div>
+                                <div class="detail-item">
+                                    <span>Reviews</span>
+                                    <h6>{{ reviews }}</h6>
+                                </div>
+                                {% endif %}
+                                <div class="detail-item" style="display: block">
+                                    <span>Description</span>
+                                    <h6 style="margin-top : 10px;">{{ post.content }}</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if post.category.form == 'ShortTermPost' %}
+                            <div class="rv-title m-t-15">Reviews ( {{ reviews.count }} )</div>
+                            <input class="rating-post" value="{{ post|rating_post }}"/>
+                            <hr>
+                            {% for review in reviews %}
+                            <div class="review-card row">            
+                                <div class="col-sm-2 col-xs-6 m-b-15 hidden-xs">
+                                    <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
+                                    <div class="rv-rater">{{ review.rater.first_name }}</div>
+                                </div>
+                                <div class="col-xs-6 col-xs-offset-3 m-b-15 visible-xs">
+                                    <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
+                                    <div class="rv-rater">{{ review.rater.first_name }}</div>
+                                </div>
+                                <div class="clearfix visible-xs"></div>
+                                <div class="col-sm-9">
+                                    <div class="rv-content">{{ review.content }}</div>
+                                    <div class="rv-created">{{ review.created_at }}</div>
+                                    <hr>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <div class="rv-title m-t-15">Location</div>
+                            <div id="map" style="height: 360px;"></div>
                         {% endif %}
                     </div>
                 </div>
@@ -281,7 +470,7 @@
 <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 <script type="text/javascript">
 
-    $('#rating-input').rating({
+    $('.rating-input').rating({
         min: 0,
         max: 5,
         step: 0.5,
@@ -290,7 +479,7 @@
         showCaption: false
     });
 
-    $('#rating-owner').rating({
+    $('.rating-owner').rating({
         min: 0,
         max: 5,
         step: 0.5,
@@ -300,7 +489,7 @@
         displayOnly: true
     });
 
-    $('#rating-post').rating({
+    $('.rating-post').rating({
         min: 0,
         max: 5,
         step: 0.5,
@@ -363,13 +552,13 @@
     var channel = pusher.subscribe('message-channel-{{client.id}}-{{me.id}}');
     channel.bind('message-event-{{client.id}}-{{me.id}}', function(data) {
       // alert(JSON.stringify(data));
-        var item = '<div class="row" style="margin:30px">\
-                    <div class="col-md-2 col-xs-4" style="text-align: center;">\
+        var item = '<div class="row" style="margin:15px 0px;">\
+                    <div class="col-md-2 col-xs-2 no-padding" style="text-align: left">\
                         <a href="/user_show/{{ client.id }}">\
                             <img src="/static/media/avatar/{{ client.avatar }}" width="40" height="40" class="profile_image">\
                         </a>\
                     </div>\
-                    <div class="reply-post message-box col-md-8  col-xs-8 no-padding">\
+                    <div class="reply-post message-box col-md-8  col-xs-10 no-padding">\
                         <div>'+data.message+'</div>\
                         <div style="font-size: 10px; color: #aaa; margin-top: 10px;">'+data.date+'</div>\
                     </div>\
