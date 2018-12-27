@@ -144,8 +144,9 @@ div.sub-category {
 .reply-post textarea {
     width: 100%;
     height: 90px;
-    margin: 12px 0;
-    padding: 8px;
+    padding: 20px;
+    border-color: #ddd;
+
 }
 
 .reply-post button {
