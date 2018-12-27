@@ -6121,3 +6121,18 @@ div.userpro-head{
 .status_controls a {
     /*display: none;*/
 }
+
+.detail-item {
+    display: flex;
+    padding: 10px;
+    line-height: 1.5;
+}
+.detail-item span{
+    font-size: 14px;
+    color : #8C8C8C;
+    margin-right: 20px
+}
+
+.detail-item h6 {
+    font-size: 16px;
+}

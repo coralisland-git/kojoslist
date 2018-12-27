@@ -97,7 +97,7 @@ class CustomerAdmin(admin.ModelAdmin):
             return '-'
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ['customer_from', 'customer_to', 'content', 'date', 'status', 'starred']
+    list_display = ['customer_from', 'customer_to', 'content', 'date', 'status', 'starred', 'post']
     search_fields = ['content']
 
 
