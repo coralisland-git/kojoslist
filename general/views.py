@@ -506,7 +506,7 @@ def delete_camp(request):
     return HttpResponse('')
 
 def view_ads(request, ads_id):
-    post = get_object_or_404(Post, pk=ads_id)    
+    post = get_object_or_404(Post, pk=ads_id)
     model = eval(post.category.form)
     post = model.objects.get(id=ads_id)
 
@@ -722,15 +722,20 @@ def view_ads(request, ads_id):
         bitcoin_amount = bc.convert_to_btc_on(total_amount, 'USD', datetime.datetime.now() - datetime.timedelta(days=1))
     return render(request, 'ads_detail.html', locals())
 
-def view_ads_message(request, user_id):
-    if user_id:
-        # post = get_object_or_404(Post, pk=ads_id)    
-        # model = eval(post.category.form)
-        # post = model.objects.get(id=ads_id)
+def view_ads_message(request, ads_id, client_id):
+    if client_id:
+        post = get_object_or_404(Post, pk=ads_id)    
+        model = eval(post.category.form)
+        post = model.objects.get(id=ads_id)
         # count = 10
-        client = Customer.objects.get(id=user_id)
+        client = Customer.objects.get(id=client_id)
+        # client = post.owner
+        reviews = Review.objects.filter(post__owner=client) \
+                               .values('post__category__name', 'post__category__parent__name', 
+                                       'post__category__id') \
+                               .distinct().count()
         me = request.user
-        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client) | Q(customer_to=request.user, customer_from=client)).order_by('-date')
+        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
         for message in messages:
             if message.status == 'unread' and message.customer_from != request.user:
                 message.status = 'read'
@@ -738,6 +743,7 @@ def view_ads_message(request, user_id):
         return render(request, 'ads_detail_message.html', locals())
     else:
         # messages = Message.objects.filter(Q(customer_from=request.user) | Q(customer_to=request.user))
+        post_id = ads_id
         me = request.user
         messages_starred = [] #len(Message.objects.filter(customer_to=request.user, status="starred"))
         messages_unread = [] #len(Message.objects.filter(customer_to=request.user, status="unread"))
@@ -747,8 +753,8 @@ def view_ads_message(request, user_id):
         messages = []
         messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
         for message in messages_all:
-            item_to = {'client' : message.customer_to, 'starred' : message.starred, 'archieve': message.archieve}
-            item_from = {'client' : message.customer_from, 'starred' : message.starred, 'archieve': message.archieve}
+            item_to = {'client' : message.customer_to, 'starred' : message.starred, 'archieve': message.archieve, 'post' : message.post}
+            item_from = {'client' : message.customer_from, 'starred' : message.starred, 'archieve': message.archieve, 'post' : message.post}
             if message.archieve:
                 if message.customer_from == request.user and item_to not in messages_archieve:
                     messages_archieve.append(item_to)
@@ -793,9 +799,10 @@ def send_reply_email(request):
     from_email = request.user.email
     content = request.POST.get('content')
     client_id = request.POST.get('client_id')
-    # post = Post.objects.get(id=ads_id)
+    post_id = request.POST.get('post_id')
+    post = Post.objects.get(id=post_id)
     client = Customer.objects.get(id=client_id)
-    room_infos = Message.objects.filter(Q(customer_from=request.user) | Q(customer_to=request.user) )
+    room_infos = Message.objects.filter(Q(customer_from=request.user, post=post) | Q(customer_to=request.user, post=post) )
     room_starred= False
     room_archieve = False
     if len(room_infos) > 0:
@@ -803,6 +810,7 @@ def send_reply_email(request):
         room_archieve = room_infos[0].archieve
     message = Message.objects.create(customer_from=request.user,
                            customer_to=client,
+                           post=post,
                            content=content,
                            status="unread",
                            starred=room_starred,
@@ -823,8 +831,8 @@ def send_reply_email(request):
                         )
     subject = request.user.first_name + ' ' + request.user.last_name + ' via Globalboard.world'
     content = """
-        {1} <br><br>Reply to: {0}/ads-message/{2}
-        """.format(settings.MAIN_URL, content, request.user.id)
+        {1} <br><br>Reply to: {0}/ads-message/{2}/{3}
+        """.format(settings.MAIN_URL, content, post_id, request.user.id)
 
     send_email(from_email, subject, client.email, content)
     try:
@@ -867,8 +875,10 @@ def change_status(request):
 def turn_status(request):
     client_id = request.GET.get('client_id')
     status = request.GET.get('status')
+    post_id = request.GET.get('post_id')
     client = Customer.objects.get(id=client_id)
-    messages = Message.objects.filter(Q(customer_to=client, customer_from=request.user) | Q(customer_from=client, customer_to=request.user))
+    post = Post.objects.get(id=post_id)
+    messages = Message.objects.filter(Q(customer_to=client, customer_from=request.user, post=post) | Q(customer_from=client, customer_to=request.user, post=post))
     for message in messages:
         if status == 'starred':
             message.starred = not message.starred

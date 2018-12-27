@@ -148,17 +148,17 @@
                                     <input id="rating-owner" value="{{ post.owner|rating }}"/>
                                 </div>
                             </div>
+                            <div class="btn col-md-2 col-xs-3" style="margin-top: 12px;">
+                                <a href="/ads-message/{{ post.id }}">
+                                  <i style="font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
+                                </a>
+                            </div>
                             <div class="col-md-2 col-xs-3">
                             {% if post.owner == user %}
                                 <a class="btn btn-default btn-reply" href="/post-ads/{{ post.id }}">Edit</a>
                             {% else %}
                                 <button class="btn btn-default btn-reply">Reply</button>
                             {% endif %}
-                            </div>
-                            <div class="btn col-md-2 col-xs-3" style="margin-top: 12px;">
-                                <a href="/ads-message/">
-                                  <i style="font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -614,7 +614,7 @@
     })
 
     $('button.btn-reply').click(function() {
-        location.href = '/ads-message/{{ post.owner.id }}';
+        location.href = '/ads-message/{{ post.id }}/{{ post.owner.id}}';
         // location.href = '/ads-message/';
     })
 

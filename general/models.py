@@ -292,6 +292,7 @@ class Campaign(models.Model):
 class Message(models.Model):
     customer_from = models.ForeignKey(Customer, related_name='customer_from', null=True)
     customer_to = models.ForeignKey(Customer, related_name='customer_to', null=True)
+    post = models.ForeignKey(Post, null=True)
     content = models.CharField(max_length=500, blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=100, choices=SSTATUS, default="unread")
