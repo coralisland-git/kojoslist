@@ -722,6 +722,7 @@ def view_ads(request, ads_id):
         bitcoin_amount = bc.convert_to_btc_on(total_amount, 'USD', datetime.datetime.now() - datetime.timedelta(days=1))
     return render(request, 'ads_detail.html', locals())
 
+@login_required(login_url='/accounts/login/')
 def view_ads_message(request, ads_id, client_id):
     if client_id:
         post = get_object_or_404(Post, pk=ads_id)    
