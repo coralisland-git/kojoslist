@@ -166,7 +166,6 @@ def profile(request):
     if request.user.is_authenticated():
         request.user.default_site = request.session['default_site']
         request.user.save()
-    message_alert = 3
     return render(request, 'profile.html', locals())
 
 @csrf_exempt
