@@ -84,11 +84,19 @@
                   <div class="header-user-section-ico">
                     <a href="/my-account"><img src="/static/media/avatar/{{ user.avatar }}" alt=""></a>
                   </div>
-                  <!-- <div class="header-user-section-welcome">
+                  <div class="" style="margin-right: 5px; padding: 10px; float: right;">
+                    {% if message_alert > 0 %}
+                      <span id="message-alert">{{message_alert}}</span>
+                    {% else %}
+                      <span id="message-alert" style="display: none">{{message_alert}}</span>
+                    {% endif %}
+                    <a href="/ads-message/{{ user.id }}">
+                      <i style="font-size: 31px;color: #999;" class="fa fa-envelope" aria-hidden="true"></i>
+                    </a>
                     <a href="/static/chat/index.html?uid={{ user.email }}" target="_blank">
                       <i style="margin: -10px 8px;font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
                     </a>
-                  </div>     -->              
+                  </div>                  
                 {% else %}
                   <div class="header-user-section-welcome" style="margin: 0px 12px; font-size: 16px; color: #aaa;">
                     <a href="/accounts/login" style="color: #aaa;">
@@ -136,12 +144,39 @@
 {% block extra_js %}
 <script src="/static/js/moment-with-locales.js"></script>
 <script src="/static/js/bootstrap-datetimepicker.js"></script>
+<script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 
 {% block load_highcharts_js %}
 <script src="/static/js/highmaps.js"></script>
 <script src="/static/js/index.js"></script>
 
 {% endblock %}
+
+<script type="text/javascript">
+  var alert_num = $('#message-alert').text();
+
+  if (alert_num == '') {
+    alert_num = 0
+  }
+  else {
+    alert_num = parseInt(alert_num);
+  }
+
+  Pusher.logToConsole = true;
+
+  var pusher = new Pusher('febd0a7de92446f7f536', {
+    cluster: 'mt1',
+    forceTLS: true
+  });
+
+  var channel = pusher.subscribe('message-channel-{{user.id}}');
+    channel.bind('message-event-{{user.id}}', function(data) {
+      // alert(JSON.stringify(data));
+        alert_num = alert_num + 1;
+        $('#message-alert').html(alert_num);
+        $('#message-alert').css('display', "block");
+    });  
+</script>
 
 {% block own_js %}
 <script type="text/javascript">

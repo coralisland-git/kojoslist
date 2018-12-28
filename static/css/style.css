@@ -6168,3 +6168,19 @@ div.userpro-head{
         border-top: 1px solid #ddd;
     }
 }
+
+
+#message-alert {
+    background-color: red;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    border-radius: 20px;
+    margin-left: 20px;
+    margin-top: -4px;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.8;
+}
