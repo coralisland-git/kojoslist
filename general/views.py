@@ -165,7 +165,8 @@ def profile(request):
     if request.user.is_authenticated():
         request.user.default_site = request.session['default_site']
         request.user.save()
-    return render(request, 'profile.html')
+    message_alert = 3
+    return render(request, 'profile.html', locals())
 
 @csrf_exempt
 def breadcrumb(request):
@@ -748,6 +749,8 @@ def view_ads_message(request, ads_id, client_id):
         me = request.user
         messages_starred = [] #len(Message.objects.filter(customer_to=request.user, status="starred"))
         messages_unread = [] #len(Message.objects.filter(customer_to=request.user, status="unread"))
+        messages_len = 0
+        messages_unread_len = 0
         messages_reservations = 0 #len(Message.objects.filter(customer_from=request.user, status="starred"))
         messages_pending_requests = 0 #len(Message.objects.filter(customer_from=request.user, status="unread"))
         messages_archieve = []
@@ -762,23 +765,30 @@ def view_ads_message(request, ads_id, client_id):
                 if message.customer_to == request.user and item_from not in messages_archieve:
                     messages_archieve.append(item_from)
             else:
-                if message.customer_from == request.user and item_to not in messages:
-                    messages.append(item_to)
-                if message.customer_to == request.user and item_from not in messages:
-                    messages.append(item_from)
+                if message.customer_from == request.user:
+                    messages_len += 1
+                    if item_to not in messages:
+                        messages.append(item_to)
+                if message.customer_to == request.user:
+                    messages_len += 1
+                    if item_from not in messages:
+                        messages.append(item_from)
                 if message.starred:
                     if message.customer_from == request.user and item_to not in messages_starred:
                         messages_starred.append(item_to)
                     if message.customer_to == request.user and item_from not in messages_starred:
                         messages_starred.append(item_from)
                 if message.status == 'unread':
-                    if message.customer_to == request.user and item_from not in messages_unread:
-                        messages_unread.append(item_from)
+                    if message.customer_to == request.user:
+                        messages_unread_len += 1
+                        if item_from not in messages_unread:
+                            messages_unread.append(item_from)
 
-        messages_len = len(messages)
         messages_archieve_len = len(messages_archieve)
         messages_starred_len = len(messages_starred)
-        messages_unread_len = len(messages_unread)
+        message_alert = messages_unread_len
+        # messages_len = len(messages)
+        # messages_unread_len = len(messages_unread)
 
         status = request.GET.get('status')
         if 'status' in request.GET:
@@ -828,13 +838,15 @@ def send_reply_email(request):
 
     pusher_client.trigger('message-channel-'+str(client.id), 
                             'message-event-'+str(client.id), 
-                            {}
+                            {
+                                'message' : 'notification'
+                            }
                         )
     subject = request.user.first_name + ' ' + request.user.last_name + ' via Globalboard.world'
     content = """
         {1} <br><br>Reply to: {0}/ads-message/{2}/{3}
         """.format(settings.MAIN_URL, content, post_id, request.user.id)
-
+    # ___send message___
     send_email(from_email, subject, client.email, content)
     try:
         send_SMS_Chat(request.user.phone, client.phone, content)

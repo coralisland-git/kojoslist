@@ -151,12 +151,17 @@
                                     <input id="rating-owner" value="{{ post.owner|rating }}"/>
                                 </div>
                             </div>
-                            <div class="btn col-md-2 col-xs-2" style="margin-top: 12px;">
+                            <!-- <div class="btn col-md-2 col-xs-2" style="margin-top: 12px;">
                                 <a href="/ads-message/{{ post.id }}">
+                                  <i style="font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
+                                </a> -->
+                            <!-- </div> -->
+                            <div class="btn col-md-2 col-xs-2" style="margin-top: 12px;">
+                                <a href="/static/chat/index.html?uid={{ user.email }}" target="_blank">
                                   <i style="font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
                                 </a>
                             </div>
-                            <div class="col-md-2 col-xs-3">
+                            <div class="col-md-2 col-xs-3 no-padding">
                             {% if post.owner == user %}
                                 <a class="btn btn-default btn-reply" href="/post-ads/{{ post.id }}">Edit</a>
                             {% else %}
