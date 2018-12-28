@@ -79,6 +79,7 @@ def index(request):
     # next = request.GET.get('q', '/home')
     # pdb.set_trace()
     # return render(request, 'wraper.html', { 'next': next })
+    # if request.user.id is not None: 
     return render(request, 'index.html')
 
 def about(request):

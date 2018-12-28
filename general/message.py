@@ -5,10 +5,12 @@ import pdb
 
 
 def message_alert(request):
-	try:
+	if(request.user.id):
 		message_alert = Message.objects.filter(customer_to=request.user, status='unread').count()
 		return {
 			'message_alert':message_alert,
 		}
-	except:
-		pass
+	else:
+		return {
+			'message_alert' : 0
+		}
