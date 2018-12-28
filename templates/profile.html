@@ -84,17 +84,17 @@
                   <div class="header-user-section-ico">
                     <a href="/my-account"><img src="/static/media/avatar/{{ user.avatar }}" alt=""></a>
                   </div>
-                  <div class="" style="margin-right: 5px; padding: 10px; float: right;">
+                  <div class="" style="margin-right: 5px; padding: 15px 10px; float: right;">
                     {% if message_alert > 0 %}
                       <span id="message-alert">{{message_alert}}</span>
                     {% else %}
                       <span id="message-alert" style="display: none">{{message_alert}}</span>
                     {% endif %}
-                    <a href="/ads-message/{{ user.id }}">
-                      <i style="font-size: 31px;color: #999;" class="fa fa-envelope" aria-hidden="true"></i>
+                    <a href="/ads-message/{{ user.id }}" style="margin-right: 5px;">
+                      <i style="font-size: 25px;color: #999;" class="fa fa-envelope" aria-hidden="true"></i>
                     </a>
                     <a href="/static/chat/index.html?uid={{ user.email }}" target="_blank">
-                      <i style="margin: -10px 8px;font-size: 31px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
+                      <i style="margin: -10px 8px;font-size: 25px;color: #999;" class="fa fa-comments-o" aria-hidden="true"></i>
                     </a>
                   </div>                  
                 {% else %}
