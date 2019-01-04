@@ -69,12 +69,12 @@
                 <!-- Header User Section -->
                 <div class="header-user-section clearfix">
                 {% if user.is_authenticated %}
-                  <div class="header-user-section-welcome">
+                  <div class="header-user-section-welcome" style="margin-top: 22px;">
                     <a href="/logout">
                       <i style="margin: -3px 5px; font-size: 18px; color: #999;" class="fa fa-sign-out" aria-hidden="true"></i>
                     </a>
                   </div>
-                  <div class="header-user-section-welcome">
+                  <div class="header-user-section-welcome"  style="margin-top: 20px; padding-left: 12px;">
                     {% if user.first_name %}
                       {{ user.first_name }} {{ user.last_name }}
                     {% else %}
