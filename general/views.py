@@ -33,7 +33,7 @@ from allauth.socialaccount.models import *
 from general.models import *
 from general.post_models import *
 from general.forms import *
-from general.utils import send_email, send_SMS, send_SMS_Chat
+from general.utils import send_email, send_SMS, send_SMS_Chat, send_email_Chat
 import paypalrestsdk
 from coinbase.wallet.client import Client
 from forex_python.converter import CurrencyRates
@@ -164,6 +164,7 @@ def get_posts_with_image(posts, mine=False):
 
 def profile(request):
     if request.user.is_authenticated():
+        # pass
         request.user.default_site = request.session['default_site']
         request.user.save()
     return render(request, 'profile.html', locals())
@@ -842,12 +843,14 @@ def send_reply_email(request):
                                 'message' : 'notification'
                             }
                         )
-    subject = request.user.first_name + ' ' + request.user.last_name + ' via Globalboard.world'
+    subject = post.title
     content = """
         {1} <br><br>Reply to: {0}/ads-message/{2}/{3}
         """.format(settings.MAIN_URL, content, post_id, request.user.id)
+
+    from_name = request.user.first_name + ' ' + request.user.last_name
     # ___send message___
-    send_email(from_email, subject, client.email, content)
+    send_email_Chat(from_email, subject, client.email, content, from_name)
     try:
         send_SMS_Chat(request.user.phone, client.phone, content)
     except:
@@ -1087,13 +1090,13 @@ def place_country_list(request):
             default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-'+state_abbr+'-all@'+state_name+city_code
         else:
             default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
-        request.session['default_site'] = default_site
         if request.user.is_authenticated():
             request.user.default_site = default_site
             request.user.save()
     except Exception as e:
         print('############', e)
         default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
+    request.session['default_site'] = default_site
     ret_arr = []
     country_all_list = Country.objects.all()
     # for country in country_all_list:
