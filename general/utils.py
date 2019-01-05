@@ -26,23 +26,23 @@ def send_SMS(to_phone, body):
 
     return True
 
-def send_email_Chat(from_email, subject, to_email, content, from_name):
-    sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_KEY)
-    from_email = Email(from_email, from_name)
-    to_email = Email(to_email)
-    content = Content("text/html", content)
-    mail = Mail(from_email, subject, to_email, content)
-    return sg.client.mail.send.post(request_body=mail.get())
+# def send_email_Chat(from_email, subject, to_email, content, from_name):
+#     sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_KEY)
+#     from_email = Email(from_email, from_name)
+#     to_email = Email(to_email)
+#     content = Content("text/html", content)
+#     mail = Mail(from_email, subject, to_email, content)
+#     return sg.client.mail.send.post(request_body=mail.get())
 
-def send_SMS_Chat(from_phone, to_phone, body):
-    client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
+# def send_SMS_Chat(from_phone, to_phone, body):
+#     client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
 
-    try:
-        res = client.api.account.messages.create(
-            to=to_phone,
-            from_=from_phone,
-            body=body)  
-    except Exception, e:
-        return False
+#     try:
+#         res = client.api.account.messages.create(
+#             to=to_phone,
+#             from_=from_phone,
+#             body=body)  
+#     except Exception, e:
+#         return False
 
-    return True
+#     return True
