@@ -165,8 +165,11 @@ def get_posts_with_image(posts, mine=False):
 def profile(request):
     if request.user.is_authenticated():
         # pass
-        request.user.default_site = request.session['default_site']
-        request.user.save()
+        try:
+            request.user.default_site = request.session['default_site']
+            request.user.save()
+        except:
+            pass
     return render(request, 'profile.html', locals())
 
 @csrf_exempt
@@ -1096,6 +1099,7 @@ def place_country_list(request):
     except Exception as e:
         print('############', e)
         default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
+
     request.session['default_site'] = default_site
     ret_arr = []
     country_all_list = Country.objects.all()
