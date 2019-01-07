@@ -847,18 +847,24 @@ def send_reply_email(request):
                             }
                         )
     subject = post.title
-    content = """{1}
-        <br><br>Post : {0}/ads/{2}
-        <br><br>Please Respond Here : {0}/ads-message/{2}/{3}
+    content_email = """{1}
+        <br><br>Post : <a href='{0}/ads/{2}'>{0}/ads/{2}</a>
+        <br><br>Please Respond Here : <a href='{0}/ads-message/{2}/{3}'>{0}/ads-message/{2}/{3}</a>
+        """.format(settings.MAIN_URL, content, post_id, request.user.id)
+
+    content_sms = """{1}
+        Post : {0}/ads/{2}
+        Please Respond Here : {0}/ads-message/{2}/{3}
         """.format(settings.MAIN_URL, content, post_id, request.user.id)
 
     from_name = request.user.first_name + ' ' + request.user.last_name
     # ___send message___
-    send_email_Chat(settings.FROM_EMAIL, subject, client.email, content, from_name)
+    send_email_Chat(settings.FROM_EMAIL, subject, client.email, content_email, from_name)
     try:
         send_SMS(client.phone, content)
-    except:
-        pass
+        # send_SMS('+1(978) 295-1387', content_sms)
+    except Exception as e:
+        print('^^^^^^^^^^^^^^^^^', e)
     return HttpResponse('')
 
 def change_status(request):
