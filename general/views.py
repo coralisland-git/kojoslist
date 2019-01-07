@@ -852,12 +852,9 @@ def send_reply_email(request):
         <br><br>Please Respond Here : <a href='{0}/ads-message/{2}/{3}'>{0}/ads-message/{2}/{3}</a>
         """.format(settings.MAIN_URL, content, post_id, request.user.id)
 
-    content_sms = """{1}
-        Post : {0}/ads/{2}
-        Please Respond Here : {0}/ads-message/{2}/{3}
-        """.format(settings.MAIN_URL, content, post_id, request.user.id)
-
     from_name = request.user.first_name + ' ' + request.user.last_name
+    
+    content_sms = "GlobalBoardWorld: " + from_name + ", '" + content + "'"
     # ___send message___
     send_email_Chat(settings.FROM_EMAIL, subject, client.email, content_email, from_name)
     try:
