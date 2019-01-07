@@ -9,9 +9,11 @@
 <div class="col-md-4 col-xs-12 col-md-offset-4" style="padding: 0px;">
 	<select class='country-list form-control country-select' id="country_list" style="margin : 0px; text-align-last: center;">
 		<option>-- Please Select Country --</option>
+		{% if current_location != '' %}
 		<option value='/profile#{{current_location}}' style="word-break: break-word;">
 	    	Current Location
 	    </option>
+	    {% endif %}
 	    {% for country in countries %}
 		    <option value="/profile#countries/{{ country.sortname|lower }}/{{ country.sortname|lower }}-all" style="word-break: break-word;">
 		    	{{ country.name }}

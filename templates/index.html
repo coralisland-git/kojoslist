@@ -323,7 +323,18 @@
             // }, "jsonp");
         },
         function(){
-            console.log('############# error ############');
+            jQuery.ajax({
+                    type: 'get',
+                    url: '/place_country_list',
+                    data: { 
+                    },
+                    success: function (data) {
+                        jQuery('.content-select-country').html(data)
+                        jQuery('#country_list').change(function(e) {
+                            location.href = $('#country_list').val();
+                        });
+                    }
+                }); 
         }
     );
 </script>
