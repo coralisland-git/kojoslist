@@ -2,6 +2,8 @@ import sendgrid
 from django.conf import settings
 from sendgrid.helpers.mail import *
 from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
+import pdb
 
 
 def send_email(from_email, subject, to_email, content):
@@ -16,13 +18,12 @@ def send_email(from_email, subject, to_email, content):
 
 def send_SMS(to_phone, body):
     client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
-
     try:
         res = client.messages.create(
             to=to_phone,
             from_="+17069142868",
             body=body)  
-    except Exception as e:
+    except TwilioRestException as e:
         print('~~~~~~~~~~~~~~~', e)
 
     return True

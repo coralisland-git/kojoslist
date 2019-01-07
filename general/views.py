@@ -853,13 +853,14 @@ def send_reply_email(request):
         """.format(settings.MAIN_URL, content, post_id, request.user.id)
 
     from_name = request.user.first_name + ' ' + request.user.last_name
-    
+
     content_sms = "GlobalBoardWorld: " + from_name + ", '" + content + "'"
     # ___send message___
     send_email_Chat(settings.FROM_EMAIL, subject, client.email, content_email, from_name)
     try:
         send_SMS(client.phone, content)
         # send_SMS('+1(978) 295-1387', content_sms)
+        # send_SMS('12125184715', content_sms)
     except Exception as e:
         print('^^^^^^^^^^^^^^^^^', e)
     return HttpResponse('')
@@ -1060,59 +1061,62 @@ def region_ads(request, region_id, region):
     })
 
 def place_country_list(request):
-    country_code = request.GET.get('countryCode')
-    state = request.GET.get('state')
-    city = request.GET.get('city')
-    state_abbr = request.GET.get('stateCode').lower()
-    if country_code == "GB" and city == '' and state == '':
-        city = 'London'
-        state = 'England'
-    default_site = ''
-    try:
-        country_list = Country.objects.filter(sortname__icontains=country_code)
-        country_id = 0
-        if len(country_list) > 0:
-            country_id = country_list[0].id
-        state_list = State.objects.filter(country=country_id)
-        state_code = 0
-        state_name = state
-        state_instance = None
-        for st in state_list:
-            if SequenceMatcher(None, st.name, state).ratio() > 0.7:
-                state_code = st.id
-                state_name = st.name
-                state_instance = st
-        city_list = City.objects.filter(state=state_code, name__icontains=city)
-        city_code = ''
-        if len(city_list) > 0:
-            city_code += '@' + str(city_list[0].id)
-        else:
-            # city_list = City.objects.filter(state=state_code)
-            # if len(city_list) > 0:
-            #     city_code += '@' + str(city_list[0].id)
-            add_city = City.objects.create(name=city, state=state_instance)
-            city_code = add_city.id
-            print('~~~~~~~~~~~ new city added : ', city, ' in ', state_name)
-        if country_code.lower() in 'us ca':
-            default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-'+state_abbr+'-all@'+state_name+city_code
-        else:
-            default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
-        if request.user.is_authenticated():
-            request.user.default_site = default_site
-            request.user.save()
-    except Exception as e:
-        print('############', e)
-        default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
-
-    request.session['default_site'] = default_site
-    ret_arr = []
     country_all_list = Country.objects.all()
-    # for country in country_all_list:
-    #     if country.sortname != country_code:
-    #         ret_arr.append({
-    #             'name' : country.name,
-    #             'sortname' : country.sortname
-    #         })
+    try:
+        country_code = request.GET.get('countryCode')
+        state = request.GET.get('state')
+        city = request.GET.get('city')
+        state_abbr = request.GET.get('stateCode').lower()
+        if country_code == "GB" and city == '' and state == '':
+            city = 'London'
+            state = 'England'
+        default_site = ''
+        try:
+            country_list = Country.objects.filter(sortname__icontains=country_code)
+            country_id = 0
+            if len(country_list) > 0:
+                country_id = country_list[0].id
+            state_list = State.objects.filter(country=country_id)
+            state_code = 0
+            state_name = state
+            state_instance = None
+            for st in state_list:
+                if SequenceMatcher(None, st.name, state).ratio() > 0.7:
+                    state_code = st.id
+                    state_name = st.name
+                    state_instance = st
+            city_list = City.objects.filter(state=state_code, name__icontains=city)
+            city_code = ''
+            if len(city_list) > 0:
+                city_code += '@' + str(city_list[0].id)
+            else:
+                # city_list = City.objects.filter(state=state_code)
+                # if len(city_list) > 0:
+                #     city_code += '@' + str(city_list[0].id)
+                add_city = City.objects.create(name=city, state=state_instance)
+                city_code = add_city.id
+                print('~~~~~~~~~~~ new city added : ', city, ' in ', state_name)
+            if country_code.lower() in 'us ca':
+                default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-'+state_abbr+'-all@'+state_name+city_code
+            else:
+                default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
+            if request.user.is_authenticated():
+                request.user.default_site = default_site
+                request.user.save()
+        except Exception as e:
+            print('############', e)
+            default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all'
+
+        request.session['default_site'] = default_site
+        ret_arr = []
+        # for country in country_all_list:
+        #     if country.sortname != country_code:
+        #         ret_arr.append({
+        #             'name' : country.name,
+        #             'sortname' : country.sortname
+        #         })
+    except:
+        default_site = ''
     rndr_str = render_to_string('_country_list.html', {
         'css_class': '',
         'countries': country_all_list,
