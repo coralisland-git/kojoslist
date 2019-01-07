@@ -3,6 +3,7 @@ from django.conf import settings
 from sendgrid.helpers.mail import *
 from twilio.rest import Client
 
+
 def send_email(from_email, subject, to_email, content):
     sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_KEY)
 
@@ -17,12 +18,12 @@ def send_SMS(to_phone, body):
     client = Client(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
 
     try:
-        res = client.api.account.messages.create(
+        res = client.messages.create(
             to=to_phone,
-            from_="+1(201) 371-7692",
+            from_="+17069142868",
             body=body)  
-    except Exception, e:
-        return False
+    except Exception as e:
+        print('~~~~~~~~~~~~~~~', e)
 
     return True
 
