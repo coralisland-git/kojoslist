@@ -33,7 +33,7 @@ from allauth.socialaccount.models import *
 from general.models import *
 from general.post_models import *
 from general.forms import *
-from general.utils import send_email, send_SMS
+from general.utils import send_email, send_SMS, send_email_Chat
 import paypalrestsdk
 from coinbase.wallet.client import Client
 from forex_python.converter import CurrencyRates
@@ -849,12 +849,12 @@ def send_reply_email(request):
     subject = post.title
     content = """{1}
         <br><br>Post : {0}/ads/{2}
-        <br><br>Reply : {0}/ads-message/{2}/{3}
+        <br><br>Please Respond Here : {0}/ads-message/{2}/{3}
         """.format(settings.MAIN_URL, content, post_id, request.user.id)
 
     from_name = request.user.first_name + ' ' + request.user.last_name
     # ___send message___
-    send_email(settings.FROM_EMAIL, subject, client.email, content)
+    send_email_Chat(settings.FROM_EMAIL, subject, client.email, content, from_name)
     try:
         send_SMS(client.phone, content)
     except:
