@@ -42,7 +42,7 @@ import math
 from difflib import SequenceMatcher
 import pdb
 import geocoder
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 import pusher
