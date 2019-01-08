@@ -205,6 +205,8 @@
 <script type="text/javascript">
     var mode = '{{ request.GET.q }}';
     console.log(mode);
+    var date = new Date()
+    var timeoffset = date.getTimezoneOffset()
     // debugger;
     // if (mode != '')
     //     parent.location.href = '/?q='+mode;
@@ -310,7 +312,8 @@
                         countryCode: itemCountryCode,
                         stateCode : itemProvinceCode,
                         state: itemProvince,
-                        city: itemLocality
+                        city: itemLocality,
+                        timeoffset: timeoffset
                     },
                     success: function (data) {
                         jQuery('.content-select-country').html(data)
@@ -327,6 +330,7 @@
                     type: 'get',
                     url: '/place_country_list',
                     data: { 
+                        timeoffset: timeoffset
                     },
                     success: function (data) {
                         jQuery('.content-select-country').html(data)
