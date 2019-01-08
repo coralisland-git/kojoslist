@@ -42,6 +42,8 @@ import math
 from difflib import SequenceMatcher
 import pdb
 import geocoder
+from datetime import datetime, timedelta
+
 
 import pusher
 
@@ -742,6 +744,9 @@ def view_ads_message(request, ads_id, client_id):
                                .distinct().count()
         me = request.user
         messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
+        if 'timeoffset' in request.session:
+            for message in messages:
+                message.date = (message.date - timedelta(minutes=int(request.session['timeoffset']))).strftime("%b. %d, %Y, %I:%M %P")
         return render(request, 'ads_detail_message.html', locals())
     else:
         # messages = Message.objects.filter(Q(customer_from=request.user) | Q(customer_to=request.user))
@@ -830,13 +835,15 @@ def send_reply_email(request):
                            starred=room_starred,
                            archieve=room_archieve
                         )
+    if 'timeoffset' in request.session:
+        message.date = message.date - timedelta(minutes=int(request.session['timeoffset']))
 
     pusher_client.trigger('message-channel-'+str(request.user.id)+'-'+str(client.id), 
                             'message-event-'+str(request.user.id)+'-'+str(client.id), 
                             {
                                 'mid' : message.id,
                                 'message': content,
-                                'date' : message.date.strftime("%b. %d, %Y, %H:%M %P")
+                                'date' : message.date.strftime("%b. %d, %Y, %I:%M %P")
                             }
                         )
 
@@ -1089,6 +1096,7 @@ def region_ads(request, region_id, region):
 
 def place_country_list(request):
     country_all_list = Country.objects.all()
+    request.session['timeoffset'] = request.GET.get('timeoffset')
     try:
         country_code = request.GET.get('countryCode')
         state = request.GET.get('state')
