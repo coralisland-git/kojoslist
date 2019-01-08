@@ -31,7 +31,7 @@ def send_SMS(to_phone, body):
 def send_email_Chat(from_email, subject, to_email, content, from_name):
     sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_KEY)
 
-    from_email = Email(from_email, "GlobalBoardWorld ("+from_name+')')
+    from_email = Email(from_email, from_name + " (GlobalBoardWorld)")
     to_email = Email(to_email)
 
     content = Content("text/html", content)
