@@ -35,6 +35,9 @@
                                             <a href="/user_show/{{ message.client.id }}">
                                                 <img src="/static/media/avatar/{{ message.client.avatar }}" width="40" height="40" class="profile_image">
                                             </a>
+                                            {% if message.new %}
+                                                <span class="badge" style="margin-top: -2px; background-color: red">New</span>
+                                            {% endif %}
                                         </div>
                                         <div  class="col-md-6 col-xs-8">
                                             <a href="/ads-message/{{message.post.id}}/{{ message.client.id }}" style="font-size: 18px">
@@ -95,7 +98,6 @@
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
 <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 <script type="text/javascript">
-
     if(performance.navigation.type == 2){
        location.reload(true);
     }
