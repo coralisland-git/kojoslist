@@ -742,10 +742,6 @@ def view_ads_message(request, ads_id, client_id):
                                .distinct().count()
         me = request.user
         messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
-        for message in messages:
-            if message.status == 'unread' and message.customer_from != request.user:
-                message.status = 'read'
-                message.save()
         return render(request, 'ads_detail_message.html', locals())
     else:
         # messages = Message.objects.filter(Q(customer_from=request.user) | Q(customer_to=request.user))
@@ -793,6 +789,9 @@ def view_ads_message(request, ads_id, client_id):
         message_alert = messages_unread_len
         # messages_len = len(messages)
         # messages_unread_len = len(messages_unread)
+        for message in messages:
+            if message in messages_unread:
+                message['new'] = True
 
         status = request.GET.get('status')
         if 'status' in request.GET:
@@ -835,6 +834,7 @@ def send_reply_email(request):
     pusher_client.trigger('message-channel-'+str(request.user.id)+'-'+str(client.id), 
                             'message-event-'+str(request.user.id)+'-'+str(client.id), 
                             {
+                                'mid' : message.id,
                                 'message': content,
                                 'date' : message.date.strftime("%b. %d, %Y, %H:%M %P")
                             }
@@ -866,6 +866,33 @@ def send_reply_email(request):
     return HttpResponse('')
 
 def change_status(request):
+    if 'alert' in request.GET:
+        if 'turnRead' in request.GET:
+            post_id = request.GET.get('postId')
+            client_id = request.GET.get('clientId')
+            post = Post.objects.get(id=post_id)
+            client = Customer.objects.get(id=client_id)
+            messages_all = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
+            for message in messages_all:
+                if message.status == 'unread' and message.customer_from != request.user:
+                    message.status = 'read'
+                    message.save()
+        message_alert = 0
+        messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
+        for message in messages_all:
+            if message.status == 'unread' and message.archieve == False :
+                if message.customer_to == request.user:
+                    message_alert += 1
+        return HttpResponse(message_alert)
+    else:
+        try:
+            mid = request.GET.get('mid')
+            message = Message.objects.get(id=mid)
+            message.status = 'read'
+            message.save()
+        except:
+            pass
+        return HttpResponse('')
     # status = request.GET.get('status')
     # flag = True
     # messages = []

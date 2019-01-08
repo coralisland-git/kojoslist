@@ -239,14 +239,19 @@
                                             <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
                                         </a>
                                     </div>
-                                    <div class="reply-post message-box col-md-8  col-xs-10 no-padding">
+                                    {% if message.status == 'unread' %}
+                                        <div class="reply-post message-box col-md-8  col-xs-10 
+                                    no-padding new-msg-items" style=" background-color: #c8efff; border-color: #c8efff">
+                                    {% else %}
+                                        <div class="reply-post message-box col-md-8  col-xs-10 no-padding">
+                                    {% endif %}
                                         <div>{{ message.content }}</div>
-                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
+                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }} - {{ message.status }}</div>
                                     </div>
                                 {% elif message.customer_from == request.user and message.customer_to == client %}
                                     <div class="reply-post message-box col-md-8 col-md-offset-2 col-xs-10 no-padding" style="background-color: #eee;">
                                         <div>{{ message.content }}</div>
-                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
+                                        <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }} - {{ message.status}}</div>
                                     </div>
                                     <div class="col-md-2 col-xs-2  no-padding" style="text-align: right;">
                                         <a href="/user_show/{{ message.customer_from.id }}">
@@ -280,6 +285,28 @@
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
 <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 <script type="text/javascript">
+
+    setTimeout(function(){
+        jQuery('.new-msg-items').css({'background-color':'white', 'border-color':'#ddd', 'transitionDuration' : '2s'});
+        jQuery.ajax({
+            type: 'get',
+            url: '/change_status',
+            data: {
+                alert: 'alert',
+                turnRead: 'turnRead',
+                postId : {{ post.id}},
+                clientId : {{ client.id }}
+            },
+            success: function(response) {
+                $('#message-alert').html(response);
+                $('#message-alert').css('display', "block");
+                if (response == 0) {
+                    $('#message-alert').css('display', "none");
+                }
+            }
+        });
+    }, 1000);
+    
 
     $('.rating-input').rating({
         min: 0,
@@ -369,7 +396,7 @@
                             <img src="/static/media/avatar/{{ client.avatar }}" width="40" height="40" class="profile_image">\
                         </a>\
                     </div>\
-                    <div class="reply-post message-box col-md-8  col-xs-10 no-padding">\
+                    <div class="reply-post message-box col-md-8  col-xs-10 no-padding new-msg-items" style=" background-color: #c8efff; border-color: #c8efff">\
                         <div>'+data.message+'</div>\
                         <div style="font-size: 10px; color: #aaa; margin-top: 10px;">'+data.date+'</div>\
                     </div>\
@@ -377,6 +404,20 @@
 
         $('#new-msg').prepend(item);
         $('#message-history').scrollTop();
+
+        setTimeout(function(){
+            jQuery('.new-msg-items').css({'background-color':'white', 'border-color':'#ddd', 'transitionDuration' : '2s'});
+        }, 1000);
+
+        jQuery.ajax({
+            type: 'get',
+            url: '/change_status',
+            data: {
+                mid : data.mid
+            },
+            success: function(data) {
+            }
+        });
     });
 
     // $('#show_earlier_messages').click(function() {

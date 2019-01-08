@@ -172,9 +172,23 @@
   var channel = pusher.subscribe('message-channel-{{user.id}}');
     channel.bind('message-event-{{user.id}}', function(data) {
       // alert(JSON.stringify(data));
-        alert_num = alert_num + 1;
-        $('#message-alert').html(alert_num);
-        $('#message-alert').css('display', "block");
+            // alert_num = alert_num + 1;
+            //  $('#message-alert').html(alert_num);
+            // $('#message-alert').css('display', "block");
+        jQuery.ajax({
+              type: 'get',
+              url: '/change_status',
+              data: {
+                  alert: 'alert'
+              },
+              success: function(response) {
+                $('#message-alert').html(response);
+                $('#message-alert').css('display', "block");
+                if (response == 0) {
+                    $('#message-alert').css('display', "none");
+                }
+              }
+          });
     });  
 </script>
 
