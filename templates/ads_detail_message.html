@@ -167,7 +167,7 @@
                             </div>
                         </div>
                         <div class="clearfix"></div>
-                        <div class="main-product-info">
+                        <!-- <div class="main-product-info">
                             <div class="product-location-info">
                                 <div class="detail-item">
                                     <span>Country</span>
@@ -196,33 +196,23 @@
                                     <h6 style="margin-top : 10px;">{{ post.content }}</h6>
                                 </div>
                             </div>
-                        </div>
-
-                        {% if post.category.form == 'ShortTermPost' %}
-                            <div class="rv-title m-t-15">Reviews ( {{ reviews.count }} )</div>
-                            <input class="rating-post" value="{{ post|rating_post }}"/>
-                            <hr>
-                            {% for review in reviews %}
-                            <div class="review-card row">            
-                                <div class="col-sm-2 col-xs-6 m-b-15 hidden-xs">
-                                    <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
-                                    <div class="rv-rater">{{ review.rater.first_name }}</div>
+                        </div> -->
+                        <div class="main-product-info">
+                            <div class="product-location-info">
+                                <div class="detail-item">
+                                    <span>Address</span>
+                                    <h6>{{ client.address }}</h6>
                                 </div>
-                                <div class="col-xs-6 col-xs-offset-3 m-b-15 visible-xs">
-                                    <img src="/static/media/avatar/{{ review.rater.avatar }}" class="img-circle img-responsive rv-avatar">
-                                    <div class="rv-rater">{{ review.rater.first_name }}</div>
+                                <div class="detail-item">
+                                    <span>Reviews</span>
+                                    <h6>{{ reviews }}</h6>
                                 </div>
-                                <div class="clearfix visible-xs"></div>
-                                <div class="col-sm-9">
-                                    <div class="rv-content">{{ review.content }}</div>
-                                    <div class="rv-created">{{ review.created_at }}</div>
-                                    <hr>
+                                <div class="detail-item" style="display: block">
+                                    <span>Description</span>
+                                    <h6 style="margin-top : 10px;">{{ client.description }}</h6>
                                 </div>
                             </div>
-                            {% endfor %}
-                            <div class="rv-title m-t-15">Location</div>
-                            <div id="map" style="height: 360px;"></div>
-                        {% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-7" style="padding: 15px;">
