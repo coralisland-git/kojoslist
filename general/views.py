@@ -743,7 +743,8 @@ def view_ads_message(request, ads_id, client_id):
                                        'post__category__id') \
                                .distinct().count()
         me = request.user
-        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
+        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')[:10]
+
         if 'timeoffset' in request.session:
             for message in messages:
                 message.date = (message.date - timedelta(minutes=int(request.session['timeoffset']))).strftime("%b. %d, %Y, %I:%M %P")
@@ -1866,7 +1867,9 @@ def post_camp(request, camp_id):
 def explorer_campaigns(request):
     categories = CampCategory.objects.all()
     campaigns = Campaign.objects.all().order_by('-created_at')
-
+    for campaign in campaigns:
+        if 'campaigns' not in campaign.over_image:
+            campaign.over_image = 'campaigns/' + campaign.over_image
     return render(request, 'campaign-list.html', {
         'categories': categories,
         'campaigns': campaigns
