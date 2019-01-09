@@ -737,11 +737,13 @@ def show_earlier_messages(request):
     post = Post.objects.get(id=post_id)
     messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
     end = False
+    if len(messages) < count + 15:
+        end = True
+
     if len(messages) > count:
         messages = messages[count: count + 15]
     else:
         messages = []
-        end = True
     count = count + len(messages)
     rndr_str = render_to_string("_more_messages.html" , {
                 'messages': messages,
