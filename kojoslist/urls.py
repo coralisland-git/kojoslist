@@ -87,4 +87,5 @@ urlpatterns += [
     url(r"^chat_send_email", chat_send_email, name="chat_send_email"),
     url(r"^change_status", change_status, name="change_status"),
     url(r"^turn_status", turn_status, name="turn_status"),
+    url(r"^show_earlier_messages", show_earlier_messages, name="show_earlier_messages"),
 ]

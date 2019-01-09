@@ -1,0 +1,30 @@
+{% for message in messages %}
+    <div class="row" style="margin : 15px 0px;">
+    {% if message.customer_from == client and message.customer_to == me %}
+        <div class="col-md-2 col-xs-2 no-padding" style="text-align: left;">
+            <a href="/user_show/{{ message.customer_from.id }}">
+                <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
+            </a>
+        </div>
+        {% if message.status == 'unread' %}
+            <div class="reply-post message-box col-md-8  col-xs-10 
+        no-padding new-msg-items" style=" background-color: #c8efff; border-color: #c8efff">
+        {% else %}
+            <div class="reply-post message-box col-md-8  col-xs-10 no-padding">
+        {% endif %}
+            <div>{{ message.content }}</div>
+            <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
+        </div>
+    {% elif message.customer_from == request.user and message.customer_to == client %}
+        <div class="reply-post message-box col-md-8 col-md-offset-2 col-xs-10 no-padding" style="background-color: #eee;">
+            <div>{{ message.content }}</div>
+            <div style="font-size: 10px; color: #aaa; margin-top: 10px;">{{ message.date }}</div>
+        </div>
+        <div class="col-md-2 col-xs-2  no-padding" style="text-align: right;">
+            <a href="/user_show/{{ message.customer_from.id }}">
+                <img src="/static/media/avatar/{{ message.customer_from.avatar }}" width="40" height="40" class="profile_image">
+            </a>
+        </div>
+    {% endif %}
+    </div>
+{% endfor %}

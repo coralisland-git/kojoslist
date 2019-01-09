@@ -729,6 +729,33 @@ def view_ads(request, ads_id):
         bitcoin_amount = bc.convert_to_btc_on(total_amount, 'USD', datetime.datetime.now() - datetime.timedelta(days=1))
     return render(request, 'ads_detail.html', locals())
 
+def show_earlier_messages(request):
+    count = int(request.GET.get('count'))
+    client_id = request.GET.get('client_id')
+    post_id = request.GET.get('post_id')
+    client = Customer.objects.get(id=client_id)
+    post = Post.objects.get(id=post_id)
+    messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
+    end = False
+    if len(messages) > count:
+        messages = messages[count: count + 15]
+    else:
+        messages = []
+        end = True
+    count = count + len(messages)
+    rndr_str = render_to_string("_more_messages.html" , {
+                'messages': messages,
+                'me' : request.user,
+                'client' : client
+                }, request=request)
+
+    data = {
+            'more_messages': rndr_str,
+            'count' : count,
+            'end' : end
+        }
+    return JsonResponse(data, safe=False)
+
 @login_required(login_url='/accounts/login/')
 def view_ads_message(request, ads_id, client_id):
     if client_id:
@@ -743,8 +770,8 @@ def view_ads_message(request, ads_id, client_id):
                                        'post__category__id') \
                                .distinct().count()
         me = request.user
-        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
-
+        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')[:15]
+        count = len(messages)
         if 'timeoffset' in request.session:
             for message in messages:
                 message.date = (message.date - timedelta(minutes=int(request.session['timeoffset']))).strftime("%b. %d, %Y, %I:%M %P")

@@ -229,8 +229,8 @@
                     </div>
                     <div style="border-bottom: 1px solid #ddd; margin: 20px 0px;" class="col-md-12 col-xs-12"></div>
                     <div class="message-history" id="message-history" style="margin-top: 30px; overflow-y: scroll; overflow-x: hidden; max-height : 400px; width: 100%">
+                        <i class="fa fa-angle-up" id="to_top"></i>
                         <div id="new-msg"></div>
-
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="row" style="margin : 15px 0px;">
@@ -262,10 +262,11 @@
                                 {% endif %}
                                 </div>
                             {% endfor %}
-                            <!-- <div class="row" style="margin : 30px; text-align: center;">
+                            <input type="hidden" name="message_count" id="message_count" value="{{ count }}" />
+                            <div id="more_messages"></div>
+                            <div class="row" style="margin : 30px; text-align: center;">
                                 <a href="javascript: void(0)" id="show_earlier_messages">Show earlier messages</a>
                             </div>
-                            <div id="more_messages"></div> -->
                         {% endif %}
                     </div>
                 </div>
@@ -404,7 +405,7 @@
                     </div>'
 
         $('#new-msg').prepend(item);
-        $('#message-history').scrollTop();
+        $('#message-history').scrollTop(0);
 
         setTimeout(function(){
             jQuery('.new-msg-items').css({'background-color':'white', 'border-color':'#ddd', 'transitionDuration' : '2s'});
@@ -421,21 +422,42 @@
         });
     });
 
-    // $('#show_earlier_messages').click(function() {
-    //     jQuery.ajax({
-    //         type: 'get',
-    //         url: '/ads-message/{{client.id}}',
-    //         data: {
-    //             count : {{ count }}
-    //         },
-    //         success: function(data) {
-    //             $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
-    //             $('#more_messages').append(item);
-    //         }
-    //     });
-    // });
+    $('#show_earlier_messages').click(function() {
+        var count = $('#message_count').val();
+        jQuery.ajax({
+            type: 'get',
+            url: '/show_earlier_messages',
+            data: {
+                count : count,
+                client_id : {{ client.id }},
+                post_id : {{ post.id}}
+            },
+            success: function(data) {
+                $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
+                $('#more_messages').append(data.more_messages);
+                $('#message_count').val(data.count);
+                if (data.end) {
+                    $('#show_earlier_messages').css({'display' : 'none'});
+                }
+            }
+        });
+    });
 
-    $('#message-history').scrollTop();
+    $("#to_top").click(function() {
+        $('#message-history').scrollTop(0);
+    });
+
+    $('#message-history').scroll(function() {
+        if ($('#message-history').scrollTop() > 200){
+             $("#to_top").css({'display' : 'block'});
+        }
+        else {
+            $("#to_top").css({'display' : 'none'});   
+        }
+    });
+
+    $('#message-history').scrollTop(0);
+
 </script>
 
 {% endblock %}
