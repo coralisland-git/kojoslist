@@ -743,7 +743,7 @@ def view_ads_message(request, ads_id, client_id):
                                        'post__category__id') \
                                .distinct().count()
         me = request.user
-        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')[:10]
+        messages = Message.objects.filter(Q(customer_from=request.user, customer_to=client, post=post) | Q(customer_to=request.user, customer_from=client, post=post)).order_by('-date')
 
         if 'timeoffset' in request.session:
             for message in messages:
