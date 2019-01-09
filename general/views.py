@@ -801,12 +801,12 @@ def view_ads_message(request, ads_id, client_id):
                     messages_archieve.append(item_from)
             else:
                 if message.customer_from == request.user:
-                    messages_len += 1
                     if item_to not in messages:
+                        messages_len += 1
                         messages.append(item_to)
                 if message.customer_to == request.user:
-                    messages_len += 1
                     if item_from not in messages:
+                        messages_len += 1
                         messages.append(item_from)
                 if message.starred:
                     if message.customer_from == request.user and item_to not in messages_starred:
@@ -815,8 +815,8 @@ def view_ads_message(request, ads_id, client_id):
                         messages_starred.append(item_from)
                 if message.status == 'unread':
                     if message.customer_to == request.user:
-                        messages_unread_len += 1
                         if item_from not in messages_unread:
+                            messages_unread_len += 1
                             messages_unread.append(item_from)
 
         messages_archieve_len = len(messages_archieve)
@@ -835,6 +835,8 @@ def view_ads_message(request, ads_id, client_id):
             if status == 'archieve':
                 messages = messages_archieve
             if status == 'unread':
+                for msg in messages_unread:
+                    msg['new'] = True
                 messages = messages_unread
             rndr_str = render_to_string("_sub_message_list.html" , {
                     'messages': messages
@@ -914,12 +916,20 @@ def change_status(request):
                 if message.status == 'unread' and message.customer_from != request.user:
                     message.status = 'read'
                     message.save()
+
+        # message_alert = 0
+        # messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
+        # for message in messages_all:
+        #     if message.status == 'unread' and message.archieve == False :
+        #         if message.customer_to == request.user:
+        #             message_alert += 1
         message_alert = 0
-        messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
-        for message in messages_all:
-            if message.status == 'unread' and message.archieve == False :
-                if message.customer_to == request.user:
-                    message_alert += 1
+        messages = Message.objects.filter(customer_to=request.user, status='unread')
+        temp = []
+        for message in messages:
+            if message.customer_from not in temp:
+                temp.append(message.customer_from)
+                message_alert += 1
         return HttpResponse(message_alert)
     else:
         try:
