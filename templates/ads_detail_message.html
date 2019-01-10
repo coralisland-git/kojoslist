@@ -217,7 +217,7 @@
                         <div class="row">
                             <form action="{% url 'view-ads' post.id %}" method="get" class="ads-pay-form">
                                 <input type="hidden" name="activated">
-                                <input class="btn btn-info btn-payment pull-right" type="submit" value="Purchase" style="width: 100px;">
+                                <input class="btn btn-payment" type="submit" value="Purchase" style="width: 100px; background-color: red; color: white">
                             </form>
                         </div>
                         {% endif %}
