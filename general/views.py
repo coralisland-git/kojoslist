@@ -516,6 +516,7 @@ def view_ads(request, ads_id):
     post = get_object_or_404(Post, pk=ads_id)
     model = eval(post.category.form)
     post = model.objects.get(id=ads_id)
+    activated = request.GET.get('activated')
 
     favourite = False
     result = ''
@@ -784,13 +785,30 @@ def view_ads_message(request, ads_id, client_id):
         me = request.user
         messages_starred = [] #len(Message.objects.filter(customer_to=request.user, status="starred"))
         messages_unread = [] #len(Message.objects.filter(customer_to=request.user, status="unread"))
+        messages_sent = []
         messages_len = 0
         messages_unread_len = 0
         messages_reservations = 0 #len(Message.objects.filter(customer_from=request.user, status="starred"))
         messages_pending_requests = 0 #len(Message.objects.filter(customer_from=request.user, status="unread"))
+        messages_sent_len = 0
         messages_archieve = []
         messages = []
-        messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user))
+        messages_s_all = Message.objects.filter(Q(customer_from=request.user)).order_by('-date')
+        messages_s = []
+        for message in messages_s_all:
+            item = {'client' : message.customer_to, 'starred' : message.starred, 'archieve': message.archieve, 'post' : message.post}
+            if item not in messages_s:
+                messages_s.append(item)
+        messages_r_all = Message.objects.filter(Q(customer_to=request.user)).order_by('-date')
+        messages_r = []
+        for message in messages_r_all:
+            item = {'client' : message.customer_from, 'starred' : message.starred, 'archieve': message.archieve, 'post' : message.post}
+            if item not in messages_r:
+                messages_r.append(item)
+        for message in messages_s:
+            if message not in messages_r:
+                messages_sent.append(message)
+        messages_all = Message.objects.filter(Q(customer_to=request.user) | Q(customer_from=request.user)).order_by('-date')
         for message in messages_all:
             item_to = {'client' : message.customer_to, 'starred' : message.starred, 'archieve': message.archieve, 'post' : message.post}
             item_from = {'client' : message.customer_from, 'starred' : message.starred, 'archieve': message.archieve, 'post' : message.post}
@@ -818,18 +836,25 @@ def view_ads_message(request, ads_id, client_id):
                         if item_from not in messages_unread:
                             messages_unread_len += 1
                             messages_unread.append(item_from)
-
+        messages_sent_len = len(messages_sent)
         messages_archieve_len = len(messages_archieve)
         messages_starred_len = len(messages_starred)
         message_alert = messages_unread_len
         # messages_len = len(messages)
         # messages_unread_len = len(messages_unread)
+        messages_new = []
         for message in messages:
             if message in messages_unread:
                 message['new'] = True
-
+                messages_new.append(message)
+        for message in messages:
+            if message not in messages_new:
+                messages_new.append(message)
+        messages = messages_new
         status = request.GET.get('status')
         if 'status' in request.GET:
+            if status == 'sent':
+                messages = messages_sent
             if status == 'starred':
                 messages = messages_starred
             if status == 'archieve':

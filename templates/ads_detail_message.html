@@ -213,13 +213,21 @@
                                 </div>
                             </div>
                         </div>
+                        {% if post.price and post.owner != user and post.category.form != 'ShortTermPost' %}
+                        <div class="row">
+                            <form action="{% url 'view-ads' post.id %}" method="get" class="ads-pay-form">
+                                <input type="hidden" name="activated">
+                                <input class="btn btn-info btn-payment pull-right" type="submit" value="Purchase" style="width: 100px;">
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-md-7" style="padding: 15px;">
                     <div class="message-form">
                         <div class="reply-post col-md-8 col-md-offset-2 col-xs-12 no-padding" style="padding: 0px;">
                             <textarea id="reply-body"></textarea>
-                            <button class="btn btn-default pull-right" id="send_remail" style="margin-top: 10px; background-color: #64B7E7; color: white; border-color: #64B7E7">Send</button>
+                            <button class="btn btn-default pull-right" id="send_remail" style="margin-top: 10px; background-color: #5bc0de; color: white; border-color: #5bc0de">Send</button>
                         </div>
                         <div class="col-md-1 hidden-phone" style="text-align-last: center;">
                             <a href="/user_show/{{ me.id }}">
@@ -457,6 +465,18 @@
     });
 
     $('#message-history').scrollTop(0);
+
+    // $('.btn-payment').click(function() {
+    //         jQuery.ajax({
+    //             type: 'get',
+    //             url: '/ads/{{post.id}}',
+    //             data: {
+    //                 // activated: true
+    //             },
+    //             success: function(data) {
+    //             }
+    //         });
+    //     });
 
 </script>
 

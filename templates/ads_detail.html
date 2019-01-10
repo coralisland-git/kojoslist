@@ -406,6 +406,7 @@
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
 
 <script type="text/javascript">
+
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     $('#rating-input').rating({
@@ -435,6 +436,10 @@
         showClear: false,
         displayOnly: true
     });
+
+    if (window.location.href.indexOf("activated") > -1) {
+        $('#pay-modal').modal(); 
+    }
 
     $('#bitcoin_payment').on('click', function(e) { 
         $('#bitcoin_section').css("display", "block");
@@ -752,6 +757,7 @@
         $('.date-checkin').data("DateTimePicker").maxDate(e.date);
         update_cart();
     });
+
 </script>
 
 {% if post.category.form == 'ShortTermPost' %}
