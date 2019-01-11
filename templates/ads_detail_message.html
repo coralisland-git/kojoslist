@@ -458,7 +458,9 @@
     });
 
     $('#message-history').scroll(function() {
-        if ($('#message-history').scrollTop() == $('#message-history')[0].scrollHeight-400 ){
+        var pos = $('#message-history').scrollTop();
+        var scrollHeight = $('#message-history')[0].scrollHeight - 400;
+        if ( (pos > scrollHeight - 10) && pos < scrollHeight + 10){
              var count = $('#message_count').val();
             jQuery.ajax({
                 type: 'get',
