@@ -271,6 +271,7 @@
                                 </div>
                             {% endfor %}
                             <input type="hidden" name="message_count" id="message_count" value="{{ count }}" />
+                            <input type="hidden" name="next-available" id="next-available" value="true" />
                             <div id="more_messages"></div>
                            <!--  {% if end != True %}
                             <div class="row" style="margin : 30px; text-align: center;">
@@ -460,7 +461,8 @@
     $('#message-history').scroll(function() {
         var pos = $('#message-history').scrollTop();
         var scrollHeight = $('#message-history')[0].scrollHeight - 400;
-        if ( (pos > scrollHeight - 2) && pos < scrollHeight + 2){
+        var next_available = $('#next-available').val();
+        if ( (pos > scrollHeight - 10) && (pos < scrollHeight + 10) && next_available == 'true'){
              var count = $('#message_count').val();
             jQuery.ajax({
                 type: 'get',
@@ -474,6 +476,9 @@
                     $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
                     $('#more_messages').append(data.more_messages);
                     $('#message_count').val(data.count);
+                    if (data.end) {
+                        $('#next-available').val('false');
+                    }
                 }
             });
         }
