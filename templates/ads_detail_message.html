@@ -272,9 +272,11 @@
                             {% endfor %}
                             <input type="hidden" name="message_count" id="message_count" value="{{ count }}" />
                             <div id="more_messages"></div>
+                           <!--  {% if end != True %}
                             <div class="row" style="margin : 30px; text-align: center;">
                                 <a href="javascript: void(0)" id="show_earlier_messages">Show earlier messages</a>
                             </div>
+                            {% endif %} -->
                         {% endif %}
                     </div>
                 </div>
@@ -430,32 +432,49 @@
         });
     });
 
-    $('#show_earlier_messages').click(function() {
-        var count = $('#message_count').val();
-        jQuery.ajax({
-            type: 'get',
-            url: '/show_earlier_messages',
-            data: {
-                count : count,
-                client_id : {{ client.id }},
-                post_id : {{ post.id}}
-            },
-            success: function(data) {
-                $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
-                $('#more_messages').append(data.more_messages);
-                $('#message_count').val(data.count);
-                if (data.end) {
-                    $('#show_earlier_messages').css({'display' : 'none'});
-                }
-            }
-        });
-    });
+    // $('#show_earlier_messages').click(function() {
+    //     var count = $('#message_count').val();
+    //     jQuery.ajax({
+    //         type: 'get',
+    //         url: '/show_earlier_messages',
+    //         data: {
+    //             count : count,
+    //             client_id : {{ client.id }},
+    //             post_id : {{ post.id}}
+    //         },
+    //         success: function(data) {
+    //             $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
+    //             $('#more_messages').append(data.more_messages);
+    //             $('#message_count').val(data.count);
+    //             if (data.end) {
+    //                 $('#show_earlier_messages').css({'display' : 'none'});
+    //             }
+    //         }
+    //     });
+    // });
 
     $("#to_top").click(function() {
         $('#message-history').scrollTop(0);
     });
 
     $('#message-history').scroll(function() {
+        if ($('#message-history').scrollTop() == $('#message-history')[0].scrollHeight-400 ){
+             var count = $('#message_count').val();
+            jQuery.ajax({
+                type: 'get',
+                url: '/show_earlier_messages',
+                data: {
+                    count : count,
+                    client_id : {{ client.id }},
+                    post_id : {{ post.id}}
+                },
+                success: function(data) {
+                    $('#message-history').scrollTop($('#message-history')[0].scrollHeight);
+                    $('#more_messages').append(data.more_messages);
+                    $('#message_count').val(data.count);
+                }
+            });
+        }
         if ($('#message-history').scrollTop() > 200){
              $("#to_top").css({'display' : 'block'});
         }
