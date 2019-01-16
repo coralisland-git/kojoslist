@@ -123,10 +123,11 @@ def search_ads(request):
     view_mode = request.POST.get('view_mode')
     is_world = request.POST.get('is_world') == 'True'
     region = request.session.get('region')
+    # category = request.POST.get('category')
 
-    q = Q(title__icontains=keyword)
+    q = ( Q(title__icontains=keyword) | Q(tag__icontains=keyword) )
     if 'ck_search_title' not in request.POST:
-        q = (Q(title__icontains=keyword) | Q(content__icontains=keyword))
+        q = (Q(title__icontains=keyword) | Q(content__icontains=keyword) | Q(tag__icontains=keyword))
 
     if region and not is_world:
         q &= (Q(region_id=region) | Q(region__district__id=region) | Q(region__isnull=True))
@@ -1170,6 +1171,7 @@ def region_ads(request, region_id, region):
         'region': region_id,
         'others': True,
         'is_world': is_world,
+        'category_list' : Category.objects.filter(parent=None),
         'breadcrumb': breadcrumb_
     })
 
