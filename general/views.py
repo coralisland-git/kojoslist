@@ -7,6 +7,7 @@ import stripe
 import datetime
 
 from PIL import Image as PilImage
+
 from random import randint
 
 from django.shortcuts import render
@@ -458,9 +459,17 @@ def upload_image(request):
 
     size = 128, 128
     try:
-        im = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
-        im.thumbnail(size)
-        im.save(settings.BASE_DIR+'/static/media/thumbnail-'+filename)
+        x = float(request.POST.get('x'))
+        y = float(request.POST.get('y'))
+        w = float(request.POST.get('width'))
+        h = float(request.POST.get('height'))
+        image = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
+        cropped_image = image.crop((x, y, w+x, h+y))
+        resized_image = cropped_image.resize((600, 600))
+        resized_image.save(settings.BASE_DIR+'/static/media/'+filename)
+        # im = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
+        resized_image.thumbnail(size)
+        resized_image.save(settings.BASE_DIR+'/static/media/thumbnail-'+filename)
     except IOError:
         print "cannot create thumbnail for", filename
 
@@ -1580,9 +1589,6 @@ def my_account(request):
 
 
 def search_txs(request):
-
-    pdb.set_trace()
-
     tx_type = request.GET.get('tx_type')
     keyword = request.GET.get('tx_key')
     payment_method = request.GET.get('tx_payment_method')

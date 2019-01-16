@@ -203,6 +203,13 @@
 <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyBS50juRrOSRY2oW99-cP_xbUPQp00mg3k&ver=3.exp"></script>
 
 <script type="text/javascript">
+    self.addEventListener('push', function(event) {
+          if (event.data) {
+            console.log('This push event has data: ', event.data.text());
+          } else {  
+            console.log('This push event has no data.');
+          }
+        });
     var mode = '{{ request.GET.q }}';
     console.log(mode);
     var date = new Date()
