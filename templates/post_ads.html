@@ -1,5 +1,7 @@
 {% extends "profile.html" %} 
 {% load staticfiles %} 
+{% load humanize %}
+{% load extra %}
 
 {% block own_css %}
 <link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/jquery-ui.css' type='text/css' media='all' /> 
@@ -125,7 +127,8 @@
                             </div>
                             <div class="form-group edit-profile">
                                 <label>Price (in USD)</label>
-                                <input type="number" step="0.01" id="post-price" name="price" class="form-control edit-post-wrap" min="0" value="{{ post.price }}" />
+                                <input type="number" step="1" id="post-price" name="price" class="form-control edit-post-wrap" min="0" value="{{ post.price }}" />
+                                <span id="price_show" style="position: absolute; margin-top: -29px;"></span>
                                 <div style="margin-top: 2px;line-height: 14px;"><small id="help_shortterm">{% if post.category.form == 'ShortTermPost' %}( price per day ){% endif %}</small></div>
                             </div>
 
@@ -142,6 +145,35 @@
                             <input type="hidden" name="by_dealer" id="by_dealer" value="0">
                             <div class="form-group edit-profile">
                                 <label style="color: #5bc0de;">Add Pictures</label>
+                                <!-- </form> -->
+                                <!-- <input accept="image/*" id="id_file" name="file" type="file" required=""> -->
+                                <div class="modal fade" id="modalCrop">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h4 class="modal-title">In certain instances it may be better to crop photos.</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <img src="" id="image" style="max-width: 100%;">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="btn-group pull-left" role="group">
+                                                    <button type="button" class="btn btn-default js-zoom-in">
+                                                      <span class="glyphicon glyphicon-zoom-in"></span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-default js-zoom-out">
+                                                      <span class="glyphicon glyphicon-zoom-out"></span>
+                                                    </button>
+                                                </div>
+                                               <!--  <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button> -->
+                                                <button type="button" class="btn btn-primary js-crop-and-upload">Upload</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <ul id="loaded-files" class="upload-image-thumbs upload-image-ul">
                                     {% for image in images %}
                                         {% if image.is_head %}
@@ -158,6 +190,7 @@
                                     <li class="upload-placeholder upload-image">
                                         <div class="uploadedImg"></div>
                                         <input type="hidden" name="uploded_id[]" class="uploded_id" />
+                                        <!-- <form method="post" enctype="multipart/form-data" id="formUpload"> -->
                                     </li>
                                 </ul>
                                 <div style="display:none;" id="upload_btn" class="upload_btn button button-primary">
@@ -255,11 +288,134 @@
 </div>
 <!-- End Content Right Content -->
 {% endblock %}
-
 {% block own_js %}
 <script src="https://checkout.stripe.com/checkout.js"></script>
 <script type="text/javascript" src="/static/fullcalendar/fullcalendar.min.js"></script>
+
 <script>
+
+    $(document).ready(function(){
+        $('input#post-price').on('blur',function(){
+           $(this).manageCommas();
+        });
+        $('input#post-price').on('focus',function(){
+            var temp = $("#price_show").html();
+            $("#price_show").css({'display' : 'none'});
+            $(this).santizeCommas();
+        });
+    });
+
+    String.prototype.addComma = function() {
+      return this.replace(/(.)(?=(.{3})+$)/g,"$1,")
+    }
+    
+    $.fn.manageCommas = function () {
+        return this.each(function () {
+            $("#price_show").html($(this).val().replace(/(,| )/g,'').addComma());
+            $("#price_show").css({'display' : 'block'});
+            $(this).val('');
+        })
+    }
+
+    $.fn.santizeCommas = function() {
+      return $(this).val($("#price_show").html().replace(/(,| )/g,''));
+    }
+
+    var image_file;
+
+    $("#inputfile").change(function () {
+        if (this.files && this.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $("#image").attr("src", e.target.result);
+            $("#modalCrop").modal();
+          }
+          reader.readAsDataURL(this.files[0]);
+          image_file = this.files;
+        }
+      });
+
+      /* SCRIPTS TO HANDLE THE CROPPER BOX */
+      var $image = $("#image");
+      var cropBoxData;
+      var canvasData;
+      $("#modalCrop").on("shown.bs.modal", function () {
+        $image.cropper({
+          viewMode: 1,
+          aspectRatio: 1/1,
+          minCropBoxWidth: 200,
+          minCropBoxHeight: 200,
+          ready: function () {
+            $image.cropper("setCanvasData", canvasData);
+            $image.cropper("setCropBoxData", cropBoxData);
+          }
+        });
+      }).on("hidden.bs.modal", function () {
+        cropBoxData = $image.cropper("getCropBoxData");
+        canvasData = $image.cropper("getCanvasData");
+        $image.cropper("destroy");
+      });
+
+      $(".js-zoom-in").click(function () {
+        $image.cropper("zoom", 0.1);
+      });
+
+      $(".js-zoom-out").click(function () {
+        $image.cropper("zoom", -0.1);
+      });
+
+      /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+      $(".js-crop-and-upload").click(function () {
+        var cropData = $image.cropper("getData");
+        $("#id_x").val(cropData["x"]);
+        $("#id_y").val(cropData["y"]);
+        $("#id_height").val(cropData["height"]);
+        $("#id_width").val(cropData["width"]);
+        $("#modalCrop").modal('hide');
+        var fd = new FormData();
+        var count = image_file.length;
+        // var formData = new FormData($('#formUpload'));
+        for (var i = 0; i < count; i++) {
+            if (fd) {
+                fd.append("images", image_file[i]);
+                fd.append("x", cropData["x"]);
+                fd.append("y", cropData["y"]);
+                fd.append("height", cropData["height"]);
+                fd.append("width", cropData["width"]);
+            }
+            jQuery("#loaded-files li").eq((i + window.liindex)).addClass("loader_img");
+            jQuery.ajax({
+                type: 'POST',
+                url: '/upload-image',
+                data: fd,
+                // data : {
+                //     x: cropData["x"],
+                //     y: cropData["y"],
+                //     height: cropData["height"],
+                //     width: cropData["width"]
+                // },
+                contentType: false,
+                dataType: "json",
+                processData: false,
+                success: function(response) {
+                    jQuery("#loaded-files li").removeClass("loader_img");
+                    jQuery(".upload-image").find('input[class="uploded_id"]').val(response.image_name);
+                    var image = '<i class="fa fa-times close_img"></i><img class="image-responsive" src="' + response.image_url + '" >';
+                    jQuery(".upload-image .uploadedImg").html(image);
+                    if ($('.upload-placeholder').length == 1) {
+                        jQuery(".upload-image").addClass('active');
+                        $('.head_image').val(response.image_name);
+                    }
+
+                    jQuery(".upload-image").removeClass("upload-image");
+                    jQuery(".upload-image-ul").append('<li class="upload-placeholder upload-image"><div class="uploadedImg"></div><input type="hidden" name="uploded_id[]" class="uploded_id" /></li>');
+                }
+            });
+        }
+        // $("#formUpload").submit();
+      });
+      
+
     var price, stripe_confirmed=false; 
 
     var handler = StripeCheckout.configure({
@@ -456,39 +612,38 @@
             $('.head_image').val(obj.target.src);
         });
 
-        jQuery("#inputfile").change(function() {
-            var fd = new FormData();
-            var file = this.files;
-            var count = file.length;
-            for (var i = 0; i < count; i++) {
-                if (fd) {
-                    fd.append("images", file[i]);
-                }
-                
-                jQuery("#loaded-files li").eq((i + window.liindex)).addClass("loader_img");
-                jQuery.ajax({
-                    type: 'POST',
-                    url: '/upload-image',
-                    data: fd,
-                    contentType: false,
-                    dataType: "json",
-                    processData: false,
-                    success: function(response) {
-                        jQuery("#loaded-files li").removeClass("loader_img");
-                        jQuery(".upload-image").find('input[class="uploded_id"]').val(response.image_name);
-                        var image = '<i class="fa fa-times close_img"></i><img class="image-responsive" src="' + response.image_url + '" >';
-                        jQuery(".upload-image .uploadedImg").html(image);
-                        if ($('.upload-placeholder').length == 1) {
-                            jQuery(".upload-image").addClass('active');
-                            $('.head_image').val(response.image_name);
-                        }
+        // jQuery("#inputfile").change(function() {
+        //     var fd = new FormData();
+        //     var file = this.files;
+        //     var count = file.length;
+        //     for (var i = 0; i < count; i++) {
+        //         if (fd) {
+        //             fd.append("images", file[i]);
+        //         }
+        //         jQuery("#loaded-files li").eq((i + window.liindex)).addClass("loader_img");
+        //         jQuery.ajax({
+        //             type: 'POST',
+        //             url: '/upload-image',
+        //             data: fd,
+        //             contentType: false,
+        //             dataType: "json",
+        //             processData: false,
+        //             success: function(response) {
+        //                 jQuery("#loaded-files li").removeClass("loader_img");
+        //                 jQuery(".upload-image").find('input[class="uploded_id"]').val(response.image_name);
+        //                 var image = '<i class="fa fa-times close_img"></i><img class="image-responsive" src="' + response.image_url + '" >';
+        //                 jQuery(".upload-image .uploadedImg").html(image);
+        //                 if ($('.upload-placeholder').length == 1) {
+        //                     jQuery(".upload-image").addClass('active');
+        //                     $('.head_image').val(response.image_name);
+        //                 }
 
-                        jQuery(".upload-image").removeClass("upload-image");
-                        jQuery(".upload-image-ul").append('<li class="upload-placeholder upload-image"><div class="uploadedImg"></div><input type="hidden" name="uploded_id[]" class="uploded_id" /></li>');
-                    }
-                });
-            }
-        });
+        //                 jQuery(".upload-image").removeClass("upload-image");
+        //                 jQuery(".upload-image-ul").append('<li class="upload-placeholder upload-image"><div class="uploadedImg"></div><input type="hidden" name="uploded_id[]" class="uploded_id" /></li>');
+        //             }
+        //         });
+        //     }
+        // });
 
         jQuery("body").on("click", ".close_img", function() {
             var dataid = jQuery(this).parent().parent().find("input").attr("value");

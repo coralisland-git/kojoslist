@@ -202,8 +202,6 @@ class Image(models.Model):
     def __str__(self):
         return '{} - {}'.format(self.post.title, self.name)
 
-
-
 class Favourite(models.Model):
     owner =  models.ForeignKey(Customer, related_name="favourites")
     post = models.ForeignKey(Post)
