@@ -136,6 +136,10 @@
                                 <label>Description</label>
                                 <textarea name="content" class="form-control edit-post-wrap" required="">{{ post.content }}</textarea>
                             </div>
+                            <div class="form-group edit-profile">
+                                <label>Tag</label>
+                                <input type="text" name="tag" class="form-control edit-post-wrap" value="{{ post.tag }}" required/>
+                            </div>
                             <div id="ads_details">
                             {% include detail_template %}
                             </div>

@@ -108,7 +108,7 @@ class Post(models.Model):
     status = models.CharField(max_length=50, blank=True, null=True)
     category = models.ForeignKey(Category)
     price = models.FloatField(default=0, blank=True, null=True)
-
+    tag = models.CharField(max_length=100, null= True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey(Customer)

@@ -30,7 +30,7 @@
             <input type="hidden" name="others" value="true">
             <input type="hidden" name="is_world" value="{{ is_world }}">
             <div class="{% if no_subscription %} col-md-10 {% else %} col-md-8 {% endif %} ads_search search">
-                <input type="text" class="search-input ads_search_input" name="keyword" placeholder="Search for ads name...">
+                <input type="text" class="search-input ads_search_input" name="keyword" placeholder="Search for ads ...">
             </div>
             <div class="col-md-2 ads_search">
                 <input type="button" id="search_ads" class="btn btn-info" value="Search">
@@ -64,6 +64,14 @@
                         <label><input type="checkbox" id="ck_posted_today" name="ck_posted_today" style="margin-top: 0;" value="true"> Posted today</label>
                     </div>
                 </div>
+               <!--  <div class="input-group col-md-2 col-xs-12" style="margin-right: 5px;">
+                    <select class="input-xlarge form-control" name="category" id="category">
+                        <option value="">All Categories</option>
+                        {% for category in category_list %}
+                            <option value="{{ category.name }}">{{category.name}}</option>
+                        {% endfor%}
+                    </select>
+                </div> -->
                 <div class="col-md-6 form-inline">
                     <div class="form-group">
                         <label for="email" style="margin-right:12px;">Price: </label>
@@ -179,6 +187,10 @@
         $('#ck_posted_today').click(function() {
             search_ads();
         });
+
+        // $('#category').click(function() {
+        //     search_ads();
+        // });
 
         function search_ads() {
             var min_val = +$('#price__gte').val(),
