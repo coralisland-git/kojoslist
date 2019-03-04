@@ -105,7 +105,9 @@ def post_purchase_notify(sender, instance, **kwargs):
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.purchaser.id)
 
             content += "<br><br>Total Price: ${0}<br>Received Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}(one time payment)<br>Total Amount Received: <span style='color: red'>${5}</span>" \
-                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)), instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)), 
+                         instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) if instance.paid_percent != 0 else 0
+                        )
 
             content += "<br><br>Contact Info:<br>" + instance.contact
 
