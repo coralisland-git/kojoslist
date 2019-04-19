@@ -45,7 +45,7 @@ def delete_image_file(sender, instance, using, **kwargs):
 @receiver(post_save, sender=LicensePost)
 @receiver(post_save, sender=ShortTermPost)
 
-def apply_subscribe(sender, instance, **kwargs):   
+def apply_subscribe(sender, instance, **kwargs):
     try:
         for ss in Search.objects.filter(alert=True).exclude(owner=instance.owner):
             isApply = not ss.keyword or ss.keyword.lower() in instance.title.lower()
@@ -57,9 +57,9 @@ def apply_subscribe(sender, instance, **kwargs):
                 isApply = isApply and instance.images.count() > 0
 
             if instance.price != None and ss.min_price != None:
-                isApply = isApply and ss.min_price <= instance.price                
+                isApply = isApply and ss.min_price <= instance.price
             if instance.price != None and ss.max_price != None:
-                isApply = isApply and ss.max_price >= instance.price                
+                isApply = isApply and ss.max_price >= instance.price
 
             if isApply:
                 subscription_info = ''
@@ -68,17 +68,17 @@ def apply_subscribe(sender, instance, **kwargs):
                     1 new result for your subscription ( {1} ) as of {2}<br><br>
                     <a href="{0}/ads/{3}">{4}</a><br><br>
                     <a href="{0}/my-subscriptions">See all of your subscriptions.</a><br><br>
-                    Thank you for using <a href="http://{0}/">Globalboard</a>.                         
+                    Thank you for using <a href="http://{0}/">Globalboard</a>.
                 """.format(settings.MAIN_URL, ss.category.name, str(instance.created_at), instance.id, instance.title)
                 send_email(settings.FROM_EMAIL, 'Globalboard Subscription Alarm', ss.owner.email, content)
     except Exception, e:
         print e, '@@@@@ Error in apply_subscribe()'
 
 @receiver(post_save, sender=Review)
-def rating_notify(sender, instance, **kwargs):    
+def rating_notify(sender, instance, **kwargs):
     try:
         content = '<a href="{0}/user_show/{1}">{2} {3}</a> left review on your ads (<a href="{0}/ads/{6}">{4}</a>) on {5}'.format(settings.MAIN_URL,
-            instance.rater.id, instance.rater.first_name, instance.rater.last_name, 
+            instance.rater.id, instance.rater.first_name, instance.rater.last_name,
             instance.post.title, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.post.id)
         content += "<br><br>"+instance.content
         send_email(settings.FROM_EMAIL, 'Globalboard Rating Notification', instance.post.owner.email, content)
@@ -86,7 +86,7 @@ def rating_notify(sender, instance, **kwargs):
         print e, '@@@@@ Error in rating_notify()'
 
 @receiver(post_save, sender=PostPurchase)
-def post_purchase_notify(sender, instance, **kwargs):    
+def post_purchase_notify(sender, instance, **kwargs):
     try:
         # send email to the owner
         subject = ''
@@ -95,7 +95,7 @@ def post_purchase_notify(sender, instance, **kwargs):
             subject = 'Item {0} purchased directly'.format(instance.post.title)
         else:
             subject = 'Item {0} purchased via escrow'.format(instance.post.title)
-                       
+
         if instance.type == 'escrow' and instance.paid_percent != 100 and instance.status == 0:
 
             subject = 'Item {0} cancelled via escrow'.format(instance.post.title)
@@ -105,7 +105,7 @@ def post_purchase_notify(sender, instance, **kwargs):
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.purchaser.id)
 
             content += "<br><br>Total Price: ${0}<br>Received Amount: ${2}({3}%)<br> Cancelled Amount: ${4}<br>Service Fee: ${1}(one time payment)<br>Total Amount Received: <span style='color: red'>${5}</span>" \
-                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)), 
+                        .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent , instance.post.price * (1.0 - (instance.paid_percent / 100.0)),
                          instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) if instance.paid_percent != 0 else 0
                         )
 
@@ -127,7 +127,7 @@ def post_purchase_notify(sender, instance, **kwargs):
             content = "{7}% of <a href='{0}/ads/{1}'>{2}</a> (${3}) has been purchased by <a href='{0}/user_show/{8}'>{4} {5}</a> on {6}" \
                   .format(settings.MAIN_URL, instance.post.id, instance.post.title, instance.post.price,
                           instance.purchaser.first_name, instance.purchaser.last_name, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.paid_percent, instance.purchaser.id)
-            
+
             content += "<br><br>Total Amount: ${0}<br>Received Amount: ${2}({3}%)<br>Service Fee: ${1}(one time payment)<br>Total Amount Received: <span style='color: red'>${4}</span>" \
                         .format(instance.post.price, instance.post.price * settings.APP_FEE, instance.post.price * instance.paid_percent / 100.0, instance.paid_percent, instance.post.price * (instance.paid_percent / 100.0 - settings.APP_FEE) )
 
@@ -168,7 +168,7 @@ def post_purchase_notify(sender, instance, **kwargs):
 
 
             content_to_self += "<br><br>Contact Info:<br>{0} {1}".format(instance.post.owner.email, instance.post.owner.address)
-            
+
         send_email(settings.FROM_EMAIL, subject, instance.post.owner.email, content)
 
         send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
@@ -181,4 +181,4 @@ def post_purchase_notify(sender, instance, **kwargs):
 @receiver(post_save, sender=Message)
 def message_notify(sender, instance, **kwargs):
     pass
-    
+

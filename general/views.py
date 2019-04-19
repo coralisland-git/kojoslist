@@ -1549,7 +1549,15 @@ def my_account(request):
                 "total_service_fee" : settings.APP_FEE_BUY * dpur.post.price,
                 "refund_amount" : dpur.post.price * float((100 - dpur.paid_percent)/100.0),
                 "total_amount" : (settings.APP_FEE_BUY +1 ) * dpur.post.price,
-                "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name
+                "category" : dpur.post.category.parent.name if dpur.post.category.parent.name !='' else dpur.post.category.name,
+
+                # Added new data
+                "total_price": dpur.post.price,
+                "received_amount": dpur.post.price * settings.APP_FEE,
+                "received_percentage": dpur.post.price * dpur.paid_percent / 100.0,
+                "cancelled_amount": dpur.paid_percent,
+                "service_fees": dpur.post.price * (1.0 - (dpur.paid_percent / 100.0)),
+                "total_amount_received": dpur.post.price * (dpur.paid_percent / 100.0 - settings.APP_FEE) if dpur.paid_percent != 0 else 0,
             })
 
 
