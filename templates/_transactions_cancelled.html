@@ -6,7 +6,15 @@
         <div class="col-md-3 col-xs-3">Date</div>
         <div class="col-md-3 col-xs-2">Category</div>
         <div class="col-md-4 col-xs-2">Detail</div>
-        <div class="col-md-2 col-xs-2">Total Amount</div>
+        <!-- <div class="col-md-2 col-xs-2">Total Amount</div> -->
+
+        <!-- Added new data -->
+        <div class="col-md-2 col-xs-2">Total Price</div>
+        <div class="col-md-2 col-xs-2">Received Amount</div>
+        <div class="col-md-2 col-xs-2">Cancelled Amount</div>
+        <div class="col-md-2 col-xs-2">Service Fee</div>
+        <div class="col-md-2 col-xs-2">Total Amount Received</div>
+
     </div>
     <hr>
     {% if cpurchases %}
@@ -18,10 +26,18 @@
                 <a href="/ads/{{ purchase.post_id }}" style="color : red">{{ purchase.post_title }}</a>
                 <div style="margin-top: 5px;word-wrap: break-word;">{{ purchase.transaction }}</div>
             </div>
-            <div class="col-md-2 col-xs-2"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div>
+            <!-- <div class="col-md-2 col-xs-2"  style="color : red">${{ purchase.approved|floatformat:2|intcomma }}</div> -->
+
+            <!-- Added new data -->
+            <div class="col-md-2 col-xs-2">${{ total_price }}</div>
+            <div class="col-md-2 col-xs-2">${{ received_amount }} ({{ received_percentage }}%)</div>
+            <div class="col-md-2 col-xs-2">${{ cancelled_amount }}</div>
+            <div class="col-md-2 col-xs-2">${{ service_fees }} (one time payment)</div>
+            <div class="col-md-2 col-xs-2"  style="color : red">${{ total_amount_received }}</div>
+
         </div>
         <hr>
-    {% endfor %}                    
+    {% endfor %}
     {% else %}
         <div class="row" style="font-size: 18px;">
             <div class="col-md-4">No record</div>
@@ -49,13 +65,36 @@
                     <div style="margin-top: 5px;word-break: break-word;">{{ purchase.transaction }}</div>
                 </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-xs-6 purchase_title">Total Amount</div>
                 <div class="col-xs-6"  style="color : red;">${{ purchase.approved|floatformat:2|intcomma}}</div>
+            </div> -->
+
+            <!-- Added new data -->
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Total Price</div>
+                <div class="col-xs-6">${{ purchase.total_price }}</div>
             </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Received Amount</div>
+                <div class="col-xs-6">${{ purchase.received_amount }}({{ purchase.received_percentage }}%)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Cancelled Amount</div>
+                <div class="col-xs-6">${{ purchase.cancelled_amount }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Service Fee</div>
+                <div class="col-xs-6">${{ purchase.service_fees }} (one time payment)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 purchase_title">Total Amount Received</div>
+                <div class="col-xs-6"  style="color : red;">${{ purchase.total_amount_received }}</div>
+            </div>
+
         </div>
         <hr>
-    {% endfor %}                    
+    {% endfor %}
     {% else %}
         <div class="row" style="font-size: 18px;">
             <div class="col-md-4">No record</div>

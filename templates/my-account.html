@@ -1,13 +1,13 @@
-{% extends "profile.html" %} 
+{% extends "profile.html" %}
 {% load socialaccount %}
-{% load staticfiles %} 
+{% load staticfiles %}
 {% load humanize %}
 {% load extra %}
 
 {% block own_css %}
-<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/my-account.css' type='text/css' media='all' /> 
+<link rel='stylesheet' id='dropdown-menu-style-css' href='/static/css/my-account.css' type='text/css' media='all' />
 <link href="/static/star-rating/star-rating.css" rel="stylesheet">
-{% endblock %} 
+{% endblock %}
 
 {% block right_content %}
     <!-- Content Right Content -->
@@ -72,7 +72,7 @@
                                 <div class="col-sm-6">
                                     <div class="input-group">
                                         <input autofocus="autofocus" id="id_email" name="email" type="email" class="form-control" required value="{{ user.email }}">
-                                        <span class="input-group-addon">     
+                                        <span class="input-group-addon">
                                             <i class="fa fa-check c-green"></i>
                                         </span>
                                     </div>
@@ -84,7 +84,7 @@
                                 <div class="col-sm-6">
                                     <div class="input-group">
                                         <input id="id_password1" name="phone" type="text" class="input-xlarge form-control phone_number" placeholder="+1 (212) 234 4342" value="{% if user.phone %}{{ user.phone }}{% endif %}">
-                                        <span class="input-group-addon sym_phone">     
+                                        <span class="input-group-addon sym_phone">
                                             {% if user.phone_verified %}
                                             <i class="fa fa-check c-green"></i>
                                             {% else %}
@@ -105,7 +105,7 @@
                                     {% if stripe %}
                                     <div class="input-group">
                                         <input type="text" class="form-control" readonly="" value="Stripe">
-                                        <span class="input-group-addon">     
+                                        <span class="input-group-addon">
                                             <i class="fa fa-check c-green"></i>
                                         </span>
                                     </div>
@@ -130,7 +130,7 @@
                             <div class="form-group">
                                 <label class="control-label col-sm-2" for="id_password">Description:</label>
                                 <div class="col-sm-6">
-                                    <textarea name="description" class="input-xlarge form-control">{% if user.description %}{{ user.description }}{% endif %}</textarea>                                    
+                                    <textarea name="description" class="input-xlarge form-control">{% if user.description %}{{ user.description }}{% endif %}</textarea>
                                 </div>
                             </div>
 
@@ -139,7 +139,7 @@
                                 <div class="col-sm-6">
                                     <a class="btn btn-default" href="/accounts/password/change/">Change Password</a>
                                 </div>
-                            </div>                            
+                            </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-5">
                                     <button type="submit" class="primaryAction btn btn-success">Save Updates</button>
@@ -162,7 +162,7 @@
                         <span class="primaryAction btn btn-success">Verified</span>
                         {% endif %}
                     </div>
-                </div>       
+                </div>
                 <div id="resume" class="tab-pane fade {% if tab == 'resume' %}active in{% endif %}">
                     <div class="pages balance">
                         <div class="col-md-9 col-lg-8">
@@ -172,7 +172,7 @@
                 </div>
                 <div id="purchase" class="tab-pane fade {% if tab == 'purchase' %}active in{% endif %}">
                     <div class="pages balance">
-                        <div id="transactionTab">  
+                        <div id="transactionTab">
                             <ul class="nav nav-tabs sub-tabs">
                                 <li class="active">
                                     <a  href="#pending" data-toggle="tab">Pending</a>
@@ -231,7 +231,7 @@
                                     </div>
                                     <hr>
                                     <div id="ppurchases_list">
-                                        {% include '_transactions_pending.html' %}    
+                                        {% include '_transactions_pending.html' %}
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="completed">
@@ -271,7 +271,7 @@
                                     </div>
                                     <hr>
                                     <div id="dpurchases_list">
-                                        {% include '_transactions_finished.html' %}    
+                                        {% include '_transactions_finished.html' %}
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="received">
@@ -311,8 +311,8 @@
                                     </div>
                                     <hr>
                                     <div id="rpurchases_list">
-                                        {% include '_transactions_received.html' %}    
-                                    </div> 
+                                        {% include '_transactions_received.html' %}
+                                    </div>
                                 </div>
                                 <div class="tab-pane" id="cancelled">
                                     <div class="rv-title" style="margin-top: 36px;">Cancelled Transactions</div>
@@ -351,7 +351,7 @@
                                     </div>
                                     <hr>
                                     <div id="cpurchases_list">
-                                        {% include '_transactions_cancelled.html' %}    
+                                        {% include '_transactions_cancelled.html' %}
                                     </div>
                                 </div>
                             </div>
@@ -362,9 +362,9 @@
                             <button type="button" class=" btn btn-md btn-success" id="btn-withdraw">Withdraw</button>
                         </div> -->
                     </div>
-                </div>                         
+                </div>
             </div>
-        </div>      
+        </div>
 
     </div>
 
@@ -380,9 +380,9 @@
         <form class="rate-form">
         <div class="modal-body" style="font-size: 16px; line-height: 22px;">
             <div class="well">
-                <p>Thank you for purchasing "<span id="post_title">{{ result }}</span>"</p> 
+                <p>Thank you for purchasing "<span id="post_title">{{ result }}</span>"</p>
                 {# <p>Transaction ID: <span id="transaction_id">{{ result }}</span></p> <p>Title: </p> #}
-                
+
                 <p style="margin-top: 15px;">You have 30 days to review this user.</p>
             </div>
                 <h4>Please rate the item</h4>
@@ -392,7 +392,7 @@
                 <div class="form-group">
                     <label style="margin-top: 16px;margin-bottom: 7px;">Leave Review</label>
                     <textarea class="form-control" name="content" rows=4 required=""></textarea>
-                </div>            
+                </div>
                 <input type="hidden" name="post_id" class="post-id">
                 <input type="hidden" name="purchase_id" class="purchase-id">
           </div>
@@ -405,7 +405,7 @@
         </div>
 
       </div>
-    </div> 
+    </div>
 
     <div id="rating-modal" class="modal fade perk-modal" role="dialog">
       <div class="modal-dialog">
@@ -428,7 +428,7 @@
                 <div class="form-group">
                     <label style="margin-top: 16px;margin-bottom: 7px;">Leave Review</label>
                     <textarea class="form-control" name="content" rows=4 required=""></textarea>
-                </div>            
+                </div>
                 <input type="hidden" id="r_post_id" name="post_id" value="{{ post.id }}">
                 <input type="hidden" id="r_purchase_id" name="purchase_id" value="{{ purchase.id }}">
           </div>
@@ -482,7 +482,7 @@
         </div>
 
       </div>
-    </div>      
+    </div>
 
     <div id="cancel-modal" class="modal fade perk-modal" role="dialog">
       <div class="modal-dialog">
@@ -513,8 +513,8 @@
         </form>
         </div>
       </div>
-    </div> 
-    
+    </div>
+
     <div id="pay-method-modal" class="modal fade perk-modal" role="dialog">
       <div class="modal-dialog">
 
@@ -610,11 +610,11 @@
                 success: function (data) {
                     alert('withdrawn Successfully');
                 }
-            }); 
+            });
         }
     });
 
-    $('#btn-pay-stripe').on('click', function(e) { 
+    $('#btn-pay-stripe').on('click', function(e) {
         $('#paypal_email_section').css("display", "none");
         $('#bitcoin_section').css("display", "none");
         // {
@@ -643,21 +643,21 @@
                                 amount : amount,
                                 payment_method : 'stripe'
                             },
-                        success: function (data) { 
+                        success: function (data) {
                             alert(data.message);
                             location.href = '/my-account?tab=purchase';
                         }
-                    }); 
+                    });
             }
         }
     });
 
-    $('#btn-pay-bitcoin').on('click', function(e) { 
+    $('#btn-pay-bitcoin').on('click', function(e) {
         $('#paypal_email_section').css("display", "none");
         $('#bitcoin_section').css("display", "block");
     });
 
-    $('#btn-pay-paypal').on('click', function(e) { 
+    $('#btn-pay-paypal').on('click', function(e) {
         // {
         //     handler.open({
         //         name: "Globalboard",
@@ -701,7 +701,7 @@
                         $('#paypal_email_section').css("display", "none");
                         location.href = '/my-account?tab=purchase';
                     }
-                }); 
+                });
             }
         }
     });
@@ -735,7 +735,7 @@
                         $('#bitcoin_section').css("display", "none");
                         location.href = '/my-account?tab=purchase';
                     }
-                }); 
+                });
             }
         }
     });
@@ -776,7 +776,7 @@
                 success: function (data) {
                     jQuery('#ppurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
         jQuery('#tx_pm_p, #tx_category_p, #tx_start_date_p, #tx_end_date_p').change(function(e) {
@@ -794,7 +794,7 @@
                 success: function (data) {
                     jQuery('#ppurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
         // jQuery('#tx_key_p').keypress(function(e) {
@@ -810,7 +810,7 @@
         //         success: function (data) {
         //             jQuery('#ppurchases_list').html(data);
         //         }
-        //     });   
+        //     });
         //     }
         // });
 
@@ -829,7 +829,7 @@
                 success: function (data) {
                     jQuery('#dpurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
         jQuery('#tx_pm_f, #tx_category_f, #tx_start_date_f, #tx_end_date_f').change(function(e) {
@@ -847,7 +847,7 @@
                 success: function (data) {
                     jQuery('#dpurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
         jQuery('#search_txs_c').click(function() {
@@ -865,7 +865,7 @@
                 success: function (data) {
                     jQuery('#cpurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
         jQuery('#tx_pm_c, #tx_category_c, #tx_start_date_c, #tx_end_date_c').change(function(e) {
@@ -883,7 +883,7 @@
                 success: function (data) {
                     jQuery('#cpurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
         jQuery('#search_txs_r').click(function() {
@@ -901,7 +901,7 @@
                 success: function (data) {
                     jQuery('#rpurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
         jQuery('#tx_pm_r, #tx_category_r, #tx_start_date_r, #tx_end_date_r').change(function(e) {
@@ -919,7 +919,7 @@
                 success: function (data) {
                     jQuery('#rpurchases_list').html(data);
                 }
-            });                     
+            });
         });
 
 
@@ -939,13 +939,13 @@
                     $('#rating-modal').modal('hide');
                     location.href = '/my-account?tab=purchase';
                 }
-            }); 
+            });
         });
 
 
         $('#withdraw-form').submit(function(e) {
             // if ( $('#withdraw_amount').val() != '') {
-            if ( $('input[name="paymethod"]:checked')[0].value == 'stripe' ) 
+            if ( $('input[name="paymethod"]:checked')[0].value == 'stripe' )
                 {
                     e.preventDefault();
                     jQuery.ajax({
@@ -962,7 +962,7 @@
             }
             // location.href = '/my-account?tab=purchase';
             // else {
-            //     alert('Please input the amount.')    
+            //     alert('Please input the amount.')
             // }
         });
 
@@ -973,7 +973,7 @@
             $('#result-modal').modal();
         });
 
-        $('#release-form').submit(function(e) { 
+        $('#release-form').submit(function(e) {
             e.preventDefault();
             var r = confirm("Do you confirm to release?");
             var percent = $('.release-amount').val();
@@ -1006,11 +1006,11 @@
                         }
                     }
                 });
-            }            
+            }
         });
 
 
-        $('#cancel-form').submit(function(e) { 
+        $('#cancel-form').submit(function(e) {
             e.preventDefault();
             var r = confirm("Do you confirm to cancel?");
             if (r == true) {
@@ -1028,7 +1028,7 @@
                         $('#rating-modal').modal();
                     }
                 });
-            } 
+            }
         });
 
         // purchase / release management
@@ -1105,7 +1105,7 @@
             alert('The details will be added soon.')
         });
 
-        // profile management        
+        // profile management
         jQuery("body").on("click", ".upload-avatar", function() {
             jQuery("#inputfile").click();
         });
@@ -1158,7 +1158,7 @@
                         success: function(res) {
                             jQuery(".verify_section").html('<span class="primaryAction btn btn-warning">Verifing ID</span>');
                         }
-                    });            
+                    });
 
                 }
             });
@@ -1181,13 +1181,13 @@
                 success: function(res) {
                     if (res == 'success') {
                         $('.verify_code').toggleClass('hidden');
-                        $('.verify_phone').toggleClass('hidden');                        
+                        $('.verify_phone').toggleClass('hidden');
                     } else {
                         alert('Please input correct phone number!');
                         $('.phone_number').focus();
                     }
                 }
-            });            
+            });
 
         });
 
@@ -1213,7 +1213,7 @@
                         alert('Verification failed!');
                     }
                 }
-            });            
+            });
         });
 
         $('#id_dob').datetimepicker({
