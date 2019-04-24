@@ -111,7 +111,7 @@ def why_use(request):
 
 @login_required(login_url='/accounts/login/')
 def my_ads(request):
-    posts = Post.objects.filter(owner=request.user).order_by('-created_at')
+    posts = Post.objects.filter(owner=request.user, available=True).order_by('-created_at')
     posts = get_posts_with_image(posts, True)
     return render(request, 'my-ads.html', {'posts': posts})
 
@@ -459,20 +459,21 @@ def upload_image(request):
     filename = fs.save(_type+myfile.name, myfile)
 
     size = 128, 128
-    try:
-        x = float(request.POST.get('x'))
-        y = float(request.POST.get('y'))
-        w = float(request.POST.get('width'))
-        h = float(request.POST.get('height'))
-        image = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
-        cropped_image = image.crop((x, y, w+x, h+y))
-        resized_image = cropped_image.resize((600, 600))
-        resized_image.save(settings.BASE_DIR+'/static/media/'+filename)
-        # im = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
-        resized_image.thumbnail(size)
-        resized_image.save(settings.BASE_DIR+'/static/media/thumbnail-'+filename)
-    except IOError:
-        print "cannot create thumbnail for", filename
+    if 'x' in request.POST:
+        try:
+            x = float(request.POST.get('x'))
+            y = float(request.POST.get('y'))
+            w = float(request.POST.get('width'))
+            h = float(request.POST.get('height'))
+            image = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
+            cropped_image = image.crop((x, y, w+x, h+y))
+            resized_image = cropped_image.resize((600, 600))
+            resized_image.save(settings.BASE_DIR+'/static/media/'+filename)
+            # im = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
+            resized_image.thumbnail(size)
+            resized_image.save(settings.BASE_DIR+'/static/media/thumbnail-'+filename)
+        except IOError:
+            print "cannot create thumbnail for", filename
 
     uploaded_file_url = fs.url(filename)
     res = { "image_url": uploaded_file_url,"image_name": uploaded_file_url.split('/')[-1] }
@@ -513,7 +514,8 @@ def active_deactive_ads(request):
 @csrf_exempt
 def delete_ads(request):
     ads = request.POST.get('ads_id')
-    Post.objects.filter(id=ads).delete()
+    Post.objects.filter(id=ads).update(available=False)
+    # Post.objects.filter(id=ads).delete()
     return HttpResponse('')
 
 @csrf_exempt
@@ -1389,21 +1391,25 @@ def my_account(request):
 
     #  just for updating status of pending transactions, shuuld be updated with cronjob later
 
-    bitcoin_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
+    try:
 
-    for trans in bitcoin_transactions:
+        bitcoin_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
 
-        if trans.status == "completed":
+        for trans in bitcoin_transactions:
 
-            pur = PostPurchase.objects.filter(transaction=trans.network['hash'])
+            if trans.status == "completed":
 
-            if len(pur) > 0:
+                pur = PostPurchase.objects.filter(transaction=trans.network['hash'])
 
-                if pur[0].status != 0:
+                if len(pur) > 0:
 
-                    pur[0].status = 0
+                    if pur[0].status != 0:
 
-                    pur[0].save()
+                        pur[0].status = 0
+
+                        pur[0].save()
+    except:
+        pass
 
 
     tab = request.GET.get('tab', 'profile')
