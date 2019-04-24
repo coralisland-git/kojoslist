@@ -459,20 +459,21 @@ def upload_image(request):
     filename = fs.save(_type+myfile.name, myfile)
 
     size = 128, 128
-    try:
-        x = float(request.POST.get('x'))
-        y = float(request.POST.get('y'))
-        w = float(request.POST.get('width'))
-        h = float(request.POST.get('height'))
-        image = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
-        cropped_image = image.crop((x, y, w+x, h+y))
-        resized_image = cropped_image.resize((600, 600))
-        resized_image.save(settings.BASE_DIR+'/static/media/'+filename)
-        # im = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
-        resized_image.thumbnail(size)
-        resized_image.save(settings.BASE_DIR+'/static/media/thumbnail-'+filename)
-    except IOError:
-        print "cannot create thumbnail for", filename
+    if 'x' in request.POST:
+        try:
+            x = float(request.POST.get('x'))
+            y = float(request.POST.get('y'))
+            w = float(request.POST.get('width'))
+            h = float(request.POST.get('height'))
+            image = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
+            cropped_image = image.crop((x, y, w+x, h+y))
+            resized_image = cropped_image.resize((600, 600))
+            resized_image.save(settings.BASE_DIR+'/static/media/'+filename)
+            # im = PilImage.open(settings.BASE_DIR+'/static/media/'+filename)
+            resized_image.thumbnail(size)
+            resized_image.save(settings.BASE_DIR+'/static/media/thumbnail-'+filename)
+        except IOError:
+            print "cannot create thumbnail for", filename
 
     uploaded_file_url = fs.url(filename)
     res = { "image_url": uploaded_file_url,"image_name": uploaded_file_url.split('/')[-1] }
