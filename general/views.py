@@ -82,7 +82,7 @@ def index(request):
     # next = request.GET.get('q', '/home')
     # pdb.set_trace()
     # return render(request, 'wraper.html', { 'next': next })
-    # if request.user.id is not None: 
+    # if request.user.id is not None:
     return render(request, 'index.html')
 
 def about(request):
@@ -139,7 +139,7 @@ def search_ads(request):
         if value and key not in ['model', 'keyword', 'others', 'csrfmiddlewaretoken', 'view_mode', 'is_world'] \
         and key[:3] != 'ck_' and value != None:
             q &= Q(**{key: value})
-    
+
     if model:   # search on specific category page
         q &= Q(category_id=request.session['category'])
 
@@ -150,7 +150,7 @@ def search_ads(request):
         posts = posts.annotate(img_num=Count('images')).filter(img_num__gt=0).order_by('-created_at')
     if 'ck_posted_today' in request.POST:
         posts = posts.filter(created_at__gte=datetime.datetime.now().date()).order_by('-created_at')
-    
+
     posts = get_posts_with_image(posts)
     rndr_str = render_to_string(view_mode, {'posts': posts, 'others': others}, request=request)
     return HttpResponse(rndr_str)
@@ -185,7 +185,7 @@ def breadcrumb(request):
     is_state = request.POST.get('is_state')
     city = request.POST.get('city')
     kind = mapName.count('-')
-    
+
     if city:
         city = City.objects.get(id=city)
         mapname = 'countries/{0}/{0}-all'.format(city.state.country.sortname.lower())
@@ -194,14 +194,14 @@ def breadcrumb(request):
         if city.district:   # district
             cmapname = smapname + '@' + str(city.district.id)
             dmapname = smapname + '@' + str(city.id)
-            args = [mapname, city.state.country.name, 
-                    smapname, city.state.name, 
+            args = [mapname, city.state.country.name,
+                    smapname, city.state.name,
                     cmapname, city.district.name,
                     dmapname, city.name]
         else:
             cmapname = smapname + '@' + str(city.id)
-            args = [mapname, city.state.country.name, 
-                    smapname, city.state.name, 
+            args = [mapname, city.state.country.name,
+                    smapname, city.state.name,
                     cmapname, city.name]
 
     elif kind == 2 or is_state == 'true': # - city
@@ -209,7 +209,7 @@ def breadcrumb(request):
         state = State.objects.filter(name=state, country__sortname=country).first()
         cmapname = 'countries/{0}/{0}-all'.format(state.country.sortname.lower())
         mapname = mapName if '@' in mapName else mapName + '@' + state.name
-        args = [cmapname, state.country.name, 
+        args = [cmapname, state.country.name,
                 mapname, state.name]
     elif kind == 1: # state
         country = mapName.split('/')[1].upper()
@@ -226,7 +226,7 @@ def get_session(request):
         request.session.create()
     session, _ = CSession.objects.get_or_create(key=request.session.session_key)
     return session
-    
+
 def put_session(request, key, val):
     session = get_session(request)
     content = json.loads(session.val)
@@ -255,14 +255,14 @@ def get_regions(request):
     #     # store last location
     #     loc = mapName
     #     if kind == 2 or is_state == 'true':
-    #         loc += '@' + state 
+    #         loc += '@' + state
     #     if city:
     #         loc += '@' + city
     #     request.user.default_site = loc
     #     request.user.save()
 
     request.session['category'] = ''
-    
+
     if city:
         city = City.objects.get(id=city)
         link = '/region-ads/ct/{}'.format(city.id)
@@ -278,7 +278,7 @@ def get_regions(request):
                 cc = Category.objects.filter(parent=mc).order_by('name')
                 _result += [(mc, cc)]
             result += [_result]
-        html = render_to_string('_category.html', {'categories': result})            
+        html = render_to_string('_category.html', {'categories': result})
     elif kind == 2 or is_state == 'true': # - city
         country = mapName.split('/')[1].upper()
         state = State.objects.filter(name=state, country__sortname=country).first()
@@ -303,7 +303,7 @@ def get_regions(request):
         request.session['region'] = country.id
         request.session['region_kind'] = 'country'
 
-        html = render_to_string('_state_list.html', 
+        html = render_to_string('_state_list.html',
                                 {'states': State.objects.filter(country=country).order_by('name')})
 
     request.session.modified = True
@@ -330,12 +330,12 @@ def post_ads(request, ads_id):
             post = model.objects.get(id=ads_id)
             if post.region:
                 states = State.objects.filter(country=post.region.state.country)
-                cities = City.objects.filter(state=post.region.state, district__isnull=True)    
+                cities = City.objects.filter(state=post.region.state, district__isnull=True)
 
                 districts = post.region.districts.all()
                 if post.region.district:    # for districts
                     districts = post.region.district.districts.all()
-            
+
             images = post.images.all()
             detail_template = 'post/{}.html'.format(post.category.form)
         else:
@@ -356,7 +356,7 @@ def post_ads(request, ads_id):
                     cities = City.objects.filter(state__name=state, district__isnull=True)
 
                 if len(loc) > 2:    # city id
-                    city = City.objects.get(id=loc[-1])   
+                    city = City.objects.get(id=loc[-1])
                     districts = city.districts.all()
                     post['region_id'] = city.id
 
@@ -378,7 +378,7 @@ def post_ads(request, ads_id):
             post = form.save()
             post.updated_at = datetime.datetime.now()
             post.save()
-            
+
             pimages = [ii.name for ii in post.images.all()]
 
             # create objects for new images
@@ -431,11 +431,11 @@ def get_sub_info(request):
     if sc_type == 'category':
         for cc in Category.objects.filter(parent__id=obj_id).order_by('name'):
             if cc.category_set.all():
-                rndr_str += '<option value="" disabled>{}</option>'.format(cc.name)        
+                rndr_str += '<option value="" disabled>{}</option>'.format(cc.name)
                 for sc in cc.category_set.all():
-                    rndr_str += '<option value="{}">&nbsp;&nbsp;&nbsp;&nbsp;{}</option>'.format(sc.id, sc.name)        
+                    rndr_str += '<option value="{}">&nbsp;&nbsp;&nbsp;&nbsp;{}</option>'.format(sc.id, sc.name)
             else:
-                rndr_str += '<option value="{}">{}</option>'.format(cc.id, cc.name)        
+                rndr_str += '<option value="{}">{}</option>'.format(cc.id, cc.name)
         objects = []
     elif sc_type == 'state':
         objects = State.objects.filter(country__id=obj_id)
@@ -443,7 +443,7 @@ def get_sub_info(request):
         objects = City.objects.filter(state__id=obj_id, district__isnull=True)
     else:
         objects = City.objects.filter(district_id=obj_id)
-        
+
     for sc in objects:
         rndr_str += '<option value="{}">{}</option>'.format(sc.id, sc.name)
     return HttpResponse(rndr_str)
@@ -453,7 +453,7 @@ def upload_image(request):
     myfile = request.FILES['images']
     _type = request.POST.get('type', '')
     if _type:
-        _type = _type + '/' 
+        _type = _type + '/'
 
     fs = FileSystemStorage()
     filename = fs.save(_type+myfile.name, myfile)
@@ -498,9 +498,9 @@ def get_post_detail(request):
     html = render_to_string(template)
 
     return JsonResponse({
-        'html': html, 
+        'html': html,
         'form': form_name,
-        'dealer_avail': category.column == 10,  
+        'dealer_avail': category.column == 10,
         'price': price}, safe=False)
 
 @csrf_exempt
@@ -672,7 +672,7 @@ def view_ads(request, ads_id):
                     'avail': False,
                     'color': '#ff9800',
                     'url': '{}/user_show/{}'.format(settings.MAIN_URL, request.user.id),
-                    'title': '{} {} - {}/{}/{}'.format(request.user.first_name, 
+                    'title': '{} {} - {}/{}/{}'.format(request.user.first_name,
                                                      request.user.last_name,
                                                      adults,
                                                      children,
@@ -691,7 +691,7 @@ def view_ads(request, ads_id):
 
                 if optpay == "direct":
                     stripe_account_id = SocialAccount.objects.get(user=post.owner, provider='stripe').uid
-                    
+
                     try:
 
                         charge = stripe.Charge.create(
@@ -699,7 +699,7 @@ def view_ads(request, ads_id):
                             currency="usd",
                             source=card, # obtained with Stripe.js
                             # destination=stripe_account_id,
-                            # application_fee = int(amount * settings.APP_FEE_BUY),                
+                            # application_fee = int(amount * settings.APP_FEE_BUY),
                             description="Direct pay to the ads (#{} - {})".format(post.id, post.title)
                         )
                     except Exception as e:
@@ -772,14 +772,14 @@ def show_earlier_messages(request):
 @login_required(login_url='/accounts/login/')
 def view_ads_message(request, ads_id, client_id):
     if client_id:
-        post = get_object_or_404(Post, pk=ads_id)    
+        post = get_object_or_404(Post, pk=ads_id)
         model = eval(post.category.form)
         post = model.objects.get(id=ads_id)
         # count = 10
         client = Customer.objects.get(id=client_id)
         # client = post.owner
         reviews = Review.objects.filter(post__owner=client) \
-                               .values('post__category__name', 'post__category__parent__name', 
+                               .values('post__category__name', 'post__category__parent__name',
                                        'post__category__id') \
                                .distinct().count()
         me = request.user
@@ -910,8 +910,8 @@ def send_reply_email(request):
     if 'timeoffset' in request.session:
         message.date = message.date - timedelta(minutes=int(request.session['timeoffset']))
 
-    pusher_client.trigger('message-channel-'+str(request.user.id)+'-'+str(client.id), 
-                            'message-event-'+str(request.user.id)+'-'+str(client.id), 
+    pusher_client.trigger('message-channel-'+str(request.user.id)+'-'+str(client.id),
+                            'message-event-'+str(request.user.id)+'-'+str(client.id),
                             {
                                 'mid' : message.id,
                                 'message': content,
@@ -919,8 +919,8 @@ def send_reply_email(request):
                             }
                         )
 
-    pusher_client.trigger('message-channel-'+str(client.id), 
-                            'message-event-'+str(client.id), 
+    pusher_client.trigger('message-channel-'+str(client.id),
+                            'message-event-'+str(client.id),
                             {
                                 'message' : 'notification'
                             }
@@ -1044,16 +1044,16 @@ def view_campaign(request, camp_id):
 
         try:
             stripe_account_id = SocialAccount.objects.get(user__id=campaign.owner.id, provider='stripe').uid
-            
+
             charge = stripe.Charge.create(
                 amount=amount,
                 currency="usd",
                 source=card, # obtained with Stripe.js
                 destination=stripe_account_id,
-                application_fee = int(amount * settings.APP_FEE),                
+                application_fee = int(amount * settings.APP_FEE),
                 description="Contribute to the Campaign (#{} - {})".format(campaign.id, campaign.title)
             )
-    
+
             PerkClaim.objects.create(campaign_id=camp_id,
                                      perk=perk,
                                      contact=contact,
@@ -1086,7 +1086,7 @@ def view_campaign(request, camp_id):
             print e, 'stripe error ##'
             # result = 'failed'
 
-        
+
     return render(request, 'camp_detail.html', {
         'post': campaign,
         'perks': perks,
@@ -1106,7 +1106,7 @@ def category_ads(request, category_id):
         30: 'disclaimer.html'
     }
 
-    if category.column in tpl_map:    
+    if category.column in tpl_map:
         return render(request, tpl_map[category.column], {'category': category})
     return category_ads_dealer(request, category_id, 'all')
 
@@ -1129,7 +1129,7 @@ def category_ads_dealer(request, category_id, kind):
     posts = get_posts_with_image(posts)
     breadcrumb_ = '<a class="breadcrumb-item" href="javascript:void();" data-mapname="custom/world">worldwide</a>'
     breadcrumb_ = retrieve_session(request, 'breadcrumb', breadcrumb_)
-    
+
     return render(request, 'ads-list.html', {
         'posts': posts,
         'region': region,
@@ -1158,7 +1158,7 @@ def region_ads(request, region_id, region):
     is_world = False
     if region == 'city':
         posts = Post.objects.filter(Q(region_id=region_id) | Q(region__district__id=region_id) | Q(region__isnull=True))
-    elif region == 'state':    
+    elif region == 'state':
         posts = Post.objects.filter(Q(region__state__id=region_id) | Q(region__isnull=True))
     elif region == 'world':
         is_world = True
@@ -1278,7 +1278,7 @@ def toggle_favourite(request):
 def my_favourites(request):
     posts = [ii.post for ii in Favourite.objects.filter(owner=request.user)]
     posts = get_posts_with_image(posts)
-    return render(request, 'ads-list.html', { 'posts': posts, 
+    return render(request, 'ads-list.html', { 'posts': posts,
                                               'others': True,
                                               'no_subscription': True})
 
@@ -1388,7 +1388,7 @@ def remove_subscription(request):
 def my_account(request):
 
     #  just for updating status of pending transactions, shuuld be updated with cronjob later
-    
+
     bitcoin_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
 
     for trans in bitcoin_transactions:
@@ -1412,7 +1412,7 @@ def my_account(request):
     total_received_amount = 0
 
     rpurchases = PostPurchase.objects.all().order_by('-udpated_at')
-    
+
     get_paid = request.user.get_paid
 
     wallet = 0.0
@@ -1427,11 +1427,11 @@ def my_account(request):
                                      .order_by('-created_at')
 
     categories = Review.objects.filter(post__owner=request.user) \
-                               .values('post__category__name', 'post__category__parent__name', 
+                               .values('post__category__name', 'post__category__parent__name',
                                        'post__category__id') \
                                .distinct()
 
-   
+
     rpurchases_list = [] #  received payments
 
     for rpur in rpurchases:
@@ -1555,15 +1555,15 @@ def my_account(request):
                 "total_price": dpur.post.price,
                 "received_amount": dpur.post.price * settings.APP_FEE,
                 "received_percentage": dpur.post.price * dpur.paid_percent / 100.0,
-                "cancelled_amount": dpur.paid_percent,
+                "cancelled_amount": dpur.post.price * (1.0 - (dpur.paid_percent / 100.0)),
                 "service_fees": dpur.post.price * (1.0 - (dpur.paid_percent / 100.0)),
                 "total_amount_received": dpur.post.price * (dpur.paid_percent / 100.0 - settings.APP_FEE) if dpur.paid_percent != 0 else 0,
             })
 
 
     for ii in categories:
-        ii['reviews'] = Review.objects.filter(post__owner=request.user, 
-                                              post__category__id=ii['post__category__id'])       
+        ii['reviews'] = Review.objects.filter(post__owner=request.user,
+                                              post__category__id=ii['post__category__id'])
 
 
     if request.method == 'GET':
@@ -1613,7 +1613,7 @@ def search_txs(request):
         end_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
     if tx_type == "pending":
-        
+
         ppurchases_list = []
 
         ppurchases = PostPurchase.objects.filter(purchaser=request.user, created_at__range=[start_date, end_date]).exclude(status=0) \
@@ -1621,7 +1621,7 @@ def search_txs(request):
 
 
         for ppur in ppurchases:
-            
+
             if (category in ppur.post.category.name or category in ppur.post.category.parent.name):
 
                 if ( keyword != None and keyword.lower() in ppur.post.title.lower()) or keyword == None  :
@@ -1640,7 +1640,7 @@ def search_txs(request):
 
                             check = True
 
-                    if check : 
+                    if check :
 
                         p_m = ''
 
@@ -1686,7 +1686,7 @@ def search_txs(request):
                                      .order_by('-created_at')
 
         for dpur in dpurchases:
-        
+
 
             if (category in dpur.post.category.name or category in dpur.post.category.parent.name):
 
@@ -1861,8 +1861,8 @@ def send_vcode(request):
 
     if result:
         request.session['vcode'] = str(vcode)
-        request.session['phone'] = phone        
-        request.session.modified = True    
+        request.session['phone'] = phone
+        request.session.modified = True
         return HttpResponse('success')
     else:
         return HttpResponse('fail')
@@ -1874,7 +1874,7 @@ def verify_phone(request):
 
     if code == vcode:
         request.user.phone_verified = True
-        request.user.phone = request.session['phone']        
+        request.user.phone = request.session['phone']
         request.user.save()
         return HttpResponse('success')
     else:
@@ -1885,8 +1885,8 @@ def upload_id(request):
     id_photo = request.POST.get('id_photo')
     request.user.v_statue = 'awaiting_approve'
     # send an email to administrator
-    content = """user {1} uploaded his ID.<br> Please check and approve it 
-                 <a href="{0}/admin/general/customer/{2}/change/">here</a>.                 
+    content = """user {1} uploaded his ID.<br> Please check and approve it
+                 <a href="{0}/admin/general/customer/{2}/change/">here</a>.
     """.format(settings.MAIN_URL, request.user.username, request.user.id)
 
     send_email(settings.FROM_EMAIL, 'Verification Submitted', settings.ADMIN_EMAIL, content)
@@ -1944,7 +1944,7 @@ def post_camp(request, camp_id):
         print(form.errors, '$$$$$$$$')
     return render(request, 'post_camp.html', {
         'form': form,
-        'categories': categories,   
+        'categories': categories,
         'stripe_connected': stripe_connected,
         'rng_perks': range(1, 11)
     })
@@ -1968,8 +1968,8 @@ def search_camps(request):
 
     # if others:
         # .filter(owner=request.user)
-    campaigns = Campaign.objects.filter(Q(title__icontains=keyword) 
-                                      | Q(overview__icontains=keyword) 
+    campaigns = Campaign.objects.filter(Q(title__icontains=keyword)
+                                      | Q(overview__icontains=keyword)
                                       | Q(tagline__icontains=keyword))
     if category:
         campaigns = campaigns.filter(Q(category=category) | Q(category__parent=category))
@@ -1996,14 +1996,14 @@ def rate_ads(request):
 def user_show(request, user_id):
     host = Customer.objects.get(id=user_id)
     categories = Review.objects.filter(post__owner=host) \
-                               .values('post__category__name', 'post__category__parent__name', 
+                               .values('post__category__name', 'post__category__parent__name',
                                        'post__category__id') \
                                .distinct()
     for ii in categories:
-        ii['reviews'] = Review.objects.filter(post__owner=host, 
+        ii['reviews'] = Review.objects.filter(post__owner=host,
                                               post__category__id=ii['post__category__id'])
 
-    return render(request, 'user_show.html', { 
+    return render(request, 'user_show.html', {
         'host': host,
         'reviews': categories,
         'num_reviews': Review.objects.filter(post__owner=host).count()
@@ -2130,9 +2130,9 @@ def release_purchase(request):
     #         return JsonResponse({"message" : message}, safe=False)
 
 
-@csrf_exempt    
+@csrf_exempt
 def cancel_purchase(request):
-    
+
     post_id = request.POST.get('p_id')
 
     purchase_id = request.POST.get('purchase_id')
@@ -2235,7 +2235,7 @@ def withdraw_money(request):
                     currency="usd",
                     source=stripe_token,
                     destination=stripe_account_id,
-                    # application_fee = int(amount * settings.APP_FEE_BUY),                
+                    # application_fee = int(amount * settings.APP_FEE_BUY),
                     description="Direct pay to the ads"
                 )
 
@@ -2325,7 +2325,7 @@ def withdraw_money(request):
         except:
 
             res_message = "You don't have enough ballence in your Paypal. Try again, please."
-        
+
     # return redirect('my-account')
     return JsonResponse({"message" : res_message}, safe=False)
 
@@ -2337,14 +2337,14 @@ def chat_send_email(request):
     to_email = request.GET.get('to_email')
     to_phone = request.GET.get('to_phone')
     print(from_email, '~~~~~~~', content, '~~~~~~',to_email)
-    if to_email and to_email != '':    
+    if to_email and to_email != '':
         send_email(from_email, "globalboard.world", to_email, content)
     if to_email != '' and from_email != '':
         send_SMS_Chat(from_phone, to_phone, content)
     return HttpResponse('')
 
 
-@csrf_exempt    
+@csrf_exempt
 def update_alert(request):
     sid = request.POST.get('sid')
     alert = request.POST.get('alert') == 'true'
