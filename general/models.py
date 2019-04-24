@@ -125,6 +125,7 @@ class Post(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     allow_other_contact = models.BooleanField(default=False)
     by_dealer = models.BooleanField(default=False)
+    available = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.title

@@ -111,7 +111,7 @@ def why_use(request):
 
 @login_required(login_url='/accounts/login/')
 def my_ads(request):
-    posts = Post.objects.filter(owner=request.user).order_by('-created_at')
+    posts = Post.objects.filter(owner=request.user, available=True).order_by('-created_at')
     posts = get_posts_with_image(posts, True)
     return render(request, 'my-ads.html', {'posts': posts})
 
@@ -513,7 +513,8 @@ def active_deactive_ads(request):
 @csrf_exempt
 def delete_ads(request):
     ads = request.POST.get('ads_id')
-    Post.objects.filter(id=ads).delete()
+    Post.objects.filter(id=ads).update(available=False)
+    # Post.objects.filter(id=ads).delete()
     return HttpResponse('')
 
 @csrf_exempt
@@ -1389,21 +1390,25 @@ def my_account(request):
 
     #  just for updating status of pending transactions, shuuld be updated with cronjob later
 
-    bitcoin_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
+    try:
 
-    for trans in bitcoin_transactions:
+        bitcoin_transactions = client.get_transactions(settings.BITCOIN_ACCOUNT).data
 
-        if trans.status == "completed":
+        for trans in bitcoin_transactions:
 
-            pur = PostPurchase.objects.filter(transaction=trans.network['hash'])
+            if trans.status == "completed":
 
-            if len(pur) > 0:
+                pur = PostPurchase.objects.filter(transaction=trans.network['hash'])
 
-                if pur[0].status != 0:
+                if len(pur) > 0:
 
-                    pur[0].status = 0
+                    if pur[0].status != 0:
 
-                    pur[0].save()
+                        pur[0].status = 0
+
+                        pur[0].save()
+    except:
+        pass
 
 
     tab = request.GET.get('tab', 'profile')
