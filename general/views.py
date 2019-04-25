@@ -1553,10 +1553,10 @@ def my_account(request):
 
                 # Added new data
                 "total_price": dpur.post.price,
-                "received_amount": dpur.post.price * settings.APP_FEE,
-                "received_percentage": dpur.post.price * dpur.paid_percent / 100.0,
-                "cancelled_amount": dpur.post.price * (1.0 - (dpur.paid_percent / 100.0)),
-                "service_fees": dpur.post.price * (1.0 - (dpur.paid_percent / 100.0)),
+                "received_amount": dpur.post.price*dpur.paid_percent/100.0,
+                "received_percentage": dpur.paid_percent,
+                "cancelled_amount": dpur.post.price*(1.0-(dpur.paid_percent/100.0)),
+                "service_fees": dpur.post.price*settings.APP_FEE_BUY,
                 "total_amount_received": dpur.post.price * (dpur.paid_percent / 100.0 - settings.APP_FEE) if dpur.paid_percent != 0 else 0,
             })
 
