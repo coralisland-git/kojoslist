@@ -1165,7 +1165,7 @@ def region_ads(request, region_id, region):
     elif region == 'world':
         is_world = True
         posts = Post.objects.all()
-    posts = get_posts_with_image(posts.exclude(status='deactive').order_by('-created_at'))
+    posts = get_posts_with_image(posts.exclude(Q(status='deactive') | Q(available=False)).order_by('-created_at'))
     breadcrumb_ = '<a class="breadcrumb-item" href="javascript:void();" data-mapname="custom/world">worldwide</a>'
     breadcrumb_ = retrieve_session(request, 'breadcrumb', breadcrumb_)
     return render(request, 'ads-list.html', {
