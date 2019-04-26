@@ -26,9 +26,9 @@
                     <div class="pages balance">
                         <form class="login form-horizontal" method="POST">
                             {% csrf_token %}
-                            {% for _, error in form.errors.items %}
+                            <!-- {% for _, error in form.errors.items %}
                                 <div class="error">{{ error }}</div>
-                            {% endfor %}
+                            {% endfor %} -->
                             <div class="form-group m-t-15">
                                 <div class="col-sm-1 col-xs-5 upload-image" style="margin-bottom: 15px;">
                                     <input id="inputfile" type="file" name="files[]" data-maxfilesize="4000000" class="hidden" data-maxuploadfile="20" data-imagequality="0.7">
@@ -78,8 +78,8 @@
                                     </div>
 
                                 </div>
-                            </div>
                             <div class="form-group">
+                            </div>
                                 <label class="control-label col-sm-2" for="id_password">Phone:</label>
                                 <div class="col-sm-6">
                                     <div class="input-group">
