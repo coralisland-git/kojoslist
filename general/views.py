@@ -111,7 +111,7 @@ def why_use(request):
 
 @login_required(login_url='/accounts/login/')
 def my_ads(request):
-    posts = Post.objects.filter(owner=request.user, available=True).order_by('-created_at')
+    posts = Post.objects.filter(owner=request.user, deleted=False).order_by('-created_at')
     posts = get_posts_with_image(posts, True)
     return render(request, 'my-ads.html', {'posts': posts})
 
@@ -514,7 +514,7 @@ def active_deactive_ads(request):
 @csrf_exempt
 def delete_ads(request):
     ads = request.POST.get('ads_id')
-    Post.objects.filter(id=ads).update(available=False)
+    Post.objects.filter(id=ads).update(deleted=True)
     # Post.objects.filter(id=ads).delete()
     return HttpResponse('')
 
@@ -1165,7 +1165,7 @@ def region_ads(request, region_id, region):
     elif region == 'world':
         is_world = True
         posts = Post.objects.all()
-    posts = get_posts_with_image(posts.exclude(Q(status='deactive') | Q(available=False)).order_by('-created_at'))
+    posts = get_posts_with_image(posts.exclude(Q(status='deactive') | Q(deleted=True)).order_by('-created_at'))
     breadcrumb_ = '<a class="breadcrumb-item" href="javascript:void();" data-mapname="custom/world">worldwide</a>'
     breadcrumb_ = retrieve_session(request, 'breadcrumb', breadcrumb_)
     return render(request, 'ads-list.html', {
