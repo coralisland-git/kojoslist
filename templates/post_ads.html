@@ -299,14 +299,14 @@
 <script>
 
     $(document).ready(function(){
-        $('input#post-price').on('blur',function(){
-           $(this).manageCommas();
-        });
-        $('input#post-price').on('focus',function(){
-            var temp = $("#price_show").html();
-            $("#price_show").css({'display' : 'none'});
-            $(this).santizeCommas();
-        });
+     //    $('input#post-price').on('blur',function(){
+     //       $(this).manageCommas();
+     //    });
+     //    $('input#post-price').on('focus',function(){
+     //        var temp = $("#price_show").html();
+     //        $("#price_show").css({'display' : 'none'});
+     //        $(this).santizeCommas();
+     //    });
     });
 
     String.prototype.addComma = function() {
