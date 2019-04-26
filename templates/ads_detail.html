@@ -31,7 +31,7 @@
                     </div>
                     <div class="col-md-12 no-padding" style="margin-top: 16px;">
                         <div class="col-md-11 no-padding" style="margin-bottom: 15px;">Posted on {{ post.created_at }}</div>
-                        {% if user != post.owner and post.available %}
+                        {% if user != post.owner and !post.deleted %}
                         <div class="col-md-1 no-padding favourite {% if favourite %} like {% endif %}">
                             <i class="fa fa-heart-o" aria-hidden="true"></i>
                             <i class="fa fa-heart" aria-hidden="true"></i>
@@ -218,7 +218,7 @@
                             <div class="clearfix"></div>
                             <button class="col-md-offset-3 col-md-2 btn btn-default" id="send_femail">Send</button>
                         </div>
-                        {% if post.price and post.owner != user and post.category.form != 'ShortTermPost' and post.available %}
+                        {% if post.price and post.owner != user and post.category.form != 'ShortTermPost' and !post.deleted %}
                         <div class="main-product-btn">
                             <div class="col-xs-6 col-md-3 no-padding">
                                 <input class="btn btn-info btn-payment" type="button" value="Purchase">
