@@ -1,7 +1,8 @@
 {% extends "_base.html" %} 
 {% load staticfiles %} 
-
+{% load ads_tags %}
 {% block page_content %}
+
 <div id="page" class="site">
     <div class="site-inner">
 
@@ -124,6 +125,9 @@
 
             <div class="container">
                 <div class="row">
+                    {% render_ads_zone 'zone_name' %}
+                </div>
+                <div class="row">
                     <!-- Footer Top -->
                     <div class="footer-top clearfix">
                         <div class="col-sm-3 col-xs-6">
@@ -185,6 +189,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="site-info">
                     &copy Copyright 2018 GlobalBoard </div>
                 <!-- .site-info -->

@@ -50,7 +50,7 @@ class Customer(AbstractUser):
 
 
 class Category(models.Model):
-    parent = models.ForeignKey("Category", blank=True, null=True)
+    parent = models.ForeignKey("Category", blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     column = models.IntegerField(default=1) # 10: dealer for sub category
     form = models.CharField(max_length=50, default='Post')
@@ -80,7 +80,7 @@ class Country(models.Model):
 
 class State(models.Model):
     name = models.CharField(max_length=150)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name.encode('utf-8')
@@ -92,8 +92,8 @@ class City(models.Model):
     districts have district as parent city
     """
     name = models.CharField(max_length=30)
-    state = models.ForeignKey(State)
-    district = models.ForeignKey("City", blank=True, null=True, related_name='districts')
+    state = models.ForeignKey(State, on_delete=models.CASCADE)
+    district = models.ForeignKey("City", blank=True, null=True, related_name='districts', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name.encode('utf-8')
@@ -106,13 +106,13 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     status = models.CharField(max_length=50, blank=True, null=True)
-    category = models.ForeignKey(Category)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     price = models.FloatField(default=0, blank=True, null=True)
     tag = models.CharField(max_length=100, null= True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    owner = models.ForeignKey(Customer)
-    region = models.ForeignKey(City, blank=True, null=True)
+    owner = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    region = models.ForeignKey(City, blank=True, null=True, on_delete=models.CASCADE)
     language = models.CharField(max_length=50, blank=True, null=True)
     # contact
     mail_relay = models.BooleanField(default=False)
@@ -146,8 +146,8 @@ PURCHASE_STATUS = (
 )
 
 class PostPurchase(models.Model):
-    post = models.ForeignKey(Post)
-    purchaser = models.ForeignKey(Customer)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    purchaser = models.ForeignKey(Customer, on_delete=models.CASCADE)
     type = models.CharField(max_length=20, choices=PURCHASE_TYPE)
     contact = models.TextField(blank=True, null=True)
     transaction = models.CharField(max_length=100)
@@ -164,9 +164,9 @@ class Review(models.Model):
     """
     review on post
     """
-    post = models.ForeignKey(Post)
-    rater = models.ForeignKey(Customer)
-    purchase = models.ForeignKey(PostPurchase, null=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    rater = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    purchase = models.ForeignKey(PostPurchase, null=True, on_delete=models.CASCADE)
     rating = models.FloatField()
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -177,10 +177,10 @@ class Review(models.Model):
 
 class Search(models.Model):
     keyword = models.CharField(max_length=100, blank=True, null=True)
-    category = models.ForeignKey(Category, blank=True, null=True)
-    city = models.ForeignKey(City, blank=True, null=True)
-    state = models.ForeignKey(State, blank=True, null=True)
-    owner = models.ForeignKey(Customer)
+    category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, blank=True, null=True, on_delete=models.CASCADE)
+    state = models.ForeignKey(State, blank=True, null=True, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Customer, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     alert = models.BooleanField(default=True)
     search_title = models.BooleanField(default=False)
@@ -197,7 +197,7 @@ class Search(models.Model):
 
 
 class Image(models.Model):
-    post = models.ForeignKey(Post, related_name='images')
+    post = models.ForeignKey(Post, related_name='images', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     is_head = models.BooleanField(default=False)
@@ -206,16 +206,16 @@ class Image(models.Model):
         return '{} - {}'.format(self.post.title, self.name)
 
 class Favourite(models.Model):
-    owner =  models.ForeignKey(Customer, related_name="favourites")
-    post = models.ForeignKey(Post)
+    owner =  models.ForeignKey(Customer, related_name="favourites", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     def __str__(self):
         return '{} - {}'.format(self.owner.first_name, self.post.title)
 
 
 class Hidden(models.Model):
-    owner =  models.ForeignKey(Customer)
-    post = models.ForeignKey(Post, related_name='post')
+    owner =  models.ForeignKey(Customer, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name='post', on_delete=models.CASCADE)
 
     def __str__(self):
         return '{} - {}'.format(self.owner.first_name, self.post.title)
@@ -223,7 +223,7 @@ class Hidden(models.Model):
 
 class Perk(models.Model):
     title = models.CharField(max_length=200)
-    campaign = models.ForeignKey("Campaign")
+    campaign = models.ForeignKey("Campaign", on_delete=models.CASCADE)
     price = models.IntegerField()
     retail = models.IntegerField(default=0)
     description = models.TextField()
@@ -236,12 +236,12 @@ class Perk(models.Model):
 
 
 class PerkClaim(models.Model):
-    campaign = models.ForeignKey("Campaign", related_name="claims")
+    campaign = models.ForeignKey("Campaign", related_name="claims", on_delete=models.CASCADE)
     # null for donate
-    perk = models.ForeignKey(Perk, blank=True, null=True, related_name="claims")
+    perk = models.ForeignKey(Perk, blank=True, null=True, related_name="claims", on_delete=models.CASCADE)
     contact = models.TextField(blank=True, null=True)
     # null for Anonymous
-    claimer = models.ForeignKey(Customer, blank=True, null=True)
+    claimer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.CASCADE)
     amount = models.IntegerField()      # in cent
     transaction = models.CharField(max_length=100)
 
@@ -250,7 +250,7 @@ class PerkClaim(models.Model):
 
 
 class CampCategory(models.Model):
-    parent = models.ForeignKey("CampCategory", blank=True, null=True)
+    parent = models.ForeignKey("CampCategory", blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     column = models.IntegerField(default=1)
 
@@ -271,7 +271,7 @@ STAGES = [
 
 class Campaign(models.Model):
     title = models.CharField(max_length=200)
-    category = models.ForeignKey(CampCategory)
+    category = models.ForeignKey(CampCategory, on_delete=models.CASCADE)
     budget = models.IntegerField()
     raised = models.IntegerField(default=0)
     over_image = models.CharField(max_length=200)
@@ -283,7 +283,7 @@ class Campaign(models.Model):
     location = models.CharField(max_length=200)
     # youtube video keys
     videos = models.TextField(blank=True, null=True)
-    owner =  models.ForeignKey(Customer)
+    owner =  models.ForeignKey(Customer, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
     
     def __str__(self):
@@ -291,9 +291,9 @@ class Campaign(models.Model):
 
 
 class Message(models.Model):
-    customer_from = models.ForeignKey(Customer, related_name='customer_from', null=True)
-    customer_to = models.ForeignKey(Customer, related_name='customer_to', null=True)
-    post = models.ForeignKey(Post, null=True)
+    customer_from = models.ForeignKey(Customer, related_name='customer_from', null=True, on_delete=models.CASCADE)
+    customer_to = models.ForeignKey(Customer, related_name='customer_to', null=True, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, null=True, on_delete=models.CASCADE  )
     content = models.CharField(max_length=500, blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=100, choices=SSTATUS, default="unread")

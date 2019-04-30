@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from general.models import *
 from general.post_models import *
+import pdb
 
 register = template.Library()
 
@@ -36,12 +37,14 @@ def get_vids(campaign):
 
 @register.filter
 def rating(customer):
-    rate = Review.objects.filter(post__owner=customer).aggregate(Avg('rating')).values()[0]
+    # rate = Review.objects.filter(post__owner=customer).aggregate(Avg('rating')).values()[0]
+    rate = Review.objects.filter(post__owner=customer).aggregate(Avg('rating')).get('rating__avg')
     return rate if rate else 0
 
 @register.filter
 def rating_post(post):
-    rate = Review.objects.filter(post=post).aggregate(Avg('rating')).values()[0]
+    # rate = Review.objects.filter(post=post).aggregate(Avg('rating')).values()[0]
+    rate = Review.objects.filter(post=post).aggregate(Avg('rating')).get('rating__avg')
     return rate if rate else 0
 
 def daterange(start_date, end_date):
@@ -66,7 +69,7 @@ def rangee(start, end):
 
 @register.filter
 def is_like(post, user):
-    if user.is_authenticated():
+    if user.is_authenticated:
         flag = Favourite.objects.filter(owner=user, post=post)
         return 'like' if flag else ''
     return ''

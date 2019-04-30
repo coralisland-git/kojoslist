@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-
 from general.views import *
 
 admin.site.site_header = "Globalboard Admin"
@@ -23,6 +22,7 @@ admin.site.site_header = "Globalboard Admin"
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^ads/', include('ads.urls')),
 ]
 
 

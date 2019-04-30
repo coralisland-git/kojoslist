@@ -5,3 +5,4 @@ django-allauth==0.32.0
 twilio
 stripe
 psycopg2
+django_cron
