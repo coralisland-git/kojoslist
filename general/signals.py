@@ -19,8 +19,8 @@ from pytz import timezone
 def delete_image_file(sender, instance, using, **kwargs):
     try:
         os.remove(settings.BASE_DIR+'/static/media/'+instance.name)
-    except Exception, e:
-        print e, '@@@@@ Error in delete_image_file()'
+    except Exception as e:
+        print(e, '@@@@@ Error in delete_image_file()')
 
 @receiver(post_save, sender=Post)
 @receiver(post_save, sender=JobPost)
@@ -71,8 +71,8 @@ def apply_subscribe(sender, instance, **kwargs):
                     Thank you for using <a href="http://{0}/">Globalboard</a>.
                 """.format(settings.MAIN_URL, ss.category.name, str(instance.created_at), instance.id, instance.title)
                 send_email(settings.FROM_EMAIL, 'Globalboard Subscription Alarm', ss.owner.email, content)
-    except Exception, e:
-        print e, '@@@@@ Error in apply_subscribe()'
+    except Exception as e:
+        print(e, '@@@@@ Error in apply_subscribe()')
 
 @receiver(post_save, sender=Review)
 def rating_notify(sender, instance, **kwargs):
@@ -82,8 +82,8 @@ def rating_notify(sender, instance, **kwargs):
             instance.post.title, instance.created_at.strftime("%b-%d-%Y at %H:%M%p"), instance.post.id)
         content += "<br><br>"+instance.content
         send_email(settings.FROM_EMAIL, 'Globalboard Rating Notification', instance.post.owner.email, content)
-    except Exception, e:
-        print e, '@@@@@ Error in rating_notify()'
+    except Exception as e:
+        print(e, '@@@@@ Error in rating_notify()')
 
 @receiver(post_save, sender=PostPurchase)
 def post_purchase_notify(sender, instance, **kwargs):
@@ -173,9 +173,8 @@ def post_purchase_notify(sender, instance, **kwargs):
 
         send_email(settings.FROM_EMAIL, subject, instance.purchaser.email, content_to_self)
 
-    except Exception, e:
-
-        print e, '@@@@@ Error in post_purchase_notify()'
+    except Exception as e:
+        print(e, '@@@@@ Error in post_purchase_notify()')
 
 
 @receiver(post_save, sender=Message)

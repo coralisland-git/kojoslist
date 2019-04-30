@@ -13,7 +13,8 @@ from random import randint
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse
+# from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -167,7 +168,7 @@ def get_posts_with_image(posts, mine=False):
     return posts_with_image
 
 def profile(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         # pass
         try:
             request.user.default_site = request.session['default_site']
@@ -251,7 +252,7 @@ def get_regions(request):
     city = request.GET.get('city')
     kind = mapName.count('-')
 
-    # if request.user.is_authenticated():
+    # if request.user.is_authenticated:
     #     # store last location
     #     loc = mapName
     #     if kind == 2 or is_state == 'true':
@@ -411,8 +412,8 @@ def post_ads(request, ads_id):
                         description="Charge for Post(#{} - {})".format(post.id, post.title)
                     )
                     # pdb.set_trace()
-                except Exception, e:
-                    print e, 'stripe error ##'
+                except Exception as e:
+                    print(e, 'stripe error ##')
         print(form.errors, '$$$$$$$$')
         return HttpResponseRedirect(reverse('my-ads'))
 
@@ -473,7 +474,7 @@ def upload_image(request):
             resized_image.thumbnail(size)
             resized_image.save(settings.BASE_DIR+'/static/media/thumbnail-'+filename)
         except IOError:
-            print "cannot create thumbnail for", filename
+            print("cannot create thumbnail for", filename)
 
     uploaded_file_url = fs.url(filename)
     res = { "image_url": uploaded_file_url,"image_name": uploaded_file_url.split('/')[-1] }
@@ -536,7 +537,7 @@ def view_ads(request, ads_id):
     lack_amount = 0
     flag = False
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         posts = [ii.post.id for ii in Favourite.objects.filter(owner=request.user)]
         favourite = post.id in posts
 
@@ -729,7 +730,7 @@ def view_ads(request, ads_id):
                 flag = True
 
             except Exception as e:
-                print e, '@@@@@ Error in view_ads()'
+                print(e, '@@@@@ Error in view_ads()')
     if flag:
         reviews = Review.objects.filter(post__id=ads_id)
     skey = settings.STRIPE_KEYS['PUBLIC_KEY']
@@ -1039,7 +1040,7 @@ def view_campaign(request, camp_id):
         perk = request.POST.get('perk_id') or -1
         contact = request.POST.get('contact')
         amount = request.POST.get('amount')
-        claimer = request.user if request.user.is_authenticated() else None
+        claimer = request.user if request.user.is_authenticated else None
         card = request.POST.get('stripeToken')
 
         perk = Perk.objects.filter(id=perk).first()
@@ -1084,8 +1085,8 @@ def view_campaign(request, camp_id):
             campaign.save()
 
             result = charge.id
-        except Exception, e:
-            print e, 'stripe error ##'
+        except Exception as e:
+            print(e, 'stripe error ##')
             # result = 'failed'
 
 
@@ -1218,7 +1219,7 @@ def place_country_list(request):
                 default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-'+state_abbr+'-all@'+state_name+city_code
             else:
                 default_site = 'countries/'+country_code.lower()+'/'+country_code.lower()+'-all@'+state_name+city_code
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 request.user.default_site = default_site
                 request.user.save()
         except Exception as e:
@@ -1266,7 +1267,7 @@ def place_country_list(request):
 def toggle_favourite(request):
     ads_id = request.POST.get('ads_id')
     res = 'success'
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         if Favourite.objects.filter(owner=request.user, post_id=ads_id):
             Favourite.objects.filter(owner=request.user, post_id=ads_id).delete()
         else:
@@ -1374,8 +1375,8 @@ def create_subscription(request):
             source=card, # obtained with Stripe.js
             description="Charge for creation of new subscription({})".format(keyword)
         )
-    except Exception, e:
-        print e, 'stripe error ##'
+    except Exception as e:
+        print(e, 'stripe error ##')
 
     return HttpResponse('')
 
@@ -1861,7 +1862,7 @@ def search_txs(request):
 def send_vcode(request):
     phone = request.POST.get('phone')
     vcode = randint(100000, 999999)
-    print vcode, '###'
+    print(vcode, '###')
     body = "{} is your Globalboard verification code.".format(vcode)
     result = send_SMS(phone, body)
 
