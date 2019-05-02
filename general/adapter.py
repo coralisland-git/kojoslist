@@ -1,5 +1,5 @@
 import json
-import time, random, hmac, urllib, httplib
+import time, random, hmac, urllib, http.client
 
 from hashlib import sha1
 from django.conf import settings
@@ -41,7 +41,7 @@ class MyAccountAdapter(DefaultAccountAdapter):
             response = conn.getresponse()       # get response of api call
             res = json.loads(response.read())   # parse response as json
             token = res['session']['token']
-            print token
+            print(token)
 
             # 2. signup
             users = { "user": 
@@ -50,8 +50,6 @@ class MyAccountAdapter(DefaultAccountAdapter):
                    'full_name': email_address.user.first_name + ' ' + email_address.user.last_name
                 }
             }
-
-            print users, '#####3'
             params = json.dumps(users)
 
             headers = {
@@ -61,11 +59,11 @@ class MyAccountAdapter(DefaultAccountAdapter):
 
             conn.request("POST", "/users.json", params, headers)
             response = conn.getresponse()
-            print response.read(), '##########3'
+            print(response.read(), '##########3')
 
             return super(MyAccountAdapter, self).confirm_email(request, email_address)
-        except Exception, e:
-            print str(e), 'Error in confirm_email @@@@@@@@@@@@@@'
+        except Exception as e:
+            print(str(e), 'Error in confirm_email @@@@@@@@@@@@@@')
 
 class MySocialAdapter(DefaultSocialAccountAdapter):
     
